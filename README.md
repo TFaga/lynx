@@ -1,4 +1,5 @@
 # Lynx
+[![Build Status](https://img.shields.io/travis/TFaga/lynx/master.svg?style=flat)](https://travis-ci.org/TFaga/lynx)
 
 > Lynx automatically exposes your JPA entities as a REST service with build-in metadata and query support using JAX-RS.
 
