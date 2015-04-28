@@ -1,15 +1,15 @@
 package com.github.tfaga.lynx.test.jpa;
 
-import com.github.tfaga.lynx.test.JpaApplication;
-import com.github.tfaga.lynx.test.jpa.entities.User;
+import com.github.tfaga.lynx.beans.QueryParameters;
+import com.github.tfaga.lynx.test.entities.User;
+import com.github.tfaga.lynx.test.rules.JpaRule;
 import com.github.tfaga.lynx.utils.JPAUtils;
 
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
+
+import java.util.List;
 
 import javax.persistence.EntityManager;
 
@@ -18,44 +18,22 @@ import javax.persistence.EntityManager;
  */
 public class JPAUtilsQueryTest {
 
-    private static JpaApplication app;
+    @ClassRule
+    public static JpaRule server = new JpaRule();
 
-    private EntityManager em;
+    private EntityManager em = server.getEntityManager();
 
-    @BeforeClass
-    public static void setUpApp() {
+    @Test
+    public void testEmptyQuery() {
 
-        app = new JpaApplication();
-        app.start();
-    }
-
-    @AfterClass
-    public static void tearDownApp() {
-
-        app.stop();
-    }
-
-    @Before
-    public void setUpEm() {
-
-        em = app.getEntityManager();
-    }
-
-    @After
-    public void tearDownEm() {
-
-        em.close();
+        List<User> users = JPAUtils.queryEntities(em, User.class, new QueryParameters());
     }
 
     @Test
-    public void testCreateEntity() {
+    public void testFindEntity() {
 
-        User u = new User();
+        User u = JPAUtils.getEntity(em, User.class, 1);
 
-        u = JPAUtils.createEntity(em, u);
-
-        Assert.assertNotNull(u);
-        Assert.assertNotNull(u.getId());
-        Assert.assertEquals(u.getId().intValue(), 1);
+        Assert.assertNull(u);
     }
 }

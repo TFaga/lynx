@@ -7,7 +7,7 @@
              version="2.1">
     <persistence-unit name="lynx" transaction-type="RESOURCE_LOCAL">
 
-        <class>com.github.tfaga.lynx.test.jpa.entities.User</class>
+        <class>com.github.tfaga.lynx.test.entities.User</class>
 
         <properties>
             <property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />
@@ -16,10 +16,11 @@
             <property name="javax.persistence.jdbc.user" value="sa" />
             <property name="javax.persistence.jdbc.password" value="sa" />
 
-            <!-- EclipseLink should create the database schema automatically -->
-            <property name="eclipselink.ddl-generation" value="create-tables" />
-            <property name="eclipselink.ddl-generation.output-mode"
-                      value="database" />
+            <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
+            <property name="javax.persistence.schema-generation.create-source" value="metadata"/>
+            <property name="javax.persistence.schema-generation.drop-source" value="metadata"/>
+
+            <property name="javax.persistence.sql-load-script-source" value="db_init.sql"/>
         </properties>
 
     </persistence-unit>
