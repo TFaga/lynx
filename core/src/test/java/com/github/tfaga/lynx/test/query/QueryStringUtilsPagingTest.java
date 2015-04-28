@@ -234,4 +234,22 @@ public class QueryStringUtilsPagingTest {
 
         Assert.assertNull(query.getOffset());
     }
+
+    @Test
+    public void testOffsetWithLimit() {
+
+        QueryParameters query = QueryStringUtils.parse("$offset=123&$limit=22");
+
+        Assert.assertNotNull(query.getLimit());
+        Assert.assertNotNull(query.getOffset());
+        Assert.assertEquals(query.getLimit().longValue(), 22);
+        Assert.assertEquals(query.getOffset().longValue(), 123);
+
+        query = QueryStringUtils.parse("$skip=123&$max=22&$skip=444");
+
+        Assert.assertNotNull(query.getLimit());
+        Assert.assertNotNull(query.getOffset());
+        Assert.assertEquals(query.getLimit().longValue(), 22);
+        Assert.assertEquals(query.getOffset().longValue(), 444);
+    }
 }
