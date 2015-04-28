@@ -34,6 +34,6 @@ public class JPAUtilsQueryTest {
 
         User u = JPAUtils.getEntity(em, User.class, 1);
 
-        Assert.assertNull(u);
+        Assert.assertNotNull(u);
     }
 }
