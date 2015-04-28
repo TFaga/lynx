@@ -73,4 +73,46 @@ public class QueryStringUtilsParseTest {
             Assert.assertEquals(e.getField(), "$max");
         }
     }
+
+    @Test
+    public void testOffset() {
+
+        QueryParameters query = QueryStringUtils.parse("$offset=921");
+
+        Assert.assertEquals(query.getOffset().longValue(), 921);
+
+        query = QueryStringUtils.parse("$skip=824");
+
+        Assert.assertEquals(query.getOffset().longValue(), 824);
+    }
+
+    @Test
+    public void testMultipleOffsets() {
+
+        QueryParameters query = QueryStringUtils.parse("$skip=2199&$offset=95461&$skip=411");
+
+        Assert.assertEquals(query.getOffset().longValue(), 411);
+    }
+
+    @Test
+    public void testWrongOffsetFormat() {
+
+        try {
+
+            QueryStringUtils.parse("$skip=122&$skip=asd");
+            Assert.fail("No exception was thrown");
+        } catch (QueryFormatException e) {
+
+            Assert.assertEquals(e.getField(), "$skip");
+        }
+
+        try {
+
+            QueryStringUtils.parse("$skip=&$offset=222");
+            Assert.fail("No exception was thrown");
+        } catch (QueryFormatException e) {
+
+            Assert.assertEquals(e.getField(), "$skip");
+        }
+    }
 }
