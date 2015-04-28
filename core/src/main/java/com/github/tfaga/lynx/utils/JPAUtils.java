@@ -21,4 +21,11 @@ public class JPAUtils {
 
         return em.find(entity, id);
     }
+
+    public static <T> T createEntity(EntityManager em, T object) {
+
+        em.persist(object);
+
+        return object;
+    }
 }
