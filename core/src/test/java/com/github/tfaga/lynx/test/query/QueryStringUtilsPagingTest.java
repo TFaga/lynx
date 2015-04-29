@@ -1,6 +1,7 @@
 package com.github.tfaga.lynx.test.query;
 
 import com.github.tfaga.lynx.beans.QueryParameters;
+import com.github.tfaga.lynx.enums.QueryFormatError;
 import com.github.tfaga.lynx.exceptions.QueryFormatException;
 import com.github.tfaga.lynx.utils.QueryStringUtils;
 
@@ -64,6 +65,20 @@ public class QueryStringUtilsPagingTest {
     }
 
     @Test
+    public void testNegativeLimit() {
+
+        try {
+
+            QueryStringUtils.parse("$limit=-123");
+            Assert.fail("No exception was thrown");
+        } catch (QueryFormatException e) {
+
+            Assert.assertEquals(e.getField(), "$limit");
+            Assert.assertEquals(e.getReason(), QueryFormatError.NEGATIVE);
+        }
+    }
+
+    @Test
     public void testWrongLimitFormat() {
 
         try {
@@ -73,6 +88,7 @@ public class QueryStringUtilsPagingTest {
         } catch (QueryFormatException e) {
 
             Assert.assertEquals(e.getField(), "$limit");
+            Assert.assertEquals(e.getReason(), QueryFormatError.NOT_A_NUMBER);
         }
 
         try {
@@ -82,6 +98,7 @@ public class QueryStringUtilsPagingTest {
         } catch (QueryFormatException e) {
 
             Assert.assertEquals(e.getField(), "$max");
+            Assert.assertEquals(e.getReason(), QueryFormatError.NOT_A_NUMBER);
         }
     }
 
@@ -164,6 +181,20 @@ public class QueryStringUtilsPagingTest {
     }
 
     @Test
+    public void testNegativeOffset() {
+
+        try {
+
+            QueryStringUtils.parse("$offset=-123");
+            Assert.fail("No exception was thrown");
+        } catch (QueryFormatException e) {
+
+            Assert.assertEquals(e.getField(), "$offset");
+            Assert.assertEquals(e.getReason(), QueryFormatError.NEGATIVE);
+        }
+    }
+
+    @Test
     public void testWrongOffsetFormat() {
 
         try {
@@ -173,6 +204,7 @@ public class QueryStringUtilsPagingTest {
         } catch (QueryFormatException e) {
 
             Assert.assertEquals(e.getField(), "$skip");
+            Assert.assertEquals(e.getReason(), QueryFormatError.NOT_A_NUMBER);
         }
 
         try {
@@ -182,6 +214,7 @@ public class QueryStringUtilsPagingTest {
         } catch (QueryFormatException e) {
 
             Assert.assertEquals(e.getField(), "$skip");
+            Assert.assertEquals(e.getReason(), QueryFormatError.NOT_A_NUMBER);
         }
     }
 
