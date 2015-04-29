@@ -17,11 +17,19 @@ public class QueryParameters {
         this.limit = limit;
     }
 
+    public void setLimit(Integer limit) {
+        this.limit = limit.longValue();
+    }
+
     public Long getOffset() {
         return offset;
     }
 
     public void setOffset(Long offset) {
         this.offset = offset;
+    }
+
+    public void setOffset(Integer offset) {
+        this.offset = offset.longValue();
     }
 }

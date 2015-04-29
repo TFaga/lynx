@@ -1,6 +1,7 @@
 package com.github.tfaga.lynx.utils;
 
 import com.github.tfaga.lynx.beans.QueryParameters;
+import com.github.tfaga.lynx.enums.QueryFormatError;
 import com.github.tfaga.lynx.exceptions.QueryFormatException;
 
 import java.io.UnsupportedEncodingException;
@@ -112,7 +113,14 @@ public class QueryStringUtils {
 
                     log.finest("Value for '" + key + "' was incorrect: '" + value + "'");
 
-                    throw new QueryFormatException(key);
+                    throw new QueryFormatException(key, QueryFormatError.NOT_A_NUMBER);
+                }
+
+                if (params.getLimit() < 0) {
+
+                    log.finest("Value for '" + key + "' was negative: '" + value + "'");
+
+                    throw new QueryFormatException(key, QueryFormatError.NEGATIVE);
                 }
 
                 break;
@@ -127,7 +135,14 @@ public class QueryStringUtils {
 
                     log.finest("Value for '" + key + "' was incorrect: '" + value + "'");
 
-                    throw new QueryFormatException(key);
+                    throw new QueryFormatException(key, QueryFormatError.NOT_A_NUMBER);
+                }
+
+                if (params.getOffset() < 0) {
+
+                    log.finest("Value for '" + key + "' was negative: '" + value + "'");
+
+                    throw new QueryFormatException(key, QueryFormatError.NEGATIVE);
                 }
 
                 break;
