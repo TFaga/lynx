@@ -1,5 +1,8 @@
 package com.github.tfaga.lynx.beans;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author Tilen Faganel
  */
@@ -8,6 +11,8 @@ public class QueryParameters {
     private Long limit;
 
     private Long offset;
+
+    private List<QueryOrder> order;
 
     public Long getLimit() {
         return limit;
@@ -31,5 +36,17 @@ public class QueryParameters {
 
     public void setOffset(Integer offset) {
         this.offset = offset.longValue();
+    }
+
+    public List<QueryOrder> getOrder() {
+
+        if (order == null)
+            order = new ArrayList<>();
+
+        return order;
+    }
+
+    public void setOrder(List<QueryOrder> order) {
+        this.order = order;
     }
 }

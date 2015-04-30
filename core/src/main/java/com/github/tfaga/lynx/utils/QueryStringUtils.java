@@ -1,6 +1,8 @@
 package com.github.tfaga.lynx.utils;
 
+import com.github.tfaga.lynx.beans.QueryOrder;
 import com.github.tfaga.lynx.beans.QueryParameters;
+import com.github.tfaga.lynx.enums.OrderDirection;
 import com.github.tfaga.lynx.enums.QueryFormatError;
 import com.github.tfaga.lynx.exceptions.QueryFormatException;
 
@@ -26,6 +28,10 @@ public class QueryStringUtils {
     public static final String OFFSET_DELIMITER = "$offset";
 
     public static final String OFFSET_DELIMITER_ALT = "$skip";
+
+    public static final String ORDER_DELIMITER = "$order";
+
+    public static final String ORDER_DELIMITER_ALT = "$sort";
 
     public static QueryParameters parse(String queryString) {
 
@@ -146,6 +152,63 @@ public class QueryStringUtils {
                 }
 
                 break;
+
+            case ORDER_DELIMITER:
+            case ORDER_DELIMITER_ALT:
+
+                params.getOrder().clear();
+
+                String[] ordersString = value.split(",");
+
+                for (String o : ordersString) {
+
+                    QueryOrder order = parseOrder(key, o);
+
+                    if (order != null && !params.getOrder().stream()
+                                                .anyMatch(co -> co.getField()
+                                                                .equals(order.getField()))) {
+
+                        params.getOrder().add(order);
+                    }
+                }
+
+                break;
         }
+    }
+
+    private static QueryOrder parseOrder(String key, String value) {
+
+        log.finest("Parsing order string: " + value);
+
+        if (value == null || value.isEmpty()) return null;
+
+        QueryOrder o = new QueryOrder();
+
+        String[] pair = value.split(" ");
+
+        if (pair[0].isEmpty()) {
+
+            log.finest("Order string '" + value + "' is malformed");
+
+            throw new QueryFormatException(key, QueryFormatError.MALFORMED);
+        }
+
+        o.setField(pair[0]);
+
+        if (pair.length > 1) {
+
+            try {
+
+                o.setOrder(OrderDirection.valueOf(pair[1]));
+            } catch (IllegalArgumentException e) {
+
+                throw new QueryFormatException(key, QueryFormatError.MALFORMED);
+            }
+        } else {
+
+            o.setOrder(OrderDirection.ASC);
+        }
+
+        return o;
     }
 }
