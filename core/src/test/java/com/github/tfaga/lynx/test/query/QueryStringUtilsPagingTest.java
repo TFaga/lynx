@@ -90,16 +90,15 @@ public class QueryStringUtilsPagingTest {
             Assert.assertEquals(e.getField(), "$limit");
             Assert.assertEquals(e.getReason(), QueryFormatError.NOT_A_NUMBER);
         }
+    }
 
-        try {
+    @Test
+    public void testEmptyLimit() {
 
-            QueryStringUtils.parse("$max=&$limit=222");
-            Assert.fail("No exception was thrown");
-        } catch (QueryFormatException e) {
+        QueryParameters query = QueryStringUtils.parse("$limit=");
 
-            Assert.assertEquals(e.getField(), "$max");
-            Assert.assertEquals(e.getReason(), QueryFormatError.NOT_A_NUMBER);
-        }
+        Assert.assertNotNull(query);
+        Assert.assertNull(query.getLimit());
     }
 
     @Test
@@ -206,16 +205,15 @@ public class QueryStringUtilsPagingTest {
             Assert.assertEquals(e.getField(), "$skip");
             Assert.assertEquals(e.getReason(), QueryFormatError.NOT_A_NUMBER);
         }
+    }
 
-        try {
+    @Test
+    public void testEmptyOffset() {
 
-            QueryStringUtils.parse("$skip=&$offset=222");
-            Assert.fail("No exception was thrown");
-        } catch (QueryFormatException e) {
+        QueryParameters query = QueryStringUtils.parse("$skip=");
 
-            Assert.assertEquals(e.getField(), "$skip");
-            Assert.assertEquals(e.getReason(), QueryFormatError.NOT_A_NUMBER);
-        }
+        Assert.assertNotNull(query);
+        Assert.assertNull(query.getOffset());
     }
 
     @Test

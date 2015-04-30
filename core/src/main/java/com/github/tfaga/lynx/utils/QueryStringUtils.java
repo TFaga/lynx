@@ -99,7 +99,7 @@ public class QueryStringUtils {
 
         if (key == null || key.isEmpty()) return;
 
-        if (value == null) value = "";
+        if (value == null || value.isEmpty()) return;
 
         switch (key) {
 
