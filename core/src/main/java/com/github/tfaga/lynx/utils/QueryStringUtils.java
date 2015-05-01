@@ -33,6 +33,33 @@ public class QueryStringUtils {
 
     public static final String ORDER_DELIMITER_ALT = "$sort";
 
+    public static QueryParameters parseUri(URI uri) {
+
+        log.finest("Parsing uri object: " + uri);
+
+        if (uri == null) return new QueryParameters();
+
+        return parse(uri.getRawQuery());
+    }
+
+    public static QueryParameters parseUri(String uri) {
+
+        log.finest("Parsing uri string: " + uri);
+
+        if (uri == null || uri.isEmpty()) return new QueryParameters();
+
+        int idxQuery = uri.indexOf("?");
+        int idxFragment = uri.indexOf("#");
+
+        if (idxQuery == -1) return new QueryParameters();
+
+        if (idxFragment == -1) return parse(uri.substring(idxQuery + 1));
+
+        if (idxFragment < idxQuery) return new QueryParameters();
+
+        return parse(uri.substring(idxQuery + 1, idxFragment));
+    }
+
     public static QueryParameters parse(String queryString) {
 
         log.finest("Parsing query string: " + queryString);
@@ -68,33 +95,6 @@ public class QueryStringUtils {
         }
 
         return params;
-    }
-
-    public static QueryParameters parseUri(URI uri) {
-
-        log.finest("Parsing uri object: " + uri);
-
-        if (uri == null) return new QueryParameters();
-
-        return parse(uri.getRawQuery());
-    }
-
-    public static QueryParameters parseUri(String uri) {
-
-        log.finest("Parsing uri string: " + uri);
-
-        if (uri == null || uri.isEmpty()) return new QueryParameters();
-
-        int idxQuery = uri.indexOf("?");
-        int idxFragment = uri.indexOf("#");
-
-        if (idxQuery == -1) return new QueryParameters();
-
-        if (idxFragment == -1) return parse(uri.substring(idxQuery + 1));
-
-        if (idxFragment < idxQuery) return new QueryParameters();
-
-        return parse(uri.substring(idxQuery + 1, idxFragment));
     }
 
     private static void parsePair(QueryParameters params, String key, String value) {

@@ -16,7 +16,7 @@ import javax.persistence.EntityManager;
 /**
  * @author Tilen Faganel
  */
-public class JPAUtilsQueryTest {
+public class JPAUtilsPagingTest {
 
     @ClassRule
     public static JpaRule server = new JpaRule();

@@ -1,13 +1,19 @@
 package com.github.tfaga.lynx.utils;
 
+import com.github.tfaga.lynx.beans.QueryOrder;
 import com.github.tfaga.lynx.beans.QueryParameters;
+import com.github.tfaga.lynx.enums.OrderDirection;
+import com.github.tfaga.lynx.exceptions.NoSuchEntityFieldException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Root;
 
 /**
@@ -31,9 +37,16 @@ public class JPAUtils {
 
         log.finest("Querying entity: '" + entity.getSimpleName() + "' with parameters: " + q);
 
-        CriteriaQuery<T> cq = em.getCriteriaBuilder().createQuery(entity);
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+
+        CriteriaQuery<T> cq = cb.createQuery(entity);
 
         Root<T> r = cq.from(entity);
+
+        if (!q.getOrder().isEmpty()) {
+
+            cq.orderBy(createOrderQuery(cb, r, q));
+        }
 
         cq.select(r);
 
@@ -62,5 +75,29 @@ public class JPAUtils {
         em.persist(object);
 
         return object;
+    }
+
+    private static List<Order> createOrderQuery(CriteriaBuilder cb, Root<?> r, QueryParameters q) {
+
+        List<Order> orders = new ArrayList<>();
+
+        q.getOrder().stream().filter(qo -> qo.getField() != null).forEach(qo -> {
+
+            try {
+
+                if (qo.getOrder() == OrderDirection.DESC) {
+
+                    orders.add(cb.desc(r.get(qo.getField())));
+                } else {
+
+                    orders.add(cb.asc(r.get(qo.getField())));
+                }
+            } catch (IllegalArgumentException e) {
+
+                throw new NoSuchEntityFieldException(e.getMessage(), qo.getField());
+            }
+        });
+
+        return orders;
     }
 }

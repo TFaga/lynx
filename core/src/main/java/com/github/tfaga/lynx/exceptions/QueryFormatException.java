@@ -32,15 +32,7 @@ public class QueryFormatException extends RuntimeException {
         return field;
     }
 
-    public void setField(String field) {
-        this.field = field;
-    }
-
     public QueryFormatError getReason() {
         return reason;
-    }
-
-    public void setReason(QueryFormatError reason) {
-        this.reason = reason;
     }
 }
