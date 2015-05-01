@@ -10,6 +10,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.logging.Logger;
 
 /**
@@ -32,6 +33,10 @@ public class QueryStringUtils {
     public static final String ORDER_DELIMITER = "$order";
 
     public static final String ORDER_DELIMITER_ALT = "$sort";
+
+    public static final String FIELDS_DELIMITER = "$fields";
+
+    public static final String FIELDS_DELIMITER_ALT = "$select";
 
     public static QueryParameters parseUri(URI uri) {
 
@@ -165,12 +170,22 @@ public class QueryStringUtils {
                     QueryOrder order = parseOrder(key, o);
 
                     if (order != null && !params.getOrder().stream()
-                                                .anyMatch(co -> co.getField()
-                                                                .equals(order.getField()))) {
+                            .anyMatch(co -> co.getField()
+                                    .equals(order.getField()))) {
 
                         params.getOrder().add(order);
                     }
                 }
+
+                break;
+
+            case FIELDS_DELIMITER:
+            case FIELDS_DELIMITER_ALT:
+
+                String[] fields = value.split(",");
+
+                Arrays.stream(fields).filter(f -> !f.isEmpty()).distinct()
+                        .forEach(f -> params.getFields().add(f));
 
                 break;
         }

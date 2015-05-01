@@ -14,6 +14,8 @@ public class QueryParameters {
 
     private List<QueryOrder> order;
 
+    private List<String> fields;
+
     public Long getLimit() {
         return limit;
     }
@@ -48,5 +50,17 @@ public class QueryParameters {
 
     public void setOrder(List<QueryOrder> order) {
         this.order = order;
+    }
+
+    public List<String> getFields() {
+
+        if (fields == null)
+            fields = new ArrayList<>();
+
+        return fields;
+    }
+
+    public void setFields(List<String> fields) {
+        this.fields = fields;
     }
 }
