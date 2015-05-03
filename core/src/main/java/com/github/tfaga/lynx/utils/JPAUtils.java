@@ -6,6 +6,7 @@ import com.github.tfaga.lynx.enums.OrderDirection;
 import com.github.tfaga.lynx.exceptions.NoSuchEntityFieldException;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -113,34 +114,60 @@ public class JPAUtils {
 
         for (QueryFilter f : q.getFilters()) {
 
+            if (f.getValue() == null && f.getDateValue() == null) continue;
+
             Predicate np = null;
 
-            switch (f.getOperation()) {
+            try {
 
-                case EQ:
-                    np = cb.equal(cb.lower(r.get(f.getField())), f.getValue().toLowerCase());
-                    break;
-                case NEQ:
-                    np = cb.notEqual(cb.lower(r.get(f.getField())), f.getValue().toLowerCase());
-                    break;
-                case LIKE:
-                    np = cb.like(cb.lower(r.get(f.getField())), f.getValue().toLowerCase());
-                    break;
-                case GT:
-                    np = cb.greaterThan(r.get(f.getField()), f.getValue());
-                    break;
-                case GTE:
-                    np = cb.greaterThanOrEqualTo(r.get(f.getField()), f.getValue());
-                    break;
-                case LT:
-                    np = cb.lessThan(r.get(f.getField()), f.getValue());
-                    break;
-                case LTE:
-                    np = cb.lessThanOrEqualTo(r.get(f.getField()), f.getValue());
-                    break;
-                case IN:
-                    np = r.get(f.getField()).in(f.getValues());
-                    break;
+                switch (f.getOperation()) {
+
+                    case EQ:
+                        np = cb.equal(cb.lower(r.get(f.getField())),
+                                f.getDateValue() == null ? f.getValue().toLowerCase() : f.getDateValue());
+                        break;
+                    case NEQ:
+                        np = cb.notEqual(cb.lower(r.get(f.getField())),
+                                f.getDateValue() == null ? f.getValue().toLowerCase() : f.getDateValue());
+                        break;
+                    case LIKE:
+                        np = cb.like(cb.lower(r.get(f.getField())), f.getValue().toLowerCase());
+                        break;
+                    case GT:
+                        if (f.getDateValue() != null) {
+                            np = cb.greaterThan(r.<Date>get(f.getField()), f.getDateValue());
+                        } else {
+                            np = cb.greaterThan(r.get(f.getField()), f.getValue());
+                        }
+                        break;
+                    case GTE:
+                        if (f.getDateValue() != null) {
+                            np = cb.greaterThanOrEqualTo(r.<Date>get(f.getField()), f.getDateValue());
+                        } else {
+                            np = cb.greaterThanOrEqualTo(r.get(f.getField()), f.getValue());
+                        }
+                        break;
+                    case LT:
+                        if (f.getDateValue() != null) {
+                            np = cb.lessThan(r.<Date>get(f.getField()), f.getDateValue());
+                        } else {
+                            np = cb.lessThan(r.get(f.getField()), f.getValue());
+                        }
+                        break;
+                    case LTE:
+                        if (f.getDateValue() != null) {
+                            np = cb.lessThanOrEqualTo(r.<Date>get(f.getField()), f.getDateValue());
+                        } else {
+                            np = cb.lessThanOrEqualTo(r.get(f.getField()), f.getValue());
+                        }
+                        break;
+                    case IN:
+                        np = r.get(f.getField()).in(f.getValues());
+                        break;
+                }
+            } catch (IllegalArgumentException e) {
+
+                throw new NoSuchEntityFieldException(e.getMessage(), f.getField());
             }
 
             predicate = cb.and(predicate, np);

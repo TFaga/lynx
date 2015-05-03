@@ -12,8 +12,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -127,13 +130,13 @@ public class QueryStringUtils {
 
                 try {
 
-                params.setLimit(Long.parseLong(value));
-            } catch (NumberFormatException e) {
+                    params.setLimit(Long.parseLong(value));
+                } catch (NumberFormatException e) {
 
-                log.finest("Value for '" + key + "' was incorrect: '" + value + "'");
+                    log.finest("Value for '" + key + "' was incorrect: '" + value + "'");
 
-                throw new QueryFormatException(key, QueryFormatError.NOT_A_NUMBER);
-            }
+                    throw new QueryFormatException(key, QueryFormatError.NOT_A_NUMBER);
+                }
 
                 if (params.getLimit() < 0) {
 
@@ -265,6 +268,13 @@ public class QueryStringUtils {
                         Arrays.stream(values.split(",")).filter(e -> !e.isEmpty()).distinct()
                                 .forEach(e -> qf.getValues().add(e));
 
+                    } else if (f[2].matches("^dt'.*'$")) {
+
+                        Date d = parseDate(f[2].replaceAll("(^dt')|('$)", ""));
+
+                        if (d == null) throw new QueryFormatException(key, QueryFormatError.MALFORMED);
+
+                        qf.setDateValue(d);
                     } else {
 
                         qf.setValue(f[2].replaceAll("(^')|('$)", ""));
@@ -274,5 +284,15 @@ public class QueryStringUtils {
                 });
 
         return filterList;
+    }
+
+    private static Date parseDate(String date) {
+
+        try {
+            return Date.from(ZonedDateTime.parse(date).toInstant());
+        } catch (DateTimeParseException e) {
+
+            return null;
+        }
     }
 }

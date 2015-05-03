@@ -3,6 +3,7 @@ package com.github.tfaga.lynx.beans;
 import com.github.tfaga.lynx.enums.FilterOperation;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -15,6 +16,8 @@ public class QueryFilter {
     private FilterOperation operation;
 
     private String value;
+
+    private Date dateValue;
 
     private List<String> values;
 
@@ -48,5 +51,13 @@ public class QueryFilter {
             values = new ArrayList<>();
 
         return values;
+    }
+
+    public Date getDateValue() {
+        return dateValue;
+    }
+
+    public void setDateValue(Date dateValue) {
+        this.dateValue = dateValue;
     }
 }

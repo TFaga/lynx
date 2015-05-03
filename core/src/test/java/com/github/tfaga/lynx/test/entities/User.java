@@ -6,6 +6,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 /**
  * @author Tilen Faganel
@@ -29,6 +31,7 @@ public class User {
 
     private Integer role;
 
+    @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
 
     public Integer getId() {
