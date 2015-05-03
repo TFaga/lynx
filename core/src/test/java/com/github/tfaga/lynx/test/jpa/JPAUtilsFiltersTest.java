@@ -85,6 +85,32 @@ public class JPAUtilsFiltersTest {
     }
 
     @Test
+    public void testMultipleFilters() {
+
+        QueryParameters q = new QueryParameters();
+
+        QueryFilter qf = new QueryFilter();
+        qf.setField("firstname");
+        qf.setOperation(FilterOperation.IN);
+        qf.getValues().add("Bruce");
+        qf.getValues().add("Karen");
+        qf.getValues().add("Sandra");
+        qf.getValues().add("Laura");
+        q.getFilters().add(qf);
+
+        qf = new QueryFilter();
+        qf.setField("country");
+        qf.setOperation(FilterOperation.LIKE);
+        qf.setValue("%ina");
+        q.getFilters().add(qf);
+
+        List<User> users = JPAUtils.queryEntities(em, User.class, q);
+
+        Assert.assertNotNull(users);
+        Assert.assertEquals(2, users.size());
+    }
+
+    @Test
     public void testWrongDateField() {
 
         Date d = Date.from(ZonedDateTime.parse("2014-11-26T11:15:08Z").toInstant());
@@ -179,28 +205,115 @@ public class JPAUtilsFiltersTest {
     }
 
     @Test
-    public void testMultipleFilters() {
-
-        QueryParameters q = new QueryParameters();
+    public void testNotEqual() {
 
         QueryFilter qf = new QueryFilter();
-        qf.setField("firstname");
-        qf.setOperation(FilterOperation.IN);
-        qf.getValues().add("Bruce");
-        qf.getValues().add("Karen");
-        qf.getValues().add("Sandra");
-        qf.getValues().add("Laura");
-        q.getFilters().add(qf);
+        qf.setField("lastname");
+        qf.setOperation(FilterOperation.NEQ);
+        qf.setValue("willis");
 
-        qf = new QueryFilter();
-        qf.setField("country");
-        qf.setOperation(FilterOperation.LIKE);
-        qf.setValue("%ina");
+        QueryParameters q = new QueryParameters();
         q.getFilters().add(qf);
 
         List<User> users = JPAUtils.queryEntities(em, User.class, q);
 
         Assert.assertNotNull(users);
-        Assert.assertEquals(2, users.size());
+        Assert.assertEquals(97, users.size());
+    }
+
+    @Test
+     public void testGte() {
+
+        QueryFilter qf = new QueryFilter();
+        qf.setField("role");
+        qf.setOperation(FilterOperation.GTE);
+        qf.setValue("1");
+
+        QueryParameters q = new QueryParameters();
+        q.getFilters().add(qf);
+
+        List<User> users = JPAUtils.queryEntities(em, User.class, q);
+
+        Assert.assertNotNull(users);
+        Assert.assertEquals(47, users.size());
+
+        Date d = Date.from(ZonedDateTime.parse("2014-11-26T11:15:08Z").toInstant());
+
+        qf = new QueryFilter();
+        qf.setField("createdAt");
+        qf.setOperation(FilterOperation.GTE);
+        qf.setDateValue(d);
+
+        q = new QueryParameters();
+        q.getFilters().add(qf);
+
+        users = JPAUtils.queryEntities(em, User.class, q);
+
+        Assert.assertNotNull(users);
+        Assert.assertEquals(40, users.size());
+    }
+
+    @Test
+    public void testLt() {
+
+        QueryFilter qf = new QueryFilter();
+        qf.setField("role");
+        qf.setOperation(FilterOperation.LT);
+        qf.setValue("1");
+
+        QueryParameters q = new QueryParameters();
+        q.getFilters().add(qf);
+
+        List<User> users = JPAUtils.queryEntities(em, User.class, q);
+
+        Assert.assertNotNull(users);
+        Assert.assertEquals(53, users.size());
+
+        Date d = Date.from(ZonedDateTime.parse("2014-11-26T11:15:08Z").toInstant());
+
+        qf = new QueryFilter();
+        qf.setField("createdAt");
+        qf.setOperation(FilterOperation.LT);
+        qf.setDateValue(d);
+
+        q = new QueryParameters();
+        q.getFilters().add(qf);
+
+        users = JPAUtils.queryEntities(em, User.class, q);
+
+        Assert.assertNotNull(users);
+        Assert.assertEquals(60, users.size());
+    }
+
+    @Test
+    public void testLte() {
+
+        QueryFilter qf = new QueryFilter();
+        qf.setField("role");
+        qf.setOperation(FilterOperation.LTE);
+        qf.setValue("0");
+
+        QueryParameters q = new QueryParameters();
+        q.getFilters().add(qf);
+
+        List<User> users = JPAUtils.queryEntities(em, User.class, q);
+
+        Assert.assertNotNull(users);
+        Assert.assertEquals(53, users.size());
+
+        Date d = Date.from(ZonedDateTime.parse("2014-11-26T11:15:08Z").toInstant());
+
+        qf = new QueryFilter();
+        qf.setField("createdAt");
+        qf.setOperation(FilterOperation.LTE);
+        qf.setDateValue(d);
+
+        q = new QueryParameters();
+        q.getFilters().add(qf);
+
+        users = JPAUtils.queryEntities(em, User.class, q);
+
+        Assert.assertNotNull(users);
+        Assert.assertEquals(61, users.size());
     }
 }
