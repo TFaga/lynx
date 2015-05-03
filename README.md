@@ -13,6 +13,10 @@ module to automatically expose your entities as a REST services. If you only wan
 the scenes and don't want to expose your entities as a REST service (or you want to do it on your own) only include
 the `core` module. However if you want to use everything then only include the `rest` module.
 
+## Getting started
+
+TODO
+
 ## Building
 
 Ensure you have JDK 8 (or newer), Maven 3.2.1 (or newer) and Git installed
