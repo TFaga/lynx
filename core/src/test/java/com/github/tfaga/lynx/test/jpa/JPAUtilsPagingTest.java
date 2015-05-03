@@ -29,7 +29,7 @@ public class JPAUtilsPagingTest {
         List<User> users = JPAUtils.queryEntities(em, User.class, new QueryParameters());
 
         Assert.assertNotNull(users);
-        Assert.assertEquals(users.size(), 100);
+        Assert.assertEquals(100, users.size());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -44,7 +44,7 @@ public class JPAUtilsPagingTest {
         List<User> users = JPAUtils.queryEntities(em, User.class);
 
         Assert.assertNotNull(users);
-        Assert.assertEquals(users.size(), 100);
+        Assert.assertEquals(100, users.size());
     }
 
     @Test
@@ -56,11 +56,11 @@ public class JPAUtilsPagingTest {
         List<User> users = JPAUtils.queryEntities(em, User.class, q);
 
         Assert.assertNotNull(users);
-        Assert.assertEquals(users.size(), 10);
+        Assert.assertEquals(10, users.size());
         Assert.assertNotNull(users.get(0).getId());
-        Assert.assertEquals(users.get(0).getId().intValue(), 1);
+        Assert.assertEquals(1, users.get(0).getId().intValue());
         Assert.assertNotNull(users.get(9).getId());
-        Assert.assertEquals(users.get(9).getId().intValue(), 10);
+        Assert.assertEquals(10, users.get(9).getId().intValue());
     }
 
     @Test
@@ -72,11 +72,11 @@ public class JPAUtilsPagingTest {
         List<User> users = JPAUtils.queryEntities(em, User.class, q);
 
         Assert.assertNotNull(users);
-        Assert.assertEquals(users.size(), 70);
+        Assert.assertEquals(70, users.size());
         Assert.assertNotNull(users.get(0).getId());
-        Assert.assertEquals(users.get(0).getId().intValue(), 31);
+        Assert.assertEquals(31, users.get(0).getId().intValue());
         Assert.assertNotNull(users.get(69).getId());
-        Assert.assertEquals(users.get(69).getId().intValue(), 100);
+        Assert.assertEquals(100, users.get(69).getId().intValue());
     }
 
     @Test
@@ -89,11 +89,11 @@ public class JPAUtilsPagingTest {
         List<User> users = JPAUtils.queryEntities(em, User.class, q);
 
         Assert.assertNotNull(users);
-        Assert.assertEquals(users.size(), 25);
+        Assert.assertEquals(25, users.size());
         Assert.assertNotNull(users.get(0).getId());
-        Assert.assertEquals(users.get(0).getId().intValue(), 41);
+        Assert.assertEquals(41, users.get(0).getId().intValue());
         Assert.assertNotNull(users.get(24).getId());
-        Assert.assertEquals(users.get(24).getId().intValue(), 65);
+        Assert.assertEquals(65, users.get(24).getId().intValue());
     }
 
     @Test
@@ -105,7 +105,7 @@ public class JPAUtilsPagingTest {
         List<User> users = JPAUtils.queryEntities(em, User.class, q);
 
         Assert.assertNotNull(users);
-        Assert.assertEquals(users.size(), 100);
+        Assert.assertEquals(100, users.size());
     }
 
     @Test
@@ -117,6 +117,6 @@ public class JPAUtilsPagingTest {
         List<User> users = JPAUtils.queryEntities(em, User.class, q);
 
         Assert.assertNotNull(users);
-        Assert.assertEquals(users.size(), 0);
+        Assert.assertEquals(0, users.size());
     }
 }

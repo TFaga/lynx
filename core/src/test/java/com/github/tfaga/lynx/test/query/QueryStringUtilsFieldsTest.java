@@ -64,6 +64,15 @@ public class QueryStringUtilsFieldsTest {
     }
 
     @Test
+    public void testEmptyFieldWithoutDelimiter() {
+
+        QueryParameters query = QueryStringUtils.parse("$fields");
+
+        Assert.assertNotNull(query.getFields());
+        Assert.assertEquals(0, query.getFields().size());
+    }
+
+    @Test
     public void testDuplicateFields() {
 
         QueryParameters query = QueryStringUtils.parse("$select=country,firstname,country");

@@ -40,7 +40,7 @@ public class JPAUtilsOrderTest {
         List<User> users = JPAUtils.queryEntities(em, User.class, q);
 
         Assert.assertNotNull(users);
-        Assert.assertEquals(users.size(), 100);
+        Assert.assertEquals(100, users.size());
         Assert.assertNotNull(users.get(0).getFirstname());
         Assert.assertEquals("Amanda", users.get(0).getFirstname());
         Assert.assertNotNull(users.get(99).getFirstname());
@@ -60,7 +60,7 @@ public class JPAUtilsOrderTest {
         List<User> users = JPAUtils.queryEntities(em, User.class, q);
 
         Assert.assertNotNull(users);
-        Assert.assertEquals(users.size(), 100);
+        Assert.assertEquals(100, users.size());
         Assert.assertNotNull(users.get(0).getLastname());
         Assert.assertEquals("Willis", users.get(0).getLastname());
         Assert.assertNotNull(users.get(99).getLastname());
@@ -90,7 +90,7 @@ public class JPAUtilsOrderTest {
         List<User> users = JPAUtils.queryEntities(em, User.class, q);
 
         Assert.assertNotNull(users);
-        Assert.assertEquals(users.size(), 100);
+        Assert.assertEquals(100, users.size());
         Assert.assertNotNull(users.get(0).getFirstname());
         Assert.assertNotNull(users.get(0).getLastname());
         Assert.assertEquals("Mark", users.get(0).getFirstname());
@@ -113,7 +113,7 @@ public class JPAUtilsOrderTest {
         List<User> users = JPAUtils.queryEntities(em, User.class, q);
 
         Assert.assertNotNull(users);
-        Assert.assertEquals(users.size(), 100);
+        Assert.assertEquals(100, users.size());
         Assert.assertNotNull(users.get(0).getLastname());
         Assert.assertEquals("Austin", users.get(0).getLastname());
         Assert.assertNotNull(users.get(99).getLastname());
@@ -131,7 +131,7 @@ public class JPAUtilsOrderTest {
         List<User> users = JPAUtils.queryEntities(em, User.class, q);
 
         Assert.assertNotNull(users);
-        Assert.assertEquals(users.size(), 100);
+        Assert.assertEquals(100, users.size());
         Assert.assertNotNull(users.get(0).getLastname());
         Assert.assertEquals("Ramos", users.get(0).getLastname());
         Assert.assertNotNull(users.get(99).getLastname());
@@ -154,7 +154,7 @@ public class JPAUtilsOrderTest {
             Assert.fail("No exception was thrown");
         } catch (NoSuchEntityFieldException e) {
 
-            Assert.assertEquals(e.getField(), "lstnm");
+            Assert.assertEquals("lstnm", e.getField());
         }
     }
 
@@ -174,7 +174,7 @@ public class JPAUtilsOrderTest {
             Assert.fail("No exception was thrown");
         } catch (NoSuchEntityFieldException e) {
 
-            Assert.assertEquals(e.getField(), "firsTNAmE");
+            Assert.assertEquals("firsTNAmE", e.getField());
         }
     }
 }

@@ -42,12 +42,12 @@ public class QueryStringUtilsPagingTest {
         QueryParameters query = QueryStringUtils.parse("$limit=123");
 
         Assert.assertNotNull(query.getLimit());
-        Assert.assertEquals(query.getLimit().longValue(), 123);
+        Assert.assertEquals(123, query.getLimit().longValue());
 
         query = QueryStringUtils.parse("$max=321");
 
         Assert.assertNotNull(query.getLimit());
-        Assert.assertEquals(query.getLimit().longValue(), 321);
+        Assert.assertEquals(321, query.getLimit().longValue());
     }
 
     @Test
@@ -56,12 +56,12 @@ public class QueryStringUtilsPagingTest {
         QueryParameters query = QueryStringUtils.parse("$limit=123&$limit=111&$max=322");
 
         Assert.assertNotNull(query.getLimit());
-        Assert.assertEquals(query.getLimit().longValue(), 322);
+        Assert.assertEquals(322, query.getLimit().longValue());
 
         query = QueryStringUtils.parse("$max=981&$max=682");
 
         Assert.assertNotNull(query.getLimit());
-        Assert.assertEquals(query.getLimit().longValue(), 682);
+        Assert.assertEquals(682, query.getLimit().longValue());
     }
 
     @Test
@@ -73,8 +73,8 @@ public class QueryStringUtilsPagingTest {
             Assert.fail("No exception was thrown");
         } catch (QueryFormatException e) {
 
-            Assert.assertEquals(e.getField(), "$limit");
-            Assert.assertEquals(e.getReason(), QueryFormatError.NEGATIVE);
+            Assert.assertEquals("$limit", e.getField());
+            Assert.assertEquals(QueryFormatError.NEGATIVE, e.getReason());
         }
     }
 
@@ -87,8 +87,8 @@ public class QueryStringUtilsPagingTest {
             Assert.fail("No exception was thrown");
         } catch (QueryFormatException e) {
 
-            Assert.assertEquals(e.getField(), "$limit");
-            Assert.assertEquals(e.getReason(), QueryFormatError.NOT_A_NUMBER);
+            Assert.assertEquals("$limit", e.getField());
+            Assert.assertEquals(QueryFormatError.NOT_A_NUMBER, e.getReason());
         }
     }
 
@@ -107,7 +107,7 @@ public class QueryStringUtilsPagingTest {
         QueryParameters query = QueryStringUtils.parseUri("api.github.com/tfaga/repos?$limit=123");
 
         Assert.assertNotNull(query.getLimit());
-        Assert.assertEquals(query.getLimit().longValue(), 123);
+        Assert.assertEquals(123, query.getLimit().longValue());
     }
 
     @Test
@@ -116,7 +116,7 @@ public class QueryStringUtilsPagingTest {
         QueryParameters query = QueryStringUtils.parseUri("api.github.com/tfaga/repos?$limit=123#header1");
 
         Assert.assertNotNull(query.getLimit());
-        Assert.assertEquals(query.getLimit().longValue(), 123);
+        Assert.assertEquals(123, query.getLimit().longValue());
 
         query = QueryStringUtils.parseUri("api.github.com/tfaga/repos#header2?$skip=98172");
 
@@ -131,7 +131,7 @@ public class QueryStringUtilsPagingTest {
         QueryParameters query = QueryStringUtils.parseUri(uri);
 
         Assert.assertNotNull(query.getLimit());
-        Assert.assertEquals(query.getLimit().longValue(), 9186);
+        Assert.assertEquals(9186, query.getLimit().longValue());
     }
 
     @Test
@@ -142,7 +142,7 @@ public class QueryStringUtilsPagingTest {
         QueryParameters query = QueryStringUtils.parseUri(uri);
 
         Assert.assertNotNull(query.getLimit());
-        Assert.assertEquals(query.getLimit().longValue(), 9186);
+        Assert.assertEquals(9186, query.getLimit().longValue());
 
         uri = new URI("api.github.com/tfaga/repos#header4?$max=9186");
 
@@ -157,12 +157,12 @@ public class QueryStringUtilsPagingTest {
         QueryParameters query = QueryStringUtils.parse("$offset=921");
 
         Assert.assertNotNull(query.getOffset());
-        Assert.assertEquals(query.getOffset().longValue(), 921);
+        Assert.assertEquals(921, query.getOffset().longValue());
 
         query = QueryStringUtils.parse("$skip=824");
 
         Assert.assertNotNull(query.getOffset());
-        Assert.assertEquals(query.getOffset().longValue(), 824);
+        Assert.assertEquals(824, query.getOffset().longValue());
     }
 
     @Test
@@ -171,12 +171,12 @@ public class QueryStringUtilsPagingTest {
         QueryParameters query = QueryStringUtils.parse("$skip=2199&$offset=95461&$skip=411");
 
         Assert.assertNotNull(query.getOffset());
-        Assert.assertEquals(query.getOffset().longValue(), 411);
+        Assert.assertEquals(411, query.getOffset().longValue());
 
         query = QueryStringUtils.parse("$offset=9881&$offset=871263");
 
         Assert.assertNotNull(query.getOffset());
-        Assert.assertEquals(query.getOffset().longValue(), 871263);
+        Assert.assertEquals(871263, query.getOffset().longValue());
     }
 
     @Test
@@ -188,8 +188,8 @@ public class QueryStringUtilsPagingTest {
             Assert.fail("No exception was thrown");
         } catch (QueryFormatException e) {
 
-            Assert.assertEquals(e.getField(), "$offset");
-            Assert.assertEquals(e.getReason(), QueryFormatError.NEGATIVE);
+            Assert.assertEquals("$offset", e.getField());
+            Assert.assertEquals(QueryFormatError.NEGATIVE, e.getReason());
         }
     }
 
@@ -202,8 +202,8 @@ public class QueryStringUtilsPagingTest {
             Assert.fail("No exception was thrown");
         } catch (QueryFormatException e) {
 
-            Assert.assertEquals(e.getField(), "$skip");
-            Assert.assertEquals(e.getReason(), QueryFormatError.NOT_A_NUMBER);
+            Assert.assertEquals("$skip", e.getField());
+            Assert.assertEquals(QueryFormatError.NOT_A_NUMBER, e.getReason());
         }
     }
 
@@ -222,7 +222,7 @@ public class QueryStringUtilsPagingTest {
         QueryParameters query = QueryStringUtils.parseUri("api.github.com/tfaga/repos?$skip=98172");
 
         Assert.assertNotNull(query.getOffset());
-        Assert.assertEquals(query.getOffset().longValue(), 98172);
+        Assert.assertEquals(98172, query.getOffset().longValue());
     }
 
     @Test
@@ -231,7 +231,7 @@ public class QueryStringUtilsPagingTest {
         QueryParameters query = QueryStringUtils.parseUri("api.github.com/tfaga/repos?$skip=98172#id1");
 
         Assert.assertNotNull(query.getOffset());
-        Assert.assertEquals(query.getOffset().longValue(), 98172);
+        Assert.assertEquals(98172, query.getOffset().longValue());
 
         query = QueryStringUtils.parseUri("api.github.com/tfaga/repos#id2?$skip=98172");
 
@@ -246,7 +246,7 @@ public class QueryStringUtilsPagingTest {
         QueryParameters query = QueryStringUtils.parseUri(uri);
 
         Assert.assertNotNull(query.getOffset());
-        Assert.assertEquals(query.getOffset().longValue(), 12312);
+        Assert.assertEquals(12312, query.getOffset().longValue());
     }
 
     @Test
@@ -257,7 +257,7 @@ public class QueryStringUtilsPagingTest {
         QueryParameters query = QueryStringUtils.parseUri(uri);
 
         Assert.assertNotNull(query.getOffset());
-        Assert.assertEquals(query.getOffset().longValue(), 12312);
+        Assert.assertEquals(12312, query.getOffset().longValue());
 
         uri = new URI("api.github.com/tfaga/repos#id4?$offset=12312");
 
@@ -273,14 +273,14 @@ public class QueryStringUtilsPagingTest {
 
         Assert.assertNotNull(query.getLimit());
         Assert.assertNotNull(query.getOffset());
-        Assert.assertEquals(query.getLimit().longValue(), 22);
-        Assert.assertEquals(query.getOffset().longValue(), 123);
+        Assert.assertEquals(22, query.getLimit().longValue());
+        Assert.assertEquals(123, query.getOffset().longValue());
 
         query = QueryStringUtils.parse("$skip=123&$max=22&$skip=444");
 
         Assert.assertNotNull(query.getLimit());
         Assert.assertNotNull(query.getOffset());
-        Assert.assertEquals(query.getLimit().longValue(), 22);
-        Assert.assertEquals(query.getOffset().longValue(), 444);
+        Assert.assertEquals(22, query.getLimit().longValue());
+        Assert.assertEquals(444, query.getOffset().longValue());
     }
 }
