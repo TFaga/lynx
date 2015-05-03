@@ -16,6 +16,8 @@ public class QueryParameters {
 
     private List<String> fields;
 
+    private List<QueryFilter> filters;
+
     public Long getLimit() {
         return limit;
     }
@@ -48,10 +50,6 @@ public class QueryParameters {
         return order;
     }
 
-    public void setOrder(List<QueryOrder> order) {
-        this.order = order;
-    }
-
     public List<String> getFields() {
 
         if (fields == null)
@@ -60,7 +58,11 @@ public class QueryParameters {
         return fields;
     }
 
-    public void setFields(List<String> fields) {
-        this.fields = fields;
+    public List<QueryFilter> getFilters() {
+
+        if (filters == null)
+            filters = new ArrayList<>();
+
+        return filters;
     }
 }

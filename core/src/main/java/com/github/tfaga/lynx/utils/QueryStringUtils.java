@@ -1,7 +1,9 @@
 package com.github.tfaga.lynx.utils;
 
+import com.github.tfaga.lynx.beans.QueryFilter;
 import com.github.tfaga.lynx.beans.QueryOrder;
 import com.github.tfaga.lynx.beans.QueryParameters;
+import com.github.tfaga.lynx.enums.FilterOperation;
 import com.github.tfaga.lynx.enums.OrderDirection;
 import com.github.tfaga.lynx.enums.QueryFormatError;
 import com.github.tfaga.lynx.exceptions.QueryFormatException;
@@ -10,7 +12,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -37,6 +41,10 @@ public class QueryStringUtils {
     public static final String FIELDS_DELIMITER = "$fields";
 
     public static final String FIELDS_DELIMITER_ALT = "$select";
+
+    public static final String FILTER_DELIMITER = "$filter";
+
+    public static final String FILTER_DELIMITER_ALT = "$where";
 
     public static QueryParameters parseUri(URI uri) {
 
@@ -119,13 +127,13 @@ public class QueryStringUtils {
 
                 try {
 
-                    params.setLimit(Long.parseLong(value));
-                } catch (NumberFormatException e) {
+                params.setLimit(Long.parseLong(value));
+            } catch (NumberFormatException e) {
 
-                    log.finest("Value for '" + key + "' was incorrect: '" + value + "'");
+                log.finest("Value for '" + key + "' was incorrect: '" + value + "'");
 
-                    throw new QueryFormatException(key, QueryFormatError.NOT_A_NUMBER);
-                }
+                throw new QueryFormatException(key, QueryFormatError.NOT_A_NUMBER);
+            }
 
                 if (params.getLimit() < 0) {
 
@@ -163,29 +171,28 @@ public class QueryStringUtils {
 
                 params.getOrder().clear();
 
-                String[] ordersString = value.split(",");
-
-                for (String o : ordersString) {
-
-                    QueryOrder order = parseOrder(key, o);
-
-                    if (order != null && !params.getOrder().stream()
-                            .anyMatch(co -> co.getField()
-                                    .equals(order.getField()))) {
-
-                        params.getOrder().add(order);
-                    }
-                }
+                Arrays.stream(value.split(",")).map(o -> parseOrder(key, o))
+                        .filter(o -> o != null).distinct()
+                        .forEach(o -> params.getOrder().add(o));
 
                 break;
 
             case FIELDS_DELIMITER:
             case FIELDS_DELIMITER_ALT:
 
-                String[] fields = value.split(",");
+                params.getFields().clear();
 
-                Arrays.stream(fields).filter(f -> !f.isEmpty()).distinct()
+                Arrays.stream(value.split(",")).filter(f -> !f.isEmpty()).distinct()
                         .forEach(f -> params.getFields().add(f));
+
+                break;
+
+            case FILTER_DELIMITER:
+            case FILTER_DELIMITER_ALT:
+
+                params.getFilters().clear();
+
+                params.getFilters().addAll(parseFilter(key, value));
 
                 break;
         }
@@ -214,10 +221,10 @@ public class QueryStringUtils {
 
             try {
 
-                o.setOrder(OrderDirection.valueOf(pair[1]));
+                o.setOrder(OrderDirection.valueOf(pair[1].toUpperCase()));
             } catch (IllegalArgumentException e) {
 
-                throw new QueryFormatException(key, QueryFormatError.MALFORMED);
+                throw new QueryFormatException(key, QueryFormatError.NO_SUCH_CONSTANT);
             }
         } else {
 
@@ -225,5 +232,47 @@ public class QueryStringUtils {
         }
 
         return o;
+    }
+
+    private static List<QueryFilter> parseFilter(String key, String value) {
+
+        log.finest("Parsing filter string: " + value);
+
+        List<QueryFilter> filterList = new ArrayList<>();
+
+        if (value == null || value.isEmpty()) return filterList;
+
+        Arrays.stream(value.split("[ ]+(?=([^']*'[^']*')*[^']*$)"))
+                .map(f -> f.split("[:]+(?=([^']*'[^']*')*[^']*$)"))
+                .filter(f -> f.length == 3)
+                .forEach(f -> {
+
+                    QueryFilter qf = new QueryFilter();
+                    qf.setField(f[0]);
+
+                    try {
+
+                        qf.setOperation(FilterOperation.valueOf(f[1].toUpperCase()));
+                    } catch (IllegalArgumentException e) {
+
+                        throw new QueryFormatException(key, QueryFormatError.NO_SUCH_CONSTANT);
+                    }
+
+                    if (f[2].matches("^\\[.*\\]$") && qf.getOperation() == FilterOperation.IN) {
+
+                        String values = f[2].replaceAll("(^\\[)|(\\]$)", "");
+
+                        Arrays.stream(values.split(",")).filter(e -> !e.isEmpty()).distinct()
+                                .forEach(e -> qf.getValues().add(e));
+
+                    } else {
+
+                        qf.setValue(f[2].replaceAll("(^')|('$)", ""));
+                    }
+
+                    filterList.add(qf);
+                });
+
+        return filterList;
     }
 }
