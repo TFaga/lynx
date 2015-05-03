@@ -40,6 +40,11 @@ public class JPAUtils {
         return queryEntities(em, entity, new QueryParameters());
     }
 
+    public static <T> Long queryEntitiesCount(EntityManager em, Class<T> entity) {
+
+        return queryEntitiesCount(em, entity, new QueryParameters());
+    }
+
     public static <T> List<T> queryEntities(EntityManager em, Class<T> entity, QueryParameters q) {
 
         if (q == null)
@@ -98,6 +103,31 @@ public class JPAUtils {
 
             return createEntityFromTuple(tqt.getResultList(), entity);
         }
+    }
+
+    public static <T> Long queryEntitiesCount(EntityManager em, Class<T> entity, QueryParameters q) {
+
+        if (q == null)
+            throw new IllegalArgumentException("Query parameters can't be null. " +
+                    "If you don't have any parameters either pass a empty object or " +
+                    "use the queryEntitiesCount(EntityManager, Class<T>) method.");
+
+        log.finest("Querying entity count: '" + entity.getSimpleName() + "' with parameters: " + q);
+
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+
+        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+
+        Root<T> r = cq.from(entity);
+
+        if (!q.getFilters().isEmpty()) {
+
+            cq.where(createWhereQuery(cb, r, q));
+        }
+
+        cq.select(cb.count(r));
+
+        return em.createQuery(cq).getSingleResult();
     }
 
     private static List<Order> createOrderQuery(CriteriaBuilder cb, Root<?> r, QueryParameters q) {
