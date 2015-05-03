@@ -60,7 +60,7 @@ public class JPAUtilsFiltersTest {
         List<User> users = JPAUtils.queryEntities(em, User.class, q);
 
         Assert.assertNotNull(users);
-        Assert.assertEquals(users.size(), 49);
+        Assert.assertEquals(users.size(), 47);
         Assert.assertEquals(1, users.get(0).getRole().intValue());
     }
 }

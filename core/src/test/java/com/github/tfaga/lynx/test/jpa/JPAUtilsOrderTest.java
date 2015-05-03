@@ -42,9 +42,9 @@ public class JPAUtilsOrderTest {
         Assert.assertNotNull(users);
         Assert.assertEquals(users.size(), 100);
         Assert.assertNotNull(users.get(0).getFirstname());
-        Assert.assertEquals("Adam", users.get(0).getFirstname());
+        Assert.assertEquals("Amanda", users.get(0).getFirstname());
         Assert.assertNotNull(users.get(99).getFirstname());
-        Assert.assertEquals("Walter", users.get(99).getFirstname());
+        Assert.assertEquals("Victor", users.get(99).getFirstname());
     }
 
     @Test
@@ -64,7 +64,7 @@ public class JPAUtilsOrderTest {
         Assert.assertNotNull(users.get(0).getLastname());
         Assert.assertEquals("Willis", users.get(0).getLastname());
         Assert.assertNotNull(users.get(99).getLastname());
-        Assert.assertEquals("Allen", users.get(99).getLastname());
+        Assert.assertEquals("Austin", users.get(99).getLastname());
     }
 
     @Test
@@ -93,12 +93,12 @@ public class JPAUtilsOrderTest {
         Assert.assertEquals(users.size(), 100);
         Assert.assertNotNull(users.get(0).getFirstname());
         Assert.assertNotNull(users.get(0).getLastname());
-        Assert.assertEquals("Nicholas", users.get(0).getFirstname());
-        Assert.assertEquals("Ramirez", users.get(0).getLastname());
+        Assert.assertEquals("Mark", users.get(0).getFirstname());
+        Assert.assertEquals("West", users.get(0).getLastname());
         Assert.assertNotNull(users.get(99).getFirstname());
         Assert.assertNotNull(users.get(99).getLastname());
-        Assert.assertEquals("Diane", users.get(99).getFirstname());
-        Assert.assertEquals("Allen", users.get(99).getLastname());
+        Assert.assertEquals("Julia", users.get(99).getFirstname());
+        Assert.assertEquals("Gonzalez", users.get(99).getLastname());
     }
 
     @Test
@@ -115,7 +115,7 @@ public class JPAUtilsOrderTest {
         Assert.assertNotNull(users);
         Assert.assertEquals(users.size(), 100);
         Assert.assertNotNull(users.get(0).getLastname());
-        Assert.assertEquals("Allen", users.get(0).getLastname());
+        Assert.assertEquals("Austin", users.get(0).getLastname());
         Assert.assertNotNull(users.get(99).getLastname());
         Assert.assertEquals("Willis", users.get(99).getLastname());
     }
@@ -133,9 +133,9 @@ public class JPAUtilsOrderTest {
         Assert.assertNotNull(users);
         Assert.assertEquals(users.size(), 100);
         Assert.assertNotNull(users.get(0).getLastname());
-        Assert.assertEquals("Campbell", users.get(0).getLastname());
+        Assert.assertEquals("Ramos", users.get(0).getLastname());
         Assert.assertNotNull(users.get(99).getLastname());
-        Assert.assertEquals("George", users.get(99).getLastname());
+        Assert.assertEquals("Hall", users.get(99).getLastname());
     }
 
     @Test

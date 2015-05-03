@@ -1,5 +1,7 @@
 package com.github.tfaga.lynx.test.entities;
 
+import java.util.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -26,6 +28,8 @@ public class User {
     private String ip_address;
 
     private Integer role;
+
+    private Date createdAt;
 
     public Integer getId() {
         return id;
@@ -81,5 +85,13 @@ public class User {
 
     public void setRole(Integer role) {
         this.role = role;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
     }
 }
