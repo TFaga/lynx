@@ -119,12 +119,4 @@ public class JPAUtilsPagingTest {
         Assert.assertNotNull(users);
         Assert.assertEquals(users.size(), 0);
     }
-
-    @Test
-    public void testFindEntity() {
-
-        User u = JPAUtils.getEntity(em, User.class, 1);
-
-        Assert.assertNotNull(u);
-    }
 }
