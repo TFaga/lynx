@@ -157,4 +157,50 @@ public class JPAUtilsFiltersTest {
             Assert.assertEquals(null, e.getField());
         }
     }
+
+    @Test
+    public void testInFilter() {
+
+        QueryFilter qf = new QueryFilter();
+        qf.setField("firstname");
+        qf.setOperation(FilterOperation.IN);
+        qf.getValues().add("Bruce");
+        qf.getValues().add("Karen");
+        qf.getValues().add("Sandra");
+        qf.getValues().add("Laura");
+
+        QueryParameters q = new QueryParameters();
+        q.getFilters().add(qf);
+
+        List<User> users = JPAUtils.queryEntities(em, User.class, q);
+
+        Assert.assertNotNull(users);
+        Assert.assertEquals(9, users.size());
+    }
+
+    @Test
+    public void testMultipleFilters() {
+
+        QueryParameters q = new QueryParameters();
+
+        QueryFilter qf = new QueryFilter();
+        qf.setField("firstname");
+        qf.setOperation(FilterOperation.IN);
+        qf.getValues().add("Bruce");
+        qf.getValues().add("Karen");
+        qf.getValues().add("Sandra");
+        qf.getValues().add("Laura");
+        q.getFilters().add(qf);
+
+        qf = new QueryFilter();
+        qf.setField("country");
+        qf.setOperation(FilterOperation.LIKE);
+        qf.setValue("%ina");
+        q.getFilters().add(qf);
+
+        List<User> users = JPAUtils.queryEntities(em, User.class, q);
+
+        Assert.assertNotNull(users);
+        Assert.assertEquals(2, users.size());
+    }
 }
