@@ -83,7 +83,7 @@ public class QueryStringUtilsOrderTest {
         } catch (QueryFormatException e) {
 
             Assert.assertEquals("$sort", e.getField());
-            Assert.assertEquals(QueryFormatError.MALFORMED, e.getReason());
+            Assert.assertEquals(QueryFormatError.NO_SUCH_CONSTANT, e.getReason());
         }
     }
 

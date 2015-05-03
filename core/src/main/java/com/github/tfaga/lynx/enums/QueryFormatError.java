@@ -5,5 +5,5 @@ package com.github.tfaga.lynx.enums;
  */
 public enum QueryFormatError {
 
-    EMPTY, MALFORMED, NOT_A_NUMBER, NEGATIVE
+    MALFORMED, NOT_A_NUMBER, NEGATIVE, NO_SUCH_CONSTANT
 }

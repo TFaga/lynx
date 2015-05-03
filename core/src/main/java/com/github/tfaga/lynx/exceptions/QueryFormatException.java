@@ -11,18 +11,10 @@ public class QueryFormatException extends RuntimeException {
 
     private QueryFormatError reason;
 
-    public QueryFormatException(String field) {
-
-        super("Field '" + field.toLowerCase() + "' in the query string is " +
-                "in the wrong format");
-
-        this.field = field;
-    }
-
     public QueryFormatException(String field, QueryFormatError reason) {
 
         super("Field '" + field.toLowerCase() + "' in the query string is " +
-                "in the wrong format for reason: " + reason);
+                "in the wrong format: " + reason);
 
         this.field = field;
         this.reason = reason;
