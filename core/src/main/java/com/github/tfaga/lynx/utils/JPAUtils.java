@@ -1,6 +1,6 @@
 package com.github.tfaga.lynx.utils;
 
-import com.github.tfaga.lynx.beans.QueryOrder;
+import com.github.tfaga.lynx.beans.QueryFilter;
 import com.github.tfaga.lynx.beans.QueryParameters;
 import com.github.tfaga.lynx.enums.OrderDirection;
 import com.github.tfaga.lynx.exceptions.NoSuchEntityFieldException;
@@ -14,6 +14,7 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 /**
@@ -42,6 +43,11 @@ public class JPAUtils {
         CriteriaQuery<T> cq = cb.createQuery(entity);
 
         Root<T> r = cq.from(entity);
+
+        if (!q.getFilters().isEmpty()) {
+
+            cq.where(createWhereQuery(cb, r, q));
+        }
 
         if (!q.getOrder().isEmpty()) {
 
@@ -99,5 +105,47 @@ public class JPAUtils {
         });
 
         return orders;
+    }
+
+    private static Predicate createWhereQuery(CriteriaBuilder cb, Root<?> r, QueryParameters q) {
+
+        Predicate predicate = cb.conjunction();
+
+        for (QueryFilter f : q.getFilters()) {
+
+            Predicate np = null;
+
+            switch (f.getOperation()) {
+
+                case EQ:
+                    np = cb.equal(cb.lower(r.get(f.getField())), f.getValue().toLowerCase());
+                    break;
+                case NEQ:
+                    np = cb.notEqual(cb.lower(r.get(f.getField())), f.getValue().toLowerCase());
+                    break;
+                case LIKE:
+                    np = cb.like(cb.lower(r.get(f.getField())), f.getValue().toLowerCase());
+                    break;
+                case GT:
+                    np = cb.greaterThan(r.get(f.getField()), f.getValue());
+                    break;
+                case GTE:
+                    np = cb.greaterThanOrEqualTo(r.get(f.getField()), f.getValue());
+                    break;
+                case LT:
+                    np = cb.lessThan(r.get(f.getField()), f.getValue());
+                    break;
+                case LTE:
+                    np = cb.lessThanOrEqualTo(r.get(f.getField()), f.getValue());
+                    break;
+                case IN:
+                    np = r.get(f.getField()).in(f.getValues());
+                    break;
+            }
+
+            predicate = cb.and(predicate, np);
+        }
+
+        return predicate;
     }
 }

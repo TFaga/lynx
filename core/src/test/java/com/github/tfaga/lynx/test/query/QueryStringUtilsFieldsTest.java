@@ -73,4 +73,14 @@ public class QueryStringUtilsFieldsTest {
         Assert.assertEquals("country", query.getFields().get(0));
         Assert.assertEquals("firstname", query.getFields().get(1));
     }
+
+    @Test
+    public void testMultipleFieldKeys() {
+
+        QueryParameters query = QueryStringUtils.parse("$select=username,firstname,lastname&$fields=address");
+
+        Assert.assertNotNull(query.getFields());
+        Assert.assertEquals(1, query.getFields().size());
+        Assert.assertEquals("address", query.getFields().get(0));
+    }
 }
