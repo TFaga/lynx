@@ -23,7 +23,7 @@ public class QueryStringUtilsFieldsTest {
     @Test
     public void testSingleField() {
 
-        QueryParameters query = QueryStringUtils.parse("$fields=username");
+        QueryParameters query = QueryStringUtils.parse("fields=username");
 
         Assert.assertNotNull(query.getFields());
         Assert.assertEquals(1, query.getFields().size());
@@ -33,7 +33,7 @@ public class QueryStringUtilsFieldsTest {
     @Test
     public void testMultipleFields() {
 
-        QueryParameters query = QueryStringUtils.parse("$fields=username,firstname,lastname");
+        QueryParameters query = QueryStringUtils.parse("fields=username,firstname,lastname");
 
         Assert.assertNotNull(query.getFields());
         Assert.assertEquals(3, query.getFields().size());
@@ -45,7 +45,7 @@ public class QueryStringUtilsFieldsTest {
     @Test
     public void testEmptyFields() {
 
-        QueryParameters query = QueryStringUtils.parse("$select=username,,,,firstname,lastname");
+        QueryParameters query = QueryStringUtils.parse("select=username,,,,firstname,lastname");
 
         Assert.assertNotNull(query.getFields());
         Assert.assertEquals(3, query.getFields().size());
@@ -57,7 +57,7 @@ public class QueryStringUtilsFieldsTest {
     @Test
     public void testEmptyField() {
 
-        QueryParameters query = QueryStringUtils.parse("$fields=");
+        QueryParameters query = QueryStringUtils.parse("fields=");
 
         Assert.assertNotNull(query.getFields());
         Assert.assertEquals(0, query.getFields().size());
@@ -66,7 +66,7 @@ public class QueryStringUtilsFieldsTest {
     @Test
     public void testEmptyFieldWithoutDelimiter() {
 
-        QueryParameters query = QueryStringUtils.parse("$fields");
+        QueryParameters query = QueryStringUtils.parse("fields");
 
         Assert.assertNotNull(query.getFields());
         Assert.assertEquals(0, query.getFields().size());
@@ -75,7 +75,7 @@ public class QueryStringUtilsFieldsTest {
     @Test
     public void testDuplicateFields() {
 
-        QueryParameters query = QueryStringUtils.parse("$select=country,firstname,country");
+        QueryParameters query = QueryStringUtils.parse("select=country,firstname,country");
 
         Assert.assertNotNull(query.getFields());
         Assert.assertEquals(2, query.getFields().size());
@@ -86,7 +86,7 @@ public class QueryStringUtilsFieldsTest {
     @Test
     public void testMultipleFieldKeys() {
 
-        QueryParameters query = QueryStringUtils.parse("$select=username,firstname,lastname&$fields=address");
+        QueryParameters query = QueryStringUtils.parse("select=username,firstname,lastname&fields=address");
 
         Assert.assertNotNull(query.getFields());
         Assert.assertEquals(1, query.getFields().size());

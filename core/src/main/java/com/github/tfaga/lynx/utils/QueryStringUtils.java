@@ -29,25 +29,25 @@ public class QueryStringUtils {
 
     private static final Logger log = Logger.getLogger(QueryStringUtils.class.getSimpleName());
 
-    public static final String LIMIT_DELIMITER = "$limit";
+    public static final String LIMIT_DELIMITER = "limit";
 
-    public static final String LIMIT_DELIMITER_ALT = "$max";
+    public static final String LIMIT_DELIMITER_ALT = "max";
 
-    public static final String OFFSET_DELIMITER = "$offset";
+    public static final String OFFSET_DELIMITER = "offset";
 
-    public static final String OFFSET_DELIMITER_ALT = "$skip";
+    public static final String OFFSET_DELIMITER_ALT = "skip";
 
-    public static final String ORDER_DELIMITER = "$order";
+    public static final String ORDER_DELIMITER = "order";
 
-    public static final String ORDER_DELIMITER_ALT = "$sort";
+    public static final String ORDER_DELIMITER_ALT = "sort";
 
-    public static final String FIELDS_DELIMITER = "$fields";
+    public static final String FIELDS_DELIMITER = "fields";
 
-    public static final String FIELDS_DELIMITER_ALT = "$select";
+    public static final String FIELDS_DELIMITER_ALT = "select";
 
-    public static final String FILTER_DELIMITER = "$filter";
+    public static final String FILTER_DELIMITER = "filter";
 
-    public static final String FILTER_DELIMITER_ALT = "$where";
+    public static final String FILTER_DELIMITER_ALT = "where";
 
     public static QueryParameters parseUri(URI uri) {
 

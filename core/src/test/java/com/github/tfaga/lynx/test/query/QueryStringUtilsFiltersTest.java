@@ -29,7 +29,7 @@ public class QueryStringUtilsFiltersTest {
     @Test
     public void testSingleFilter() {
 
-        QueryParameters query = QueryStringUtils.parse("$filter=username:eq:test");
+        QueryParameters query = QueryStringUtils.parse("filter=username:eq:test");
 
         Assert.assertNotNull(query);
         Assert.assertNotNull(query.getFilters());
@@ -43,7 +43,7 @@ public class QueryStringUtilsFiltersTest {
     @Test
     public void testSingleFilterWithQuotes() {
 
-        QueryParameters query = QueryStringUtils.parse("$filter=username:eq:'test test'");
+        QueryParameters query = QueryStringUtils.parse("filter=username:eq:'test test'");
 
         Assert.assertNotNull(query);
         Assert.assertNotNull(query.getFilters());
@@ -57,7 +57,7 @@ public class QueryStringUtilsFiltersTest {
     @Test
     public void testMultipleFilters() {
 
-        QueryParameters query = QueryStringUtils.parse("$where=username:eq:'test test' lastname:gte:gale");
+        QueryParameters query = QueryStringUtils.parse("where=username:eq:'test test' lastname:gte:gale");
 
         Assert.assertNotNull(query);
         Assert.assertNotNull(query.getFilters());
@@ -75,7 +75,7 @@ public class QueryStringUtilsFiltersTest {
     @Test
     public void testMalformedFilter() {
 
-        QueryParameters query = QueryStringUtils.parse("$filter=usernameeq:test test");
+        QueryParameters query = QueryStringUtils.parse("filter=usernameeq:test test");
 
         Assert.assertNotNull(query);
         Assert.assertNotNull(query.getFilters());
@@ -87,11 +87,11 @@ public class QueryStringUtilsFiltersTest {
 
         try {
 
-            QueryStringUtils.parse("$filter=username:equal:test test");
+            QueryStringUtils.parse("filter=username:equal:test test");
             Assert.fail("No exception was thrown");
         } catch (QueryFormatException e) {
 
-            Assert.assertEquals("$filter", e.getField());
+            Assert.assertEquals("filter", e.getField());
             Assert.assertNotNull(e.getReason());
             Assert.assertEquals(QueryFormatError.NO_SUCH_CONSTANT, e.getReason());
         }
@@ -100,7 +100,7 @@ public class QueryStringUtilsFiltersTest {
     @Test
     public void testEmptyFilter() {
 
-        QueryParameters query = QueryStringUtils.parse("$filter=");
+        QueryParameters query = QueryStringUtils.parse("filter=");
 
         Assert.assertNotNull(query);
         Assert.assertNotNull(query.getFilters());
@@ -110,7 +110,7 @@ public class QueryStringUtilsFiltersTest {
     @Test
     public void testMultipleKeyFilters() {
 
-        QueryParameters query = QueryStringUtils.parse("$where=username:eq:'test test' lastname:gte:gale&$filter=country:neq:SI");
+        QueryParameters query = QueryStringUtils.parse("where=username:eq:'test test' lastname:gte:gale&filter=country:neq:SI");
 
         Assert.assertNotNull(query);
         Assert.assertNotNull(query.getFilters());
@@ -124,7 +124,7 @@ public class QueryStringUtilsFiltersTest {
     @Test
     public void testInFilter() {
 
-        QueryParameters query = QueryStringUtils.parse("$where=username:in:[johnf,garryz]");
+        QueryParameters query = QueryStringUtils.parse("where=username:in:[johnf,garryz]");
 
         Assert.assertNotNull(query);
         Assert.assertNotNull(query.getFilters());
@@ -141,7 +141,7 @@ public class QueryStringUtilsFiltersTest {
     @Test
     public void testInFilterEmptyElements() {
 
-        QueryParameters query = QueryStringUtils.parse("$where=username:in:[johnf,,,,garryz]");
+        QueryParameters query = QueryStringUtils.parse("where=username:in:[johnf,,,,garryz]");
 
         Assert.assertNotNull(query);
         Assert.assertNotNull(query.getFilters());
@@ -158,7 +158,7 @@ public class QueryStringUtilsFiltersTest {
     @Test
     public void testArrayValueWhenNotInOperation() {
 
-        QueryParameters query = QueryStringUtils.parse("$where=username:neq:[johnf,garryz]");
+        QueryParameters query = QueryStringUtils.parse("where=username:neq:[johnf,garryz]");
 
         Assert.assertNotNull(query);
         Assert.assertNotNull(query.getFilters());
@@ -174,7 +174,7 @@ public class QueryStringUtilsFiltersTest {
 
         Date d = Date.from(ZonedDateTime.parse("2014-11-26T11:15:08Z").toInstant());
 
-        QueryParameters query = QueryStringUtils.parse("$where=username:gte:dt'2014-11-26T11:15:08Z'");
+        QueryParameters query = QueryStringUtils.parse("where=username:gte:dt'2014-11-26T11:15:08Z'");
 
         Assert.assertNotNull(query);
         Assert.assertNotNull(query.getFilters());
@@ -189,11 +189,11 @@ public class QueryStringUtilsFiltersTest {
     public void testMalformedDateFilter() {
 
         try {
-            QueryStringUtils.parse("$where=username:gte:dt'2014-11-26T1sdf1:15:08Z'");
+            QueryStringUtils.parse("where=username:gte:dt'2014-11-26T1sdf1:15:08Z'");
             Assert.fail("No exception was thrown");
         } catch (QueryFormatException e) {
 
-            Assert.assertEquals("$where", e.getField());
+            Assert.assertEquals("where", e.getField());
             Assert.assertNotNull(e.getReason());
             Assert.assertEquals(QueryFormatError.MALFORMED, e.getReason());
         }
@@ -202,7 +202,7 @@ public class QueryStringUtilsFiltersTest {
     @Test
     public void testNoDateIdentifier() {
 
-        QueryParameters query = QueryStringUtils.parse("$where=username:gte:'2014-11-26T11:15:08Z'");
+        QueryParameters query = QueryStringUtils.parse("where=username:gte:'2014-11-26T11:15:08Z'");
 
         Assert.assertNotNull(query);
         Assert.assertNotNull(query.getFilters());
