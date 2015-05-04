@@ -130,7 +130,7 @@ public class JPAUtils {
         return em.createQuery(cq).getSingleResult();
     }
 
-    private static List<Order> createOrderQuery(CriteriaBuilder cb, Root<?> r, QueryParameters q) {
+    public static List<Order> createOrderQuery(CriteriaBuilder cb, Root<?> r, QueryParameters q) {
 
         List<Order> orders = new ArrayList<>();
 
@@ -154,7 +154,7 @@ public class JPAUtils {
         return orders;
     }
 
-    private static Predicate createWhereQuery(CriteriaBuilder cb, Root<?> r, QueryParameters q) {
+    public static Predicate createWhereQuery(CriteriaBuilder cb, Root<?> r, QueryParameters q) {
 
         Predicate predicate = cb.conjunction();
 
@@ -223,19 +223,17 @@ public class JPAUtils {
         return predicate;
     }
 
-    private static List<Selection<?>> createFieldsSelect(Root<?> r, QueryParameters q, String idField) {
+    public static List<Selection<?>> createFieldsSelect(Root<?> r, QueryParameters q, String idField) {
 
-        List<Selection<?>> fields = new ArrayList<>();
-
-        q.getFields().forEach(f -> {
+        List<Selection<?>> fields = q.getFields().stream().map(f -> {
 
             try {
-                fields.add(r.get(f).alias(f));
+                return r.get(f).alias(f);
             } catch (IllegalArgumentException e) {
 
                 throw new NoSuchEntityFieldException(e.getMessage(), f);
             }
-        });
+        }).collect(Collectors.toList());
 
         try {
             fields.add(r.get(idField).alias(idField));
@@ -253,7 +251,7 @@ public class JPAUtils {
 
         for (Tuple t : tuples) {
 
-            T el = null;
+            T el;
 
             try {
                 el = entity.getConstructor().newInstance();

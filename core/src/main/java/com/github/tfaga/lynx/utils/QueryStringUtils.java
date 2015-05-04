@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * @author Tilen Faganel
@@ -128,44 +129,14 @@ public class QueryStringUtils {
             case LIMIT_DELIMITER:
             case LIMIT_DELIMITER_ALT:
 
-                try {
-
-                    params.setLimit(Long.parseLong(value));
-                } catch (NumberFormatException e) {
-
-                    log.finest("Value for '" + key + "' was incorrect: '" + value + "'");
-
-                    throw new QueryFormatException(key, QueryFormatError.NOT_A_NUMBER);
-                }
-
-                if (params.getLimit() < 0) {
-
-                    log.finest("Value for '" + key + "' was negative: '" + value + "'");
-
-                    throw new QueryFormatException(key, QueryFormatError.NEGATIVE);
-                }
+                params.setLimit(parseLimit(key, value));
 
                 break;
 
             case OFFSET_DELIMITER:
             case OFFSET_DELIMITER_ALT:
 
-                try {
-
-                    params.setOffset(Long.parseLong(value));
-                } catch (NumberFormatException e) {
-
-                    log.finest("Value for '" + key + "' was incorrect: '" + value + "'");
-
-                    throw new QueryFormatException(key, QueryFormatError.NOT_A_NUMBER);
-                }
-
-                if (params.getOffset() < 0) {
-
-                    log.finest("Value for '" + key + "' was negative: '" + value + "'");
-
-                    throw new QueryFormatException(key, QueryFormatError.NEGATIVE);
-                }
+                params.setOffset(parseOffset(key, value));
 
                 break;
 
@@ -185,8 +156,7 @@ public class QueryStringUtils {
 
                 params.getFields().clear();
 
-                Arrays.stream(value.split(",")).filter(f -> !f.isEmpty()).distinct()
-                        .forEach(f -> params.getFields().add(f));
+                params.getFields().addAll(parseFields(value));
 
                 break;
 
@@ -201,7 +171,40 @@ public class QueryStringUtils {
         }
     }
 
-    private static QueryOrder parseOrder(String key, String value) {
+    public static Long parseOffset(String key, String value) {
+
+        log.finest("Parsing offset string: " + value);
+
+        return parseLimit(key, value);
+    }
+
+    public static Long parseLimit(String key, String value) {
+
+        log.finest("Parsing limit string: " + value);
+
+        Long limit;
+
+        try {
+
+            limit = Long.parseLong(value);
+        } catch (NumberFormatException e) {
+
+            log.finest("Value for '" + key + "' was incorrect: '" + value + "'");
+
+            throw new QueryFormatException(key, QueryFormatError.NOT_A_NUMBER);
+        }
+
+        if (limit < 0) {
+
+            log.finest("Value for '" + key + "' was negative: '" + value + "'");
+
+            throw new QueryFormatException(key, QueryFormatError.NEGATIVE);
+        }
+
+        return limit;
+    }
+
+    public static QueryOrder parseOrder(String key, String value) {
 
         log.finest("Parsing order string: " + value);
 
@@ -237,7 +240,15 @@ public class QueryStringUtils {
         return o;
     }
 
-    private static List<QueryFilter> parseFilter(String key, String value) {
+    public static List<String> parseFields(String value) {
+
+        log.finest("Parsing fields string: " + value);
+
+        return Arrays.stream(value.split(",")).filter(f -> !f.isEmpty()).distinct()
+                .collect(Collectors.toList());
+    }
+
+    public static List<QueryFilter> parseFilter(String key, String value) {
 
         log.finest("Parsing filter string: " + value);
 
@@ -272,7 +283,8 @@ public class QueryStringUtils {
 
                         Date d = parseDate(f[2].replaceAll("(^dt')|('$)", ""));
 
-                        if (d == null) throw new QueryFormatException(key, QueryFormatError.MALFORMED);
+                        if (d == null)
+                            throw new QueryFormatException(key, QueryFormatError.MALFORMED);
 
                         qf.setDateValue(d);
                     } else {
