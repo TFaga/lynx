@@ -1,4 +1,4 @@
-package com.github.tfaga.lynx.test.query;
+package com.github.tfaga.lynx.test;
 
 import com.github.tfaga.lynx.beans.QueryParameters;
 import com.github.tfaga.lynx.enums.OrderDirection;

@@ -1,4 +1,4 @@
-package com.github.tfaga.lynx.test.jpa;
+package com.github.tfaga.lynx.test;
 
 import com.github.tfaga.lynx.beans.QueryOrder;
 import com.github.tfaga.lynx.beans.QueryParameters;
