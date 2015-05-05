@@ -8,8 +8,7 @@ jdk:
 - oraclejdk8
 before_install:
 - openssl aes-256-cbc -K $encrypted_9cb8d6eff452_key -iv $encrypted_9cb8d6eff452_iv
-  -in gpg.pub.enc -out gpg.pub -d
-- openssl aes-256-cbc -K $encrypted_9cb8d6eff452_key -iv $encrypted_9cb8d6eff452_iv
-  -in gpg.key.enc -out gpg.key -d
+  -in gpg.tar.enc -out gpg.tar -d
+- tar xvf gpg.tar
 install: mvn install -DskipTests=true -B -V --settings ./settings.xml
 script: mvn test -B --settings ./settings.xml
