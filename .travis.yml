@@ -3,7 +3,7 @@ env:
   global:
   - secure: E9q9OjPHX1EngKg68mPFhZGgcwRpk+P9aujnxqRd22DyYkxktD38wK8MOAb+dhy7h0aAfnCXf2LXzdM8Fevwz2Ppz7DAoe+Z9RN8oBxzPk+lkK7qVCGhQ//GKpS2lKuR10nrue9qu3LNUk1KaJ+tcTkGOQN7zOkCqTraEQE77os=
   - secure: F/PWQpOG1NMfGYjBBz/DjtSBaqWoKxv1kGWrmAxbMjf6obA8maIVPRGuKylcO5T4YTFojl9MK1Zz7OQdqCLHJNBu104MRt8tQHqUwGwsty9xDMvWJ+O0utHrogkEVo5FrZrUj4Jb7iwwiHroaAqqiRkfMHlXFsXq0A5L0M3tl0s=
-  - secure: fNgkGOVg+XjeBLLAd8sk9XwsUF3JpseaIimvnapa0L8+FuIP48n0JPAa+5VcxzpFwkGntK6PTIuTA3tp+C4jWO+HI4p4eoEGqJuIrOhtoFeibT/utfm2GSXmOni5fJ9fOe8r9vYpWJ0LVLoNy5Q6sif/5uevXB18XvMZMRxhTO8=
+  - secure: HsGmKr3uRkIFgYB6f574As7OeK0hl+eCJTkhgOQIAiTcn+aTeZtoUQ4Y0aVt8knD2yADLZBfie0LPGssdiigy54dkWd4QETYs4Vq9oB8WliGMtt0yHl/nONzuQ2z/4Ponf+Hmm2FxZCA2KfAhtrhGxaa3NEvWNQbTGIvWfr9URo=
 jdk:
 - oraclejdk8
 before_install:
