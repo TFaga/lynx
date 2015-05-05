@@ -3,14 +3,12 @@ env:
   global:
   - secure: E9q9OjPHX1EngKg68mPFhZGgcwRpk+P9aujnxqRd22DyYkxktD38wK8MOAb+dhy7h0aAfnCXf2LXzdM8Fevwz2Ppz7DAoe+Z9RN8oBxzPk+lkK7qVCGhQ//GKpS2lKuR10nrue9qu3LNUk1KaJ+tcTkGOQN7zOkCqTraEQE77os=
   - secure: F/PWQpOG1NMfGYjBBz/DjtSBaqWoKxv1kGWrmAxbMjf6obA8maIVPRGuKylcO5T4YTFojl9MK1Zz7OQdqCLHJNBu104MRt8tQHqUwGwsty9xDMvWJ+O0utHrogkEVo5FrZrUj4Jb7iwwiHroaAqqiRkfMHlXFsXq0A5L0M3tl0s=
-  - secure: HsGmKr3uRkIFgYB6f574As7OeK0hl+eCJTkhgOQIAiTcn+aTeZtoUQ4Y0aVt8knD2yADLZBfie0LPGssdiigy54dkWd4QETYs4Vq9oB8WliGMtt0yHl/nONzuQ2z/4Ponf+Hmm2FxZCA2KfAhtrhGxaa3NEvWNQbTGIvWfr9URo=
+  - secure: a62qkbgsys8O5o3EV1neO+A12qp5WI+i+yyGKj8r9RAZUTR3a7n2Xs/Dyqpb+ZJEl4BENiWTgdgDHfkGlbuwdver/XcJNE6Qo1KGetUqyrfh1zc7eDpGP78lAxGSDQrG6HHICSVDZUWQmoIeeovRBfSNJVZfrpysDzVV4juGpq0=
 jdk:
 - oraclejdk8
 before_install:
 - openssl aes-256-cbc -K $encrypted_9cb8d6eff452_key -iv $encrypted_9cb8d6eff452_iv
   -in gpg.tar.enc -out gpg.tar -d
 - tar xvf gpg.tar
-- gpg --import gpg.pub
-- gpg --import gpg.key
 install: mvn install -DskipTests=true -V --settings ./settings.xml
 script: mvn test --settings ./settings.xml
