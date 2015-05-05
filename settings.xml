@@ -24,6 +24,7 @@
             </activation>
             <properties>
                 <gpg.executable>gpg2</gpg.executable>
+                <gpg.secretKeyring>~/build/${env.TRAVIS_REPO_SLUG}/gpg.key</gpg.secretKeyring>
                 <gpg.passphrase>${env.GPG_PASSPHRASE}</gpg.passphrase>
             </properties>
         </profile>
