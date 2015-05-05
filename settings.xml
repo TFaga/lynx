@@ -29,7 +29,6 @@
                 <gpg.passphrase>${env.GPG_PASSPHRASE}</gpg.passphrase>
                 <gpgArguments>
                     <arg>--no-use-agent</arg>
-                    <arg>--no-permission-warning</arg>
                 </gpgArguments>
             </properties>
         </profile>
