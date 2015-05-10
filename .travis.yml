@@ -13,4 +13,4 @@ before_install:
 install: mvn install -Dmaven.javadoc.skip=true -Dsource.skip=true -DskipTests=true -V
 script: mvn test
 after_success:
-- mvn package gpg:sign -DskipTests=true --settings ./settings.xml
+- mvn package gpg:sign deploy -DskipTests=true --settings ./settings.xml
