@@ -10,7 +10,7 @@ before_install:
 - openssl aes-256-cbc -K $encrypted_9cb8d6eff452_key -iv $encrypted_9cb8d6eff452_iv
   -in gpg.tar.enc -out gpg.tar -d
 - tar xvf gpg.tar
-install: mvn install -DskipTests=true -V
+install: mvn install -Dmaven.javadoc.skip=true -Dsource.skip=true -DskipTests=true -V
 script: mvn test
 after_success:
 - mvn package gpg:sign -DskipTests=true --settings ./settings.xml
