@@ -205,6 +205,26 @@ public class JPAUtilsFiltersTest {
     }
 
     @Test
+    public void testNinFilter() {
+
+        QueryFilter qf = new QueryFilter();
+        qf.setField("firstname");
+        qf.setOperation(FilterOperation.NIN);
+        qf.getValues().add("Bruce");
+        qf.getValues().add("Karen");
+        qf.getValues().add("Sandra");
+        qf.getValues().add("Laura");
+
+        QueryParameters q = new QueryParameters();
+        q.getFilters().add(qf);
+
+        List<User> users = JPAUtils.queryEntities(em, User.class, q);
+
+        Assert.assertNotNull(users);
+        Assert.assertEquals(91, users.size());
+    }
+
+    @Test
     public void testNotEqual() {
 
         QueryFilter qf = new QueryFilter();

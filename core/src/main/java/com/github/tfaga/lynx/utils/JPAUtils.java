@@ -211,6 +211,9 @@ public class JPAUtils {
                     case IN:
                         np = r.get(f.getField()).in(f.getValues());
                         break;
+                    case NIN:
+                        np = cb.not(r.get(f.getField())).in(f.getValues());
+                        break;
                 }
             } catch (IllegalArgumentException e) {
 

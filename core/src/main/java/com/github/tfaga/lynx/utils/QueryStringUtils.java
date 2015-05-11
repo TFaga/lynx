@@ -272,7 +272,8 @@ public class QueryStringUtils {
                         throw new QueryFormatException(key, QueryFormatError.NO_SUCH_CONSTANT);
                     }
 
-                    if (f[2].matches("^\\[.*\\]$") && qf.getOperation() == FilterOperation.IN) {
+                    if (f[2].matches("^\\[.*\\]$") && (qf.getOperation() == FilterOperation.IN ||
+                            qf.getOperation() == FilterOperation.NIN)) {
 
                         String values = f[2].replaceAll("(^\\[)|(\\]$)", "");
 
