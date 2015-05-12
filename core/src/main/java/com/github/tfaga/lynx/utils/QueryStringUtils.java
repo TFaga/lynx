@@ -189,16 +189,20 @@ public class QueryStringUtils {
             limit = Long.parseLong(value);
         } catch (NumberFormatException e) {
 
-            log.finest("Value for '" + key + "' was incorrect: '" + value + "'");
+            String msg = "Value for '" + key + "' is not a number: '" + value + "'";
 
-            throw new QueryFormatException(key, QueryFormatError.NOT_A_NUMBER);
+            log.finest(msg);
+
+            throw new QueryFormatException(msg, key, QueryFormatError.NOT_A_NUMBER);
         }
 
         if (limit < 0) {
 
-            log.finest("Value for '" + key + "' was negative: '" + value + "'");
+            String msg = "Value for '" + key + "' is negative: '" + value + "'";
 
-            throw new QueryFormatException(key, QueryFormatError.NEGATIVE);
+            log.finest(msg);
+
+            throw new QueryFormatException(msg, key, QueryFormatError.NEGATIVE);
         }
 
         return limit;
@@ -216,9 +220,11 @@ public class QueryStringUtils {
 
         if (pair[0].isEmpty()) {
 
-            log.finest("Order string '" + value + "' is malformed");
+            String msg = "Value for '" + key + "' is malformed: '" + value + "'";
 
-            throw new QueryFormatException(key, QueryFormatError.MALFORMED);
+            log.finest(msg);
+
+            throw new QueryFormatException(msg, key, QueryFormatError.MALFORMED);
         }
 
         o.setField(pair[0]);
@@ -230,7 +236,11 @@ public class QueryStringUtils {
                 o.setOrder(OrderDirection.valueOf(pair[1].toUpperCase()));
             } catch (IllegalArgumentException e) {
 
-                throw new QueryFormatException(key, QueryFormatError.NO_SUCH_CONSTANT);
+                String msg = "Constant in '" + key + "' does not exist: '" + value + "'";
+
+                log.finest(msg);
+
+                throw new QueryFormatException(msg, key, QueryFormatError.NO_SUCH_CONSTANT);
             }
         } else {
 
@@ -269,7 +279,11 @@ public class QueryStringUtils {
                         qf.setOperation(FilterOperation.valueOf(f[1].toUpperCase()));
                     } catch (IllegalArgumentException e) {
 
-                        throw new QueryFormatException(key, QueryFormatError.NO_SUCH_CONSTANT);
+                        String msg = "Constant in '" + key + "' does not exist: '" + value + "'";
+
+                        log.finest(msg);
+
+                        throw new QueryFormatException(msg, key, QueryFormatError.NO_SUCH_CONSTANT);
                     }
 
                     if (f[2].matches("^\\[.*\\]$") && (qf.getOperation() == FilterOperation.IN ||
@@ -284,8 +298,14 @@ public class QueryStringUtils {
 
                         Date d = parseDate(f[2].replaceAll("(^dt')|('$)", ""));
 
-                        if (d == null)
-                            throw new QueryFormatException(key, QueryFormatError.MALFORMED);
+                        if (d == null) {
+
+                            String msg = "Value for '" + key + "' is malformed: '" + value + "'";
+
+                            log.finest(msg);
+
+                            throw new QueryFormatException(msg, key, QueryFormatError.MALFORMED);
+                        }
 
                         qf.setDateValue(d);
                     } else {
