@@ -105,7 +105,8 @@ public class JPAUtils {
         }
     }
 
-    public static <T> Long queryEntitiesCount(EntityManager em, Class<T> entity, QueryParameters q) {
+    public static <T> Long queryEntitiesCount(EntityManager em, Class<T> entity, QueryParameters
+            q) {
 
         if (q == null)
             throw new IllegalArgumentException("Query parameters can't be null. " +
@@ -171,11 +172,13 @@ public class JPAUtils {
 
                     case EQ:
                         np = cb.equal(cb.lower(r.get(f.getField())),
-                                f.getDateValue() == null ? f.getValue().toLowerCase() : f.getDateValue());
+                                f.getDateValue() == null ? f.getValue().toLowerCase() : f
+                                        .getDateValue());
                         break;
                     case NEQ:
                         np = cb.notEqual(cb.lower(r.get(f.getField())),
-                                f.getDateValue() == null ? f.getValue().toLowerCase() : f.getDateValue());
+                                f.getDateValue() == null ? f.getValue().toLowerCase() : f
+                                        .getDateValue());
                         break;
                     case LIKE:
                         np = cb.like(cb.lower(r.get(f.getField())), f.getValue().toLowerCase());
@@ -189,7 +192,8 @@ public class JPAUtils {
                         break;
                     case GTE:
                         if (f.getDateValue() != null) {
-                            np = cb.greaterThanOrEqualTo(r.<Date>get(f.getField()), f.getDateValue());
+                            np = cb.greaterThanOrEqualTo(r.<Date>get(f.getField()), f
+                                    .getDateValue());
                         } else {
                             np = cb.greaterThanOrEqualTo(r.get(f.getField()), f.getValue());
                         }
@@ -226,7 +230,8 @@ public class JPAUtils {
         return predicate;
     }
 
-    public static List<Selection<?>> createFieldsSelect(Root<?> r, QueryParameters q, String idField) {
+    public static List<Selection<?>> createFieldsSelect(Root<?> r, QueryParameters q, String
+            idField) {
 
         List<Selection<?>> fields = q.getFields().stream().map(f -> {
 
@@ -269,7 +274,7 @@ public class JPAUtils {
                 Object o = t.get(te);
 
                 try {
-                    Field f = entity.getDeclaredField(te.getAlias());
+                    Field f = getFieldFromEntity(entity, te.getAlias());
                     f.setAccessible(true);
                     f.set(el, o);
                 } catch (NoSuchFieldException | IllegalAccessException e1) {
@@ -303,5 +308,20 @@ public class JPAUtils {
         }
 
         return idProperty;
+    }
+
+    private static Field getFieldFromEntity(Class entity, String fieldName) throws
+            NoSuchFieldException {
+
+        try {
+            return entity.getDeclaredField(fieldName);
+        } catch (NoSuchFieldException e) {
+
+            if (entity.getSuperclass() == null) {
+                throw e;
+            }
+
+            return getFieldFromEntity(entity.getSuperclass(), fieldName);
+        }
     }
 }
