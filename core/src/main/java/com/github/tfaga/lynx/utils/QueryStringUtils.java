@@ -32,23 +32,18 @@ public class QueryStringUtils {
     private static final Logger log = Logger.getLogger(QueryStringUtils.class.getSimpleName());
 
     public static final String LIMIT_DELIMITER = "limit";
-
     public static final String LIMIT_DELIMITER_ALT = "max";
 
     public static final String OFFSET_DELIMITER = "offset";
-
     public static final String OFFSET_DELIMITER_ALT = "skip";
 
     public static final String ORDER_DELIMITER = "order";
-
     public static final String ORDER_DELIMITER_ALT = "sort";
 
     public static final String FIELDS_DELIMITER = "fields";
-
     public static final String FIELDS_DELIMITER_ALT = "select";
 
     public static final String FILTER_DELIMITER = "filter";
-
     public static final String FILTER_DELIMITER_ALT = "where";
 
     public static QueryParameters parseUri(URI uri) {
@@ -58,6 +53,11 @@ public class QueryStringUtils {
         if (uri == null) return new QueryParameters();
 
         return parse(uri.getRawQuery());
+    }
+
+    public static QueryParameters parseUriEncoded(String uri) {
+
+        return parseUri(decodeUrl(uri));
     }
 
     public static QueryParameters parseUri(String uri) {
@@ -76,6 +76,11 @@ public class QueryStringUtils {
         if (idxFragment < idxQuery) return new QueryParameters();
 
         return parse(uri.substring(idxQuery + 1, idxFragment));
+    }
+
+    public static QueryParameters parseEncoded(String queryString) {
+
+        return parse(decodeUrl(queryString));
     }
 
     public static QueryParameters parse(String queryString) {
@@ -98,8 +103,8 @@ public class QueryStringUtils {
 
             String key, value;
 
-            key = decodeUrl(pair.substring(0, idxOfPair));
-            value = decodeUrl(pair.substring(idxOfPair + 1));
+            key = pair.substring(0, idxOfPair);
+            value = pair.substring(idxOfPair + 1);
 
             parsePair(params, key, value);
         }
@@ -325,7 +330,9 @@ public class QueryStringUtils {
     private static String decodeUrl(String url) {
 
         try {
-            if (URLEncoder.encode(url, StandardCharsets.UTF_8.displayName()).equals(url)) {
+            String a = URLEncoder.encode(url, StandardCharsets.UTF_8.displayName());
+
+            if (!URLEncoder.encode(url, StandardCharsets.UTF_8.displayName()).equals(url)) {
                 return URLDecoder.decode(url, StandardCharsets.UTF_8.displayName());
             } else {
                 return url;

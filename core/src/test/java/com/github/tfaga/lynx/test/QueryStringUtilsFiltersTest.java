@@ -212,4 +212,46 @@ public class QueryStringUtilsFiltersTest {
         Assert.assertEquals(FilterOperation.GTE, query.getFilters().get(0).getOperation());
         Assert.assertEquals("2014-11-26T11:15:08Z", query.getFilters().get(0).getValue());
     }
+
+    @Test
+    public void testQueryDecoded() {
+
+        QueryParameters query = QueryStringUtils.parse("where=firstname:like:Kar%");
+
+        Assert.assertNotNull(query);
+        Assert.assertNotNull(query.getFilters());
+        Assert.assertEquals(1, query.getFilters().size());
+        Assert.assertEquals("firstname", query.getFilters().get(0).getField());
+        Assert.assertNotNull(query.getFilters().get(0).getOperation());
+        Assert.assertEquals(FilterOperation.LIKE, query.getFilters().get(0).getOperation());
+        Assert.assertEquals("Kar%", query.getFilters().get(0).getValue());
+    }
+
+    @Test
+    public void testQueryEncoded() {
+
+        QueryParameters query = QueryStringUtils.parseEncoded("where=firstname:like:Kar%25");
+
+        Assert.assertNotNull(query);
+        Assert.assertNotNull(query.getFilters());
+        Assert.assertEquals(1, query.getFilters().size());
+        Assert.assertEquals("firstname", query.getFilters().get(0).getField());
+        Assert.assertNotNull(query.getFilters().get(0).getOperation());
+        Assert.assertEquals(FilterOperation.LIKE, query.getFilters().get(0).getOperation());
+        Assert.assertEquals("Kar%", query.getFilters().get(0).getValue());
+    }
+
+    @Test
+    public void testUriDecoded() {
+
+        QueryParameters query = QueryStringUtils.parseUriEncoded("api.github.com/tfaga/repos?where=firstname:like:Kar%25%20");
+
+        Assert.assertNotNull(query);
+        Assert.assertNotNull(query.getFilters());
+        Assert.assertEquals(1, query.getFilters().size());
+        Assert.assertEquals("firstname", query.getFilters().get(0).getField());
+        Assert.assertNotNull(query.getFilters().get(0).getOperation());
+        Assert.assertEquals(FilterOperation.LIKE, query.getFilters().get(0).getOperation());
+        Assert.assertEquals("Kar%", query.getFilters().get(0).getValue());
+    }
 }
