@@ -11,6 +11,7 @@ import com.github.tfaga.lynx.exceptions.QueryFormatException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
@@ -97,16 +98,8 @@ public class QueryStringUtils {
 
             String key, value;
 
-            try {
-
-                key = URLDecoder.decode(pair.substring(0, idxOfPair), StandardCharsets.UTF_8.displayName());
-                value = URLDecoder.decode(pair.substring(idxOfPair + 1), StandardCharsets.UTF_8.displayName());
-            } catch (UnsupportedEncodingException e) {
-
-                log.severe("UTF-8 encoding is not supported on this system");
-
-                throw new AssertionError();
-            }
+            key = decodeUrl(pair.substring(0, idxOfPair));
+            value = decodeUrl(pair.substring(idxOfPair + 1));
 
             parsePair(params, key, value);
         }
@@ -326,6 +319,22 @@ public class QueryStringUtils {
         } catch (DateTimeParseException e) {
 
             return null;
+        }
+    }
+
+    private static String decodeUrl(String url) {
+
+        try {
+            if (URLEncoder.encode(url, StandardCharsets.UTF_8.displayName()).equals(url)) {
+                return URLDecoder.decode(url, StandardCharsets.UTF_8.displayName());
+            } else {
+                return url;
+            }
+        } catch (UnsupportedEncodingException e) {
+
+            log.severe("UTF-8 encoding is not supported on this system");
+
+            throw new AssertionError();
         }
     }
 }
