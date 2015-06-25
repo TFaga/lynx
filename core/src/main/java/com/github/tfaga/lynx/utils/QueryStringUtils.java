@@ -289,7 +289,9 @@ public class QueryStringUtils {
 
                         String values = f[2].replaceAll("(^\\[)|(\\]$)", "");
 
-                        Arrays.stream(values.split(",")).filter(e -> !e.isEmpty()).distinct()
+                        Arrays.stream(values.split("[,]+(?=([^']*'[^']*')*[^']*$)"))
+                                .filter(e -> !e.isEmpty()).distinct()
+                                .map(e -> e.replaceAll("(^')|('$)", ""))
                                 .forEach(e -> qf.getValues().add(e));
 
                     } else if (f[2].matches("^dt'.*'$")) {
