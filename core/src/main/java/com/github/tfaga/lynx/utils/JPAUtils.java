@@ -180,13 +180,24 @@ public class JPAUtils {
                                 f.getDateValue() == null ? f.getValue() : f
                                         .getDateValue());
                         break;
+                    case EQIC:
+                        np = cb.equal(cb.lower(stringField), f.getDateValue() == null ? f
+                                .getValue().toLowerCase() : f.getDateValue());
+                        break;
                     case NEQ:
                         np = cb.notEqual(stringField,
                                 f.getDateValue() == null ? f.getValue() : f
                                         .getDateValue());
                         break;
+                    case NEQIC:
+                        np = cb.notEqual(cb.lower(stringField), f.getDateValue() == null ? f
+                                .getValue().toLowerCase() : f.getDateValue());
+                        break;
                     case LIKE:
                         np = cb.like(stringField, f.getValue());
+                        break;
+                    case LIKEIC:
+                        np = cb.like(cb.lower(stringField), f.getValue().toLowerCase());
                         break;
                     case GT:
                         if (f.getDateValue() != null) {

@@ -338,6 +338,57 @@ public class JPAUtilsFiltersTest {
     }
 
     @Test
+    public void testEqic() {
+
+        QueryFilter qf = new QueryFilter();
+        qf.setField("firstname");
+        qf.setOperation(FilterOperation.EQIC);
+        qf.setValue("jULIa");
+
+        QueryParameters q = new QueryParameters();
+        q.getFilters().add(qf);
+
+        List<User> users = JPAUtils.queryEntities(em, User.class, q);
+
+        Assert.assertNotNull(users);
+        Assert.assertEquals(2, users.size());
+    }
+
+    @Test
+    public void testNeqic() {
+
+        QueryFilter qf = new QueryFilter();
+        qf.setField("firstname");
+        qf.setOperation(FilterOperation.NEQIC);
+        qf.setValue("JaCK");
+
+        QueryParameters q = new QueryParameters();
+        q.getFilters().add(qf);
+
+        List<User> users = JPAUtils.queryEntities(em, User.class, q);
+
+        Assert.assertNotNull(users);
+        Assert.assertEquals(98, users.size());
+    }
+
+    @Test
+    public void testLikeic() {
+
+        QueryFilter qf = new QueryFilter();
+        qf.setField("firstname");
+        qf.setOperation(FilterOperation.LIKEIC);
+        qf.setValue("jA%");
+
+        QueryParameters q = new QueryParameters();
+        q.getFilters().add(qf);
+
+        List<User> users = JPAUtils.queryEntities(em, User.class, q);
+
+        Assert.assertNotNull(users);
+        Assert.assertEquals(5, users.size());
+    }
+
+    @Test
     public void testIntegerEq() {
 
         QueryFilter qf = new QueryFilter();
