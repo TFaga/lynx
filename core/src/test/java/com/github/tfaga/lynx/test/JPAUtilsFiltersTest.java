@@ -404,4 +404,42 @@ public class JPAUtilsFiltersTest {
         Assert.assertNotNull(users);
         Assert.assertEquals(53, users.size());
     }
+
+    @Test
+    public void testInic() {
+
+        QueryFilter qf = new QueryFilter();
+        qf.setField("firstname");
+        qf.setOperation(FilterOperation.INIC);
+        qf.getValues().add("sArAH");
+        qf.getValues().add("ricHArd");
+        qf.getValues().add("jACk");
+
+        QueryParameters q = new QueryParameters();
+        q.getFilters().add(qf);
+
+        List<User> users = JPAUtils.queryEntities(em, User.class, q);
+
+        Assert.assertNotNull(users);
+        Assert.assertEquals(4, users.size());
+    }
+
+    @Test
+    public void testNinic() {
+
+        QueryFilter qf = new QueryFilter();
+        qf.setField("firstname");
+        qf.setOperation(FilterOperation.NINIC);
+        qf.getValues().add("sArAH");
+        qf.getValues().add("ricHArd");
+        qf.getValues().add("jACk");
+
+        QueryParameters q = new QueryParameters();
+        q.getFilters().add(qf);
+
+        List<User> users = JPAUtils.queryEntities(em, User.class, q);
+
+        Assert.assertNotNull(users);
+        Assert.assertEquals(96, users.size());
+    }
 }

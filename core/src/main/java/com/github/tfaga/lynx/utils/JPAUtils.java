@@ -171,7 +171,6 @@ public class JPAUtils {
 
                 Path<String> stringField = getCriteraField(f.getField(), r);
                 Path<Date> dateField = getCriteraField(f.getField(), r);
-                Path<Boolean> booleanField = getCriteraField(f.getField(), r);
 
                 switch (f.getOperation()) {
 
@@ -230,8 +229,18 @@ public class JPAUtils {
                     case IN:
                         np = stringField.in(f.getValues());
                         break;
+                    case INIC:
+                        np = cb.lower(stringField)
+                                .in(f.getValues().stream().map(String::toLowerCase)
+                                        .collect(Collectors.toList()));
+                        break;
                     case NIN:
-                        np = cb.not(booleanField).in(f.getValues());
+                        np = cb.not(stringField.in(f.getValues()));
+                        break;
+                    case NINIC:
+                        np = cb.not(cb.lower(stringField)
+                                .in(f.getValues().stream().map(String::toLowerCase)
+                                        .collect(Collectors.toList())));
                         break;
                 }
             } catch (IllegalArgumentException e) {

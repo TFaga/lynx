@@ -5,5 +5,5 @@ package com.github.tfaga.lynx.enums;
  */
 public enum FilterOperation {
 
-    EQ, EQIC, NEQ, NEQIC, LIKE, LIKEIC, GT, GTE, LT, LTE, IN, NIN
+    EQ, EQIC, NEQ, NEQIC, LIKE, LIKEIC, GT, GTE, LT, LTE, IN, INIC, NIN, NINIC
 }
