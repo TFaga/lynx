@@ -21,6 +21,7 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
@@ -168,55 +169,58 @@ public class JPAUtils {
 
             try {
 
+                Path<String> stringField = getCriteraField(f.getField(), r);
+                Path<Date> dateField = getCriteraField(f.getField(), r);
+                Path<Boolean> booleanField = getCriteraField(f.getField(), r);
+
                 switch (f.getOperation()) {
 
                     case EQ:
-                        np = cb.equal(cb.lower(r.get(f.getField())),
-                                f.getDateValue() == null ? f.getValue().toLowerCase() : f
+                        np = cb.equal(stringField,
+                                f.getDateValue() == null ? f.getValue() : f
                                         .getDateValue());
                         break;
                     case NEQ:
-                        np = cb.notEqual(cb.lower(r.get(f.getField())),
-                                f.getDateValue() == null ? f.getValue().toLowerCase() : f
+                        np = cb.notEqual(stringField,
+                                f.getDateValue() == null ? f.getValue() : f
                                         .getDateValue());
                         break;
                     case LIKE:
-                        np = cb.like(cb.lower(r.get(f.getField())), f.getValue().toLowerCase());
+                        np = cb.like(stringField, f.getValue());
                         break;
                     case GT:
                         if (f.getDateValue() != null) {
-                            np = cb.greaterThan(r.<Date>get(f.getField()), f.getDateValue());
+                            np = cb.greaterThan(dateField, f.getDateValue());
                         } else {
-                            np = cb.greaterThan(r.get(f.getField()), f.getValue());
+                            np = cb.greaterThan(stringField, f.getValue());
                         }
                         break;
                     case GTE:
                         if (f.getDateValue() != null) {
-                            np = cb.greaterThanOrEqualTo(r.<Date>get(f.getField()), f
-                                    .getDateValue());
+                            np = cb.greaterThanOrEqualTo(dateField, f.getDateValue());
                         } else {
-                            np = cb.greaterThanOrEqualTo(r.get(f.getField()), f.getValue());
+                            np = cb.greaterThanOrEqualTo(stringField, f.getValue());
                         }
                         break;
                     case LT:
                         if (f.getDateValue() != null) {
-                            np = cb.lessThan(r.<Date>get(f.getField()), f.getDateValue());
+                            np = cb.lessThan(dateField, f.getDateValue());
                         } else {
-                            np = cb.lessThan(r.get(f.getField()), f.getValue());
+                            np = cb.lessThan(stringField, f.getValue());
                         }
                         break;
                     case LTE:
                         if (f.getDateValue() != null) {
-                            np = cb.lessThanOrEqualTo(r.<Date>get(f.getField()), f.getDateValue());
+                            np = cb.lessThanOrEqualTo(dateField, f.getDateValue());
                         } else {
-                            np = cb.lessThanOrEqualTo(r.get(f.getField()), f.getValue());
+                            np = cb.lessThanOrEqualTo(stringField, f.getValue());
                         }
                         break;
                     case IN:
-                        np = r.get(f.getField()).in(f.getValues());
+                        np = stringField.in(f.getValues());
                         break;
                     case NIN:
-                        np = cb.not(r.get(f.getField())).in(f.getValues());
+                        np = cb.not(booleanField).in(f.getValues());
                         break;
                 }
             } catch (IllegalArgumentException e) {
@@ -323,5 +327,21 @@ public class JPAUtils {
 
             return getFieldFromEntity(entity.getSuperclass(), fieldName);
         }
+    }
+
+    private static <G> Path<G> getCriteraField(String fieldName, Root<?> r) {
+
+        if (fieldName == null) fieldName = "";
+
+        String fields[] = fieldName.split("\\.");
+
+        Path<G> path = r.get(fields[0]);
+
+        for (int i = 1; i < fields.length; i++) {
+
+            path = path.get(fields[i]);
+        }
+
+        return path;
     }
 }

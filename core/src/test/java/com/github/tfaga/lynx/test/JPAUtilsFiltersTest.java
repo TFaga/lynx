@@ -230,7 +230,7 @@ public class JPAUtilsFiltersTest {
         QueryFilter qf = new QueryFilter();
         qf.setField("lastname");
         qf.setOperation(FilterOperation.NEQ);
-        qf.setValue("willis");
+        qf.setValue("Willis");
 
         QueryParameters q = new QueryParameters();
         q.getFilters().add(qf);
@@ -335,5 +335,22 @@ public class JPAUtilsFiltersTest {
 
         Assert.assertNotNull(users);
         Assert.assertEquals(61, users.size());
+    }
+
+    @Test
+    public void testIntegerEq() {
+
+        QueryFilter qf = new QueryFilter();
+        qf.setField("role");
+        qf.setOperation(FilterOperation.EQ);
+        qf.setValue("0");
+
+        QueryParameters q = new QueryParameters();
+        q.getFilters().add(qf);
+
+        List<User> users = JPAUtils.queryEntities(em, User.class, q);
+
+        Assert.assertNotNull(users);
+        Assert.assertEquals(53, users.size());
     }
 }

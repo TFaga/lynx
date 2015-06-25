@@ -244,7 +244,8 @@ public class QueryStringUtilsFiltersTest {
     @Test
     public void testUriDecoded() {
 
-        QueryParameters query = QueryStringUtils.parseUriEncoded("api.github.com/tfaga/repos?where=firstname:like:Kar%25%20");
+        QueryParameters query = QueryStringUtils.parseUriEncoded("api.github" +
+                ".com/tfaga/repos?where=firstname:like:Kar%25%20");
 
         Assert.assertNotNull(query);
         Assert.assertNotNull(query.getFilters());
