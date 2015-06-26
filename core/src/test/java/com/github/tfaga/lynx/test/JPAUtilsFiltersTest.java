@@ -4,6 +4,7 @@ import com.github.tfaga.lynx.beans.QueryFilter;
 import com.github.tfaga.lynx.beans.QueryParameters;
 import com.github.tfaga.lynx.enums.FilterOperation;
 import com.github.tfaga.lynx.exceptions.NoSuchEntityFieldException;
+import com.github.tfaga.lynx.test.entities.Project;
 import com.github.tfaga.lynx.test.entities.User;
 import com.github.tfaga.lynx.test.rules.JpaRule;
 import com.github.tfaga.lynx.utils.JPAUtils;
@@ -17,6 +18,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceException;
 
 /**
  * @author Tilen Faganel
@@ -242,7 +244,7 @@ public class JPAUtilsFiltersTest {
     }
 
     @Test
-     public void testGte() {
+    public void testGte() {
 
         QueryFilter qf = new QueryFilter();
         qf.setField("role");
@@ -441,5 +443,98 @@ public class JPAUtilsFiltersTest {
 
         Assert.assertNotNull(users);
         Assert.assertEquals(96, users.size());
+    }
+
+    @Test
+    public void testManyToOneRelation() {
+
+        QueryFilter qf = new QueryFilter();
+        qf.setField("user.id");
+        qf.setOperation(FilterOperation.EQ);
+        qf.setValue("28");
+
+        QueryParameters q = new QueryParameters();
+        q.getFilters().add(qf);
+
+        List<Project> projects = JPAUtils.queryEntities(em, Project.class, q);
+
+        Assert.assertNotNull(projects);
+        Assert.assertEquals(5, projects.size());
+
+        qf = new QueryFilter();
+        qf.setField("user.firstname");
+        qf.setOperation(FilterOperation.INIC);
+        qf.getValues().add("sArAH");
+        qf.getValues().add("ricHArd");
+        qf.getValues().add("jACk");
+
+        q = new QueryParameters();
+        q.getFilters().add(qf);
+
+        projects = JPAUtils.queryEntities(em, Project.class, q);
+
+        Assert.assertNotNull(projects);
+        Assert.assertEquals(8, projects.size());
+    }
+
+    @Test(expected = PersistenceException.class)
+    public void testManyToOneRelationOnlyField() {
+
+        QueryFilter qf = new QueryFilter();
+        qf.setField("user");
+        qf.setOperation(FilterOperation.EQ);
+        qf.setValue("28");
+
+        QueryParameters q = new QueryParameters();
+        q.getFilters().add(qf);
+
+        JPAUtils.queryEntities(em, Project.class, q);
+        Assert.fail("No exception was thrown");
+    }
+
+    @Test
+    public void testOneToManyRelation() {
+
+        QueryFilter qf = new QueryFilter();
+        qf.setField("projects.id");
+        qf.setOperation(FilterOperation.EQ);
+        qf.setValue("10");
+
+        QueryParameters q = new QueryParameters();
+        q.getFilters().add(qf);
+
+        List<User> users = JPAUtils.queryEntities(em, User.class, q);
+
+        Assert.assertNotNull(users);
+        Assert.assertEquals(1, users.size());
+
+        qf = new QueryFilter();
+        qf.setField("projects.name");
+        qf.setOperation(FilterOperation.NIN);
+        qf.getValues().add("Green");
+        qf.getValues().add("Violet");
+
+        q = new QueryParameters();
+        q.getFilters().add(qf);
+
+        users = JPAUtils.queryEntities(em, User.class, q);
+
+        Assert.assertNotNull(users);
+        Assert.assertEquals(89, users.size());
+    }
+
+    @Test(expected = PersistenceException.class)
+    public void testOneToManyRelationOnlyFieldInteger() {
+
+        QueryFilter qf = new QueryFilter();
+        qf.setField("projects");
+        qf.setOperation(FilterOperation.EQ);
+        qf.setValue("28");
+
+        QueryParameters q = new QueryParameters();
+        q.getFilters().add(qf);
+
+        JPAUtils.queryEntities(em, User.class, q);
+        Assert.fail("No exception was thrown");
     }
 }
