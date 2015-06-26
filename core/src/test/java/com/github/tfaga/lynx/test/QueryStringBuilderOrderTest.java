@@ -4,7 +4,6 @@ import com.github.tfaga.lynx.beans.QueryParameters;
 import com.github.tfaga.lynx.enums.OrderDirection;
 import com.github.tfaga.lynx.enums.QueryFormatError;
 import com.github.tfaga.lynx.exceptions.QueryFormatException;
-import com.github.tfaga.lynx.utils.QueryStringUtils;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -12,7 +11,7 @@ import org.junit.Test;
 /**
  * @author Tilen Faganel
  */
-public class QueryStringUtilsOrderTest {
+public class QueryStringBuilderOrderTest {
 
     @Test
     public void testQueryOrderObject() {
@@ -26,7 +25,7 @@ public class QueryStringUtilsOrderTest {
     @Test
     public void testSingleOrder() {
 
-        QueryParameters query = QueryStringUtils.parse("order=username DESC");
+        QueryParameters query = QueryParameters.query("order=username DESC").build();
 
         Assert.assertNotNull(query);
         Assert.assertNotNull(query.getOrder());
@@ -39,7 +38,7 @@ public class QueryStringUtilsOrderTest {
     @Test
     public void testOrderWithoutDirection() {
 
-        QueryParameters query = QueryStringUtils.parse("sort=username");
+        QueryParameters query = QueryParameters.query("sort=username").build();
 
         Assert.assertNotNull(query);
         Assert.assertNotNull(query.getOrder());
@@ -52,7 +51,7 @@ public class QueryStringUtilsOrderTest {
     @Test
     public void testEmptyOrder() {
 
-        QueryParameters query = QueryStringUtils.parse("order=");
+        QueryParameters query = QueryParameters.query("order=").build();
 
         Assert.assertNotNull(query);
         Assert.assertNotNull(query.getOrder());
@@ -64,7 +63,7 @@ public class QueryStringUtilsOrderTest {
 
         try {
 
-            QueryStringUtils.parse("order= ASC");
+            QueryParameters.query("order= ASC").build();
             Assert.fail("No exception was thrown");
         } catch (QueryFormatException e) {
 
@@ -78,7 +77,7 @@ public class QueryStringUtilsOrderTest {
 
         try {
 
-            QueryStringUtils.parse("sort=lastname SOMETHING");
+            QueryParameters.query("sort=lastname SOMETHING").build();
             Assert.fail("No exception was thrown");
         } catch (QueryFormatException e) {
 
@@ -90,7 +89,7 @@ public class QueryStringUtilsOrderTest {
     @Test
     public void testMultipleOrders() {
 
-        QueryParameters query = QueryStringUtils.parse("order=username ASC,lastname DESC");
+        QueryParameters query = QueryParameters.query("order=username ASC,lastname DESC").build();
 
         Assert.assertNotNull(query);
         Assert.assertNotNull(query.getOrder());
@@ -108,7 +107,7 @@ public class QueryStringUtilsOrderTest {
     @Test
     public void testMultipleOrdersWithoutDirections() {
 
-        QueryParameters query = QueryStringUtils.parse("order=username,lastname DESC,firstname");
+        QueryParameters query = QueryParameters.query("order=username,lastname DESC,firstname").build();
 
         Assert.assertNotNull(query);
         Assert.assertNotNull(query.getOrder());
@@ -130,7 +129,7 @@ public class QueryStringUtilsOrderTest {
     @Test
     public void testMultipleOrdersWithEmptyBetween() {
 
-        QueryParameters query = QueryStringUtils.parse("order=username,,,,firstname DESC");
+        QueryParameters query = QueryParameters.query("order=username,,,,firstname DESC").build();
 
         Assert.assertNotNull(query);
         Assert.assertNotNull(query.getOrder());
@@ -150,7 +149,7 @@ public class QueryStringUtilsOrderTest {
 
         try {
 
-            QueryStringUtils.parse("order=username, firstname DESC");
+            QueryParameters.query("order=username, firstname DESC").build();
             Assert.fail("No exception was thrown");
         } catch (QueryFormatException e) {
 
@@ -162,7 +161,7 @@ public class QueryStringUtilsOrderTest {
     @Test
     public void testMultipleOrderKeys() {
 
-        QueryParameters query = QueryStringUtils.parse("order=username,firstname&sort=lastname DESC");
+        QueryParameters query = QueryParameters.query("order=username,firstname&sort=lastname DESC").build();
 
         Assert.assertNotNull(query);
         Assert.assertNotNull(query.getOrder());
@@ -176,7 +175,7 @@ public class QueryStringUtilsOrderTest {
     @Test
     public void testMultipleOrderRepeatFields() {
 
-        QueryParameters query = QueryStringUtils.parse("order=username,firstname,username DESC");
+        QueryParameters query = QueryParameters.query("order=username,firstname,username DESC").build();
 
         Assert.assertNotNull(query);
         Assert.assertNotNull(query.getOrder());

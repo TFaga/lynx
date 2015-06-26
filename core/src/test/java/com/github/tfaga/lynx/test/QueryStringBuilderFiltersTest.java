@@ -4,7 +4,6 @@ import com.github.tfaga.lynx.beans.QueryParameters;
 import com.github.tfaga.lynx.enums.FilterOperation;
 import com.github.tfaga.lynx.enums.QueryFormatError;
 import com.github.tfaga.lynx.exceptions.QueryFormatException;
-import com.github.tfaga.lynx.utils.QueryStringUtils;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -15,7 +14,7 @@ import java.util.Date;
 /**
  * @author Tilen Faganel
  */
-public class QueryStringUtilsFiltersTest {
+public class QueryStringBuilderFiltersTest {
 
     @Test
     public void testQueryFieldsObject() {
@@ -29,7 +28,7 @@ public class QueryStringUtilsFiltersTest {
     @Test
     public void testSingleFilter() {
 
-        QueryParameters query = QueryStringUtils.parse("filter=username:eq:test");
+        QueryParameters query = QueryParameters.query("filter=username:eq:test").build();
 
         Assert.assertNotNull(query);
         Assert.assertNotNull(query.getFilters());
@@ -43,7 +42,7 @@ public class QueryStringUtilsFiltersTest {
     @Test
     public void testSingleFilterWithQuotes() {
 
-        QueryParameters query = QueryStringUtils.parse("filter=username:eq:'test test'");
+        QueryParameters query = QueryParameters.query("filter=username:eq:'test test'").build();
 
         Assert.assertNotNull(query);
         Assert.assertNotNull(query.getFilters());
@@ -57,7 +56,7 @@ public class QueryStringUtilsFiltersTest {
     @Test
     public void testMultipleFilters() {
 
-        QueryParameters query = QueryStringUtils.parse("where=username:eq:'test test' lastname:gte:gale");
+        QueryParameters query = QueryParameters.query("where=username:eq:'test test' lastname:gte:gale").build();
 
         Assert.assertNotNull(query);
         Assert.assertNotNull(query.getFilters());
@@ -75,7 +74,7 @@ public class QueryStringUtilsFiltersTest {
     @Test
     public void testMalformedFilter() {
 
-        QueryParameters query = QueryStringUtils.parse("filter=usernameeq:test test");
+        QueryParameters query = QueryParameters.query("filter=usernameeq:test test").build();
 
         Assert.assertNotNull(query);
         Assert.assertNotNull(query.getFilters());
@@ -87,7 +86,7 @@ public class QueryStringUtilsFiltersTest {
 
         try {
 
-            QueryStringUtils.parse("filter=username:equal:test test");
+            QueryParameters.query("filter=username:equal:test test").build();
             Assert.fail("No exception was thrown");
         } catch (QueryFormatException e) {
 
@@ -100,7 +99,7 @@ public class QueryStringUtilsFiltersTest {
     @Test
     public void testEmptyFilter() {
 
-        QueryParameters query = QueryStringUtils.parse("filter=");
+        QueryParameters query = QueryParameters.query("filter=").build();
 
         Assert.assertNotNull(query);
         Assert.assertNotNull(query.getFilters());
@@ -110,7 +109,8 @@ public class QueryStringUtilsFiltersTest {
     @Test
     public void testMultipleKeyFilters() {
 
-        QueryParameters query = QueryStringUtils.parse("where=username:eq:'test test' lastname:gte:gale&filter=country:neq:SI");
+        QueryParameters query = QueryParameters.query("where=username:eq:'test test' " +
+                "lastname:gte:gale&filter=country:neq:SI").build();
 
         Assert.assertNotNull(query);
         Assert.assertNotNull(query.getFilters());
@@ -124,7 +124,7 @@ public class QueryStringUtilsFiltersTest {
     @Test
     public void testInFilter() {
 
-        QueryParameters query = QueryStringUtils.parse("where=username:in:[johnf,garryz]");
+        QueryParameters query = QueryParameters.query("where=username:in:[johnf,garryz]").build();
 
         Assert.assertNotNull(query);
         Assert.assertNotNull(query.getFilters());
@@ -141,7 +141,7 @@ public class QueryStringUtilsFiltersTest {
     @Test
     public void testInFilterEmptyElements() {
 
-        QueryParameters query = QueryStringUtils.parse("where=username:in:[johnf,,,,garryz]");
+        QueryParameters query = QueryParameters.query("where=username:in:[johnf,,,,garryz]").build();
 
         Assert.assertNotNull(query);
         Assert.assertNotNull(query.getFilters());
@@ -158,7 +158,7 @@ public class QueryStringUtilsFiltersTest {
     @Test
     public void testArrayValueWhenNotInOperation() {
 
-        QueryParameters query = QueryStringUtils.parse("where=username:neq:[johnf,garryz]");
+        QueryParameters query = QueryParameters.query("where=username:neq:[johnf,garryz]").build();
 
         Assert.assertNotNull(query);
         Assert.assertNotNull(query.getFilters());
@@ -174,7 +174,7 @@ public class QueryStringUtilsFiltersTest {
 
         Date d = Date.from(ZonedDateTime.parse("2014-11-26T11:15:08Z").toInstant());
 
-        QueryParameters query = QueryStringUtils.parse("where=username:gte:dt'2014-11-26T11:15:08Z'");
+        QueryParameters query = QueryParameters.query("where=username:gte:dt'2014-11-26T11:15:08Z'").build();
 
         Assert.assertNotNull(query);
         Assert.assertNotNull(query.getFilters());
@@ -189,7 +189,7 @@ public class QueryStringUtilsFiltersTest {
     public void testMalformedDateFilter() {
 
         try {
-            QueryStringUtils.parse("where=username:gte:dt'2014-11-26T1sdf1:15:08Z'");
+            QueryParameters.query("where=username:gte:dt'2014-11-26T1sdf1:15:08Z'").build();
             Assert.fail("No exception was thrown");
         } catch (QueryFormatException e) {
 
@@ -202,7 +202,7 @@ public class QueryStringUtilsFiltersTest {
     @Test
     public void testNoDateIdentifier() {
 
-        QueryParameters query = QueryStringUtils.parse("where=username:gte:'2014-11-26T11:15:08Z'");
+        QueryParameters query = QueryParameters.query("where=username:gte:'2014-11-26T11:15:08Z'").build();
 
         Assert.assertNotNull(query);
         Assert.assertNotNull(query.getFilters());
@@ -216,7 +216,7 @@ public class QueryStringUtilsFiltersTest {
     @Test
     public void testQueryDecoded() {
 
-        QueryParameters query = QueryStringUtils.parse("where=firstname:like:Kar%");
+        QueryParameters query = QueryParameters.query("where=firstname:like:Kar%").build();
 
         Assert.assertNotNull(query);
         Assert.assertNotNull(query.getFilters());
@@ -230,7 +230,7 @@ public class QueryStringUtilsFiltersTest {
     @Test
     public void testQueryEncoded() {
 
-        QueryParameters query = QueryStringUtils.parseEncoded("where=firstname:like:Kar%25");
+        QueryParameters query = QueryParameters.queryEncoded("where=firstname:like:Kar%25").build();
 
         Assert.assertNotNull(query);
         Assert.assertNotNull(query.getFilters());
@@ -244,8 +244,8 @@ public class QueryStringUtilsFiltersTest {
     @Test
     public void testUriDecoded() {
 
-        QueryParameters query = QueryStringUtils.parseUriEncoded("api.github" +
-                ".com/tfaga/repos?where=firstname:like:Kar%25%20");
+        QueryParameters query = QueryParameters.uriEncoded("api.github" +
+                ".com/tfaga/repos?where=firstname:like:Kar%25%20").build();
 
         Assert.assertNotNull(query);
         Assert.assertNotNull(query.getFilters());
@@ -259,7 +259,7 @@ public class QueryStringUtilsFiltersTest {
     @Test
     public void testQuotesInInFilter() {
 
-        QueryParameters query = QueryStringUtils.parse("where=country:in:['Czech Republic',China]");
+        QueryParameters query = QueryParameters.query("where=country:in:['Czech Republic',China]").build();
 
         Assert.assertNotNull(query);
         Assert.assertNotNull(query.getFilters());
@@ -276,7 +276,7 @@ public class QueryStringUtilsFiltersTest {
     @Test
     public void testQuotesInNinFilter() {
 
-        QueryParameters query = QueryStringUtils.parse("where=country:nin:['Czech Republic',Nigeria]");
+        QueryParameters query = QueryParameters.query("where=country:nin:['Czech Republic',Nigeria]").build();
 
         Assert.assertNotNull(query);
         Assert.assertNotNull(query.getFilters());

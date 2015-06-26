@@ -1,7 +1,6 @@
 package com.github.tfaga.lynx.test;
 
 import com.github.tfaga.lynx.beans.QueryParameters;
-import com.github.tfaga.lynx.utils.QueryStringUtils;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -9,7 +8,7 @@ import org.junit.Test;
 /**
  * @author Tilen Faganel
  */
-public class QueryStringUtilsFieldsTest {
+public class QueryStringBuilderFieldsTest {
 
     @Test
     public void testQueryFieldsObject() {
@@ -23,7 +22,7 @@ public class QueryStringUtilsFieldsTest {
     @Test
     public void testSingleField() {
 
-        QueryParameters query = QueryStringUtils.parse("fields=username");
+        QueryParameters query = QueryParameters.query("fields=username").build();
 
         Assert.assertNotNull(query.getFields());
         Assert.assertEquals(1, query.getFields().size());
@@ -33,7 +32,7 @@ public class QueryStringUtilsFieldsTest {
     @Test
     public void testMultipleFields() {
 
-        QueryParameters query = QueryStringUtils.parse("fields=username,firstname,lastname");
+        QueryParameters query = QueryParameters.query("fields=username,firstname,lastname").build();
 
         Assert.assertNotNull(query.getFields());
         Assert.assertEquals(3, query.getFields().size());
@@ -45,7 +44,8 @@ public class QueryStringUtilsFieldsTest {
     @Test
     public void testEmptyFields() {
 
-        QueryParameters query = QueryStringUtils.parse("select=username,,,,firstname,lastname");
+        QueryParameters query = QueryParameters.query("select=username,,,,firstname,lastname")
+                .build();
 
         Assert.assertNotNull(query.getFields());
         Assert.assertEquals(3, query.getFields().size());
@@ -57,7 +57,7 @@ public class QueryStringUtilsFieldsTest {
     @Test
     public void testEmptyField() {
 
-        QueryParameters query = QueryStringUtils.parse("fields=");
+        QueryParameters query = QueryParameters.query("fields=").build();
 
         Assert.assertNotNull(query.getFields());
         Assert.assertEquals(0, query.getFields().size());
@@ -66,7 +66,7 @@ public class QueryStringUtilsFieldsTest {
     @Test
     public void testEmptyFieldWithoutDelimiter() {
 
-        QueryParameters query = QueryStringUtils.parse("fields");
+        QueryParameters query = QueryParameters.query("fields").build();
 
         Assert.assertNotNull(query.getFields());
         Assert.assertEquals(0, query.getFields().size());
@@ -75,7 +75,7 @@ public class QueryStringUtilsFieldsTest {
     @Test
     public void testDuplicateFields() {
 
-        QueryParameters query = QueryStringUtils.parse("select=country,firstname,country");
+        QueryParameters query = QueryParameters.query("select=country,firstname,country").build();
 
         Assert.assertNotNull(query.getFields());
         Assert.assertEquals(2, query.getFields().size());
@@ -86,7 +86,8 @@ public class QueryStringUtilsFieldsTest {
     @Test
     public void testMultipleFieldKeys() {
 
-        QueryParameters query = QueryStringUtils.parse("select=username,firstname,lastname&fields=address");
+        QueryParameters query = QueryParameters.query("select=username,firstname," +
+                "lastname&fields=address").build();
 
         Assert.assertNotNull(query.getFields());
         Assert.assertEquals(1, query.getFields().size());

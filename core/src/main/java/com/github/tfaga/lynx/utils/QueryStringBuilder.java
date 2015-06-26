@@ -27,9 +27,9 @@ import java.util.stream.Collectors;
  * @version 1.0.0
  * @since 1.0.0
  */
-public class QueryStringUtils {
+public class QueryStringBuilder {
 
-    private static final Logger log = Logger.getLogger(QueryStringUtils.class.getSimpleName());
+    private static final Logger log = Logger.getLogger(QueryStringBuilder.class.getSimpleName());
 
     public static final String LIMIT_DELIMITER = "limit";
     public static final String LIMIT_DELIMITER_ALT = "max";
@@ -46,58 +46,142 @@ public class QueryStringUtils {
     public static final String FILTER_DELIMITER = "filter";
     public static final String FILTER_DELIMITER_ALT = "where";
 
-    public static QueryParameters parseUri(URI uri) {
+    private String query;
 
-        log.finest("Parsing uri object: " + uri);
+    private Long maxLimit;
+    private Long defaultLimit;
+    private Long defaultOffset;
 
-        if (uri == null) return new QueryParameters();
+    public QueryStringBuilder uri(URI uri) {
 
-        return parse(uri.getRawQuery());
+        log.finest("Setting uri object: " + uri);
+
+        if (uri == null) throw new IllegalArgumentException("The passed URI cannot be null");
+
+        query = uri.getRawQuery();
+
+        return this;
     }
 
-    public static QueryParameters parseUriEncoded(String uri) {
+    public QueryStringBuilder uriEncoded(String uri) {
 
-        return parseUri(decodeUrl(uri));
+        return uri(decodeUrl(uri));
     }
 
-    public static QueryParameters parseUri(String uri) {
+    public QueryStringBuilder uri(String uri) {
 
-        log.finest("Parsing uri string: " + uri);
+        log.finest("Setting uri string: " + uri);
 
-        if (uri == null || uri.isEmpty()) return new QueryParameters();
+        if (uri == null || uri.isEmpty()) throw new IllegalArgumentException("The passed URI string cannot be empty");
 
         int idxQuery = uri.indexOf("?");
         int idxFragment = uri.indexOf("#");
 
-        if (idxQuery == -1) return new QueryParameters();
+        if (idxQuery == -1) throw new IllegalArgumentException();
 
-        if (idxFragment == -1) return parse(uri.substring(idxQuery + 1));
+        if (idxFragment == -1) {
 
-        if (idxFragment < idxQuery) return new QueryParameters();
+            query = uri.substring(idxQuery + 1);
 
-        return parse(uri.substring(idxQuery + 1, idxFragment));
+            return this;
+        }
+
+        if (idxFragment < idxQuery) {
+
+            query = "";
+
+            return this;
+        }
+
+        query = uri.substring(idxQuery + 1, idxFragment);
+
+        return this;
     }
 
-    public static QueryParameters parseEncoded(String queryString) {
+    public QueryStringBuilder queryEncoded(String queryString) {
 
-        return parse(decodeUrl(queryString));
+        return query(decodeUrl(queryString));
     }
 
-    public static QueryParameters parse(String queryString) {
+    public QueryStringBuilder query(String queryString) {
 
-        log.finest("Parsing query string: " + queryString);
+        query = queryString;
+
+        return this;
+    }
+
+    public QueryStringBuilder maxLimit(int limit) {
+
+        return maxLimit((long) limit);
+    }
+
+    public QueryStringBuilder maxLimit(Long limit) {
+
+        log.finest("Setting max limit: " + limit);
+
+        if (limit == null) throw new IllegalArgumentException("The passed limit cannot be null");
+
+        if (limit < 0) throw new IllegalArgumentException("The passed limit must be a positive number");
+
+        maxLimit = limit;
+
+        return this;
+    }
+
+    public QueryStringBuilder defaultLimit(int limit) {
+
+        return defaultLimit((long) limit);
+    }
+
+    public QueryStringBuilder defaultLimit(Long limit) {
+
+        log.finest("Setting default limit: " + limit);
+
+        if (limit == null) throw new IllegalArgumentException("The passed limit cannot be null");
+
+        if (limit < 0) throw new IllegalArgumentException("The passed limit must be a positive number");
+
+        defaultLimit = limit;
+
+        return this;
+    }
+
+    public QueryStringBuilder defaultOffset(int offset) {
+
+        return defaultOffset((long) offset);
+    }
+
+    public QueryStringBuilder defaultOffset(Long offset) {
+
+        log.finest("Setting default offset: " + offset);
+
+        if (offset == null) throw new IllegalArgumentException("The passed offset cannot be null");
+
+        if (offset < 0) throw new IllegalArgumentException("The passed offset must be a positive number");
+
+        defaultOffset = offset;
+
+        return this;
+    }
+
+    public QueryParameters build() {
+
+        log.finest("Building query string: " + query);
 
         QueryParameters params = new QueryParameters();
 
-        if (queryString == null || queryString.isEmpty()) return params;
+        if (defaultLimit != null) params.setLimit(defaultLimit);
+        if (defaultOffset != null) params.setOffset(defaultOffset);
 
-        for (String pair : queryString.split("&")) {
+        if (query == null || query.isEmpty()) return params;
+
+        for (String pair : query.split("&")) {
 
             int idxOfPair = pair.indexOf("=");
 
             if (idxOfPair == -1) {
 
-                parsePair(params, pair, "");
+                buildPair(params, pair, "");
                 continue;
             }
 
@@ -106,15 +190,15 @@ public class QueryStringUtils {
             key = pair.substring(0, idxOfPair);
             value = pair.substring(idxOfPair + 1);
 
-            parsePair(params, key, value);
+            buildPair(params, key, value);
         }
 
         return params;
     }
 
-    private static void parsePair(QueryParameters params, String key, String value) {
+    private void buildPair(QueryParameters params, String key, String value) {
 
-        log.finest("Parsing query string pair: " + key + " " + value);
+        log.finest("Building query string pair: " + key + " " + value);
 
         if (params == null) return;
 
@@ -127,14 +211,14 @@ public class QueryStringUtils {
             case LIMIT_DELIMITER:
             case LIMIT_DELIMITER_ALT:
 
-                params.setLimit(parseLimit(key, value));
+                params.setLimit(buildLimit(key, value));
 
                 break;
 
             case OFFSET_DELIMITER:
             case OFFSET_DELIMITER_ALT:
 
-                params.setOffset(parseOffset(key, value));
+                params.setOffset(buildOffset(key, value));
 
                 break;
 
@@ -143,7 +227,7 @@ public class QueryStringUtils {
 
                 params.getOrder().clear();
 
-                Arrays.stream(value.split(",")).map(o -> parseOrder(key, o))
+                Arrays.stream(value.split(",")).map(o -> buildOrder(key, o))
                         .filter(o -> o != null).distinct()
                         .forEach(o -> params.getOrder().add(o));
 
@@ -154,7 +238,7 @@ public class QueryStringUtils {
 
                 params.getFields().clear();
 
-                params.getFields().addAll(parseFields(value));
+                params.getFields().addAll(buildFields(value));
 
                 break;
 
@@ -163,22 +247,45 @@ public class QueryStringUtils {
 
                 params.getFilters().clear();
 
-                params.getFilters().addAll(parseFilter(key, value));
+                params.getFilters().addAll(buildFilter(key, value));
 
                 break;
         }
     }
 
-    public static Long parseOffset(String key, String value) {
+    private Long buildOffset(String key, String value) {
 
-        log.finest("Parsing offset string: " + value);
+        log.finest("Building offset string: " + value);
 
-        return parseLimit(key, value);
+        Long offset;
+
+        try {
+
+            offset = Long.parseLong(value);
+        } catch (NumberFormatException e) {
+
+            String msg = "Value for '" + key + "' is not a number: '" + value + "'";
+
+            log.finest(msg);
+
+            throw new QueryFormatException(msg, key, QueryFormatError.NOT_A_NUMBER);
+        }
+
+        if (offset < 0) {
+
+            String msg = "Value for '" + key + "' is negative: '" + value + "'";
+
+            log.finest(msg);
+
+            throw new QueryFormatException(msg, key, QueryFormatError.NEGATIVE);
+        }
+
+        return offset;
     }
 
-    public static Long parseLimit(String key, String value) {
+    private Long buildLimit(String key, String value) {
 
-        log.finest("Parsing limit string: " + value);
+        log.finest("Building limit string: " + value);
 
         Long limit;
 
@@ -203,12 +310,14 @@ public class QueryStringUtils {
             throw new QueryFormatException(msg, key, QueryFormatError.NEGATIVE);
         }
 
+        if (maxLimit != null && limit > maxLimit) limit = maxLimit;
+
         return limit;
     }
 
-    public static QueryOrder parseOrder(String key, String value) {
+    private QueryOrder buildOrder(String key, String value) {
 
-        log.finest("Parsing order string: " + value);
+        log.finest("Building order string: " + value);
 
         if (value == null || value.isEmpty()) return null;
 
@@ -248,17 +357,17 @@ public class QueryStringUtils {
         return o;
     }
 
-    public static List<String> parseFields(String value) {
+    private List<String> buildFields(String value) {
 
-        log.finest("Parsing fields string: " + value);
+        log.finest("Building fields string: " + value);
 
         return Arrays.stream(value.split(",")).filter(f -> !f.isEmpty()).distinct()
                 .collect(Collectors.toList());
     }
 
-    public static List<QueryFilter> parseFilter(String key, String value) {
+    private List<QueryFilter> buildFilter(String key, String value) {
 
-        log.finest("Parsing filter string: " + value);
+        log.finest("Building filter string: " + value);
 
         List<QueryFilter> filterList = new ArrayList<>();
 
@@ -319,7 +428,7 @@ public class QueryStringUtils {
         return filterList;
     }
 
-    private static Date parseDate(String date) {
+    private Date parseDate(String date) {
 
         try {
             return Date.from(ZonedDateTime.parse(date).toInstant());
@@ -329,11 +438,9 @@ public class QueryStringUtils {
         }
     }
 
-    private static String decodeUrl(String url) {
+    private String decodeUrl(String url) {
 
         try {
-            String a = URLEncoder.encode(url, StandardCharsets.UTF_8.displayName());
-
             if (!URLEncoder.encode(url, StandardCharsets.UTF_8.displayName()).equals(url)) {
                 return URLDecoder.decode(url, StandardCharsets.UTF_8.displayName());
             } else {
