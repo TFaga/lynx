@@ -21,6 +21,26 @@ public class QueryFilter {
 
     private List<String> values;
 
+    public QueryFilter() {
+    }
+
+    public QueryFilter(String field, FilterOperation operation) {
+        this.field = field;
+        this.operation = operation;
+    }
+
+    public QueryFilter(String field, FilterOperation operation, String value) {
+        this.field = field;
+        this.operation = operation;
+        this.value = value;
+    }
+
+    public QueryFilter(String field, FilterOperation operation, Date dateValue) {
+        this.field = field;
+        this.operation = operation;
+        this.dateValue = dateValue;
+    }
+
     public String getField() {
         return field;
     }
