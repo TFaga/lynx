@@ -74,9 +74,24 @@ public class QueryStringBuilderFiltersTest {
     }
 
     @Test
-    public void testMalformedFilter() {
+    public void testMalformedUniaryFilter() {
 
-        QueryParameters query = QueryParameters.query("filter=usernameeq:test test").build();
+        try {
+
+            QueryParameters.query("filter=usernameeq:test test").build();
+            Assert.fail("No exception was thrown");
+        } catch (QueryFormatException e) {
+
+            Assert.assertEquals("filter", e.getField());
+            Assert.assertNotNull(e.getReason());
+            Assert.assertEquals(QueryFormatError.NO_SUCH_CONSTANT, e.getReason());
+        }
+    }
+
+    @Test
+    public void testMalformedBinaryFilter() {
+
+        QueryParameters query = QueryParameters.query("filter=usernameeq:eq test").build();
 
         Assert.assertNotNull(query);
         Assert.assertNotNull(query.getFilters());
@@ -295,7 +310,7 @@ public class QueryStringBuilderFiltersTest {
     @Test
     public void testIsNullFilter() {
 
-        QueryParameters query = QueryParameters.query("where=description:isnull:null").build();
+        QueryParameters query = QueryParameters.query("where=description:isnull").build();
 
         Assert.assertNotNull(query);
         Assert.assertNotNull(query.getFilters());
@@ -303,7 +318,6 @@ public class QueryStringBuilderFiltersTest {
         Assert.assertEquals("description", query.getFilters().get(0).getField());
         Assert.assertNotNull(query.getFilters().get(0).getOperation());
         Assert.assertEquals(FilterOperation.ISNULL, query.getFilters().get(0).getOperation());
-        Assert.assertNotNull(query.getFilters().get(0).getValue());
-        Assert.assertEquals("null", query.getFilters().get(0).getValue());
+        Assert.assertNull(query.getFilters().get(0).getValue());
     }
 }

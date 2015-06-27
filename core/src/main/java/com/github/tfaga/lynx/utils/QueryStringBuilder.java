@@ -72,7 +72,8 @@ public class QueryStringBuilder {
 
         log.finest("Setting uri string: " + uri);
 
-        if (uri == null || uri.isEmpty()) throw new IllegalArgumentException("The passed URI string cannot be empty");
+        if (uri == null || uri.isEmpty())
+            throw new IllegalArgumentException("The passed URI string cannot be empty");
 
         int idxQuery = uri.indexOf("?");
         int idxFragment = uri.indexOf("#");
@@ -121,7 +122,8 @@ public class QueryStringBuilder {
 
         if (limit == null) throw new IllegalArgumentException("The passed limit cannot be null");
 
-        if (limit < 0) throw new IllegalArgumentException("The passed limit must be a positive number");
+        if (limit < 0)
+            throw new IllegalArgumentException("The passed limit must be a positive number");
 
         maxLimit = limit;
 
@@ -139,7 +141,8 @@ public class QueryStringBuilder {
 
         if (limit == null) throw new IllegalArgumentException("The passed limit cannot be null");
 
-        if (limit < 0) throw new IllegalArgumentException("The passed limit must be a positive number");
+        if (limit < 0)
+            throw new IllegalArgumentException("The passed limit must be a positive number");
 
         defaultLimit = limit;
 
@@ -157,7 +160,8 @@ public class QueryStringBuilder {
 
         if (offset == null) throw new IllegalArgumentException("The passed offset cannot be null");
 
-        if (offset < 0) throw new IllegalArgumentException("The passed offset must be a positive number");
+        if (offset < 0)
+            throw new IllegalArgumentException("The passed offset must be a positive number");
 
         defaultOffset = offset;
 
@@ -373,8 +377,35 @@ public class QueryStringBuilder {
 
         if (value == null || value.isEmpty()) return filterList;
 
-        Arrays.stream(value.split("[ ]+(?=([^']*'[^']*')*[^']*$)"))
+        List<String[]> filters = Arrays.stream(value.split("[ ]+(?=([^']*'[^']*')*[^']*$)"))
                 .map(f -> f.split("[:]+(?=([^']*'[^']*')*[^']*$)"))
+                .collect(Collectors.toList());
+
+        filters.stream().filter(f -> f.length == 2).forEach(f -> {
+
+            QueryFilter qf = new QueryFilter();
+            qf.setField(f[0]);
+
+            try {
+
+                qf.setOperation(FilterOperation.valueOf(f[1].toUpperCase()));
+            } catch (IllegalArgumentException e) {
+
+                String msg = "Constant in '" + key + "' does not exist: '" + value + "'";
+
+                log.finest(msg);
+
+                throw new QueryFormatException(msg, key, QueryFormatError.NO_SUCH_CONSTANT);
+            }
+
+            if (qf.getOperation() == FilterOperation.ISNULL || qf.getOperation() ==
+                    FilterOperation.ISNOTNULL) {
+
+                filterList.add(qf);
+            }
+        });
+
+        filters.stream()
                 .filter(f -> f.length == 3)
                 .forEach(f -> {
 
