@@ -140,12 +140,14 @@ public class JPAUtils {
 
             try {
 
+                Path<String> field = getCriteraField(qo.getField(), r);
+
                 if (qo.getOrder() == OrderDirection.DESC) {
 
-                    orders.add(cb.desc(r.get(qo.getField())));
+                    orders.add(cb.desc(field));
                 } else {
 
-                    orders.add(cb.asc(r.get(qo.getField())));
+                    orders.add(cb.asc(field));
                 }
             } catch (IllegalArgumentException e) {
 
