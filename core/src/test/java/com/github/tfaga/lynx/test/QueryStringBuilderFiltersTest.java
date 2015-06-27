@@ -291,4 +291,19 @@ public class QueryStringBuilderFiltersTest {
         Assert.assertEquals("Czech Republic", query.getFilters().get(0).getValues().get(0));
         Assert.assertEquals("Nigeria", query.getFilters().get(0).getValues().get(1));
     }
+
+    @Test
+    public void testIsNullFilter() {
+
+        QueryParameters query = QueryParameters.query("where=description:isnull:null").build();
+
+        Assert.assertNotNull(query);
+        Assert.assertNotNull(query.getFilters());
+        Assert.assertEquals(1, query.getFilters().size());
+        Assert.assertEquals("description", query.getFilters().get(0).getField());
+        Assert.assertNotNull(query.getFilters().get(0).getOperation());
+        Assert.assertEquals(FilterOperation.ISNULL, query.getFilters().get(0).getOperation());
+        Assert.assertNotNull(query.getFilters().get(0).getValue());
+        Assert.assertEquals("null", query.getFilters().get(0).getValue());
+    }
 }

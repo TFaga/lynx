@@ -542,23 +542,6 @@ public class JPAUtilsFiltersTest {
     }
 
     @Test
-    public void testNullFilter() {
-
-        QueryFilter qf = new QueryFilter();
-        qf.setField("description");
-        qf.setOperation(FilterOperation.EQ);
-        qf.setValue("null");
-
-        QueryParameters q = new QueryParameters();
-        q.getFilters().add(qf);
-
-        List<Project> projects = JPAUtils.queryEntities(em, Project.class, q);
-
-        Assert.assertNotNull(projects);
-        Assert.assertEquals(1, projects.size());
-    }
-
-    @Test
     public void testEnumFilter() {
 
         QueryFilter qf = new QueryFilter();
@@ -623,5 +606,39 @@ public class JPAUtilsFiltersTest {
 
         JPAUtils.queryEntities(em, Project.class, q);
         Assert.fail("No exception was thrown");
+    }
+
+    @Test
+    public void testIsNullFilter() {
+
+        QueryFilter qf = new QueryFilter();
+        qf.setField("description");
+        qf.setOperation(FilterOperation.ISNULL);
+        qf.setValue("");
+
+        QueryParameters q = new QueryParameters();
+        q.getFilters().add(qf);
+
+        List<Project> projects = JPAUtils.queryEntities(em, Project.class, q);
+
+        Assert.assertNotNull(projects);
+        Assert.assertEquals(1, projects.size());
+    }
+
+    @Test
+    public void testIsNotNullFilter() {
+
+        QueryFilter qf = new QueryFilter();
+        qf.setField("description");
+        qf.setOperation(FilterOperation.ISNOTNULL);
+        qf.setValue("");
+
+        QueryParameters q = new QueryParameters();
+        q.getFilters().add(qf);
+
+        List<Project> projects = JPAUtils.queryEntities(em, Project.class, q);
+
+        Assert.assertNotNull(projects);
+        Assert.assertEquals(99, projects.size());
     }
 }

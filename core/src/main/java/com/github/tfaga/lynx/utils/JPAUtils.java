@@ -260,6 +260,12 @@ public class JPAUtils {
                                 .in(f.getValues().stream().map(String::toLowerCase)
                                         .collect(Collectors.toList())));
                         break;
+                    case ISNULL:
+                        np = cb.isNull(stringField);
+                        break;
+                    case ISNOTNULL:
+                        np = cb.isNotNull(stringField);
+                        break;
                 }
             } catch (IllegalArgumentException e) {
 
