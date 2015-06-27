@@ -4,6 +4,7 @@ import com.github.tfaga.lynx.beans.QueryFilter;
 import com.github.tfaga.lynx.beans.QueryParameters;
 import com.github.tfaga.lynx.enums.FilterOperation;
 import com.github.tfaga.lynx.exceptions.NoSuchEntityFieldException;
+import com.github.tfaga.lynx.exceptions.NoSuchEnumException;
 import com.github.tfaga.lynx.test.entities.Project;
 import com.github.tfaga.lynx.test.entities.User;
 import com.github.tfaga.lynx.test.rules.JpaRule;
@@ -572,5 +573,55 @@ public class JPAUtilsFiltersTest {
 
         Assert.assertNotNull(projects);
         Assert.assertEquals(50, projects.size());
+    }
+
+    @Test
+    public void testEnumInFilter() {
+
+        QueryFilter qf = new QueryFilter();
+        qf.setField("status");
+        qf.setOperation(FilterOperation.IN);
+        qf.getValues().add("ACTIVE");
+
+        QueryParameters q = new QueryParameters();
+        q.getFilters().add(qf);
+
+        List<Project> projects = JPAUtils.queryEntities(em, Project.class, q);
+
+        Assert.assertNotNull(projects);
+        Assert.assertEquals(50, projects.size());
+    }
+
+    @Test
+    public void testEnumNinFilter() {
+
+        QueryFilter qf = new QueryFilter();
+        qf.setField("status");
+        qf.setOperation(FilterOperation.NIN);
+        qf.getValues().add("ACTIVE");
+        qf.getValues().add("INACTIVE");
+
+        QueryParameters q = new QueryParameters();
+        q.getFilters().add(qf);
+
+        List<Project> projects = JPAUtils.queryEntities(em, Project.class, q);
+
+        Assert.assertNotNull(projects);
+        Assert.assertEquals(0, projects.size());
+    }
+
+    @Test(expected = NoSuchEnumException.class)
+    public void testEnumNonexistantFilter() {
+
+        QueryFilter qf = new QueryFilter();
+        qf.setField("status");
+        qf.setOperation(FilterOperation.EQ);
+        qf.setValue("NONACTIVE");
+
+        QueryParameters q = new QueryParameters();
+        q.getFilters().add(qf);
+
+        JPAUtils.queryEntities(em, Project.class, q);
+        Assert.fail("No exception was thrown");
     }
 }

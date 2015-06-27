@@ -4,6 +4,7 @@ import com.github.tfaga.lynx.beans.QueryFilter;
 import com.github.tfaga.lynx.beans.QueryParameters;
 import com.github.tfaga.lynx.enums.OrderDirection;
 import com.github.tfaga.lynx.exceptions.NoSuchEntityFieldException;
+import com.github.tfaga.lynx.exceptions.NoSuchEnumException;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -241,7 +242,9 @@ public class JPAUtils {
                         }
                         break;
                     case IN:
-                        np = stringField.in(f.getValues());
+                        np = stringField.in(f.getValues().stream()
+                                .map(s -> getValueForPath(stringField, s)).collect(Collectors
+                                        .toList()));
                         break;
                     case INIC:
                         np = cb.lower(stringField)
@@ -249,7 +252,8 @@ public class JPAUtils {
                                         .collect(Collectors.toList()));
                         break;
                     case NIN:
-                        np = cb.not(stringField.in(f.getValues()));
+                        np = cb.not(stringField.in(f.getValues().stream()
+                                .map(s -> getValueForPath(stringField, s)).collect(Collectors.toList())));
                         break;
                     case NINIC:
                         np = cb.not(cb.lower(stringField)
@@ -369,8 +373,13 @@ public class JPAUtils {
 
         Class c = path.getModel().getBindableJavaType();
 
-        if (c.isEnum())
-            return Enum.valueOf(c, value.toUpperCase());
+        try {
+            if (c.isEnum())
+                return Enum.valueOf(c, value.toUpperCase());
+        } catch (IllegalArgumentException e) {
+
+            throw new NoSuchEnumException(e.getMessage(), path.getAlias(), value);
+        }
 
         return value;
     }
