@@ -179,22 +179,32 @@ public class JPAUtils {
                 switch (f.getOperation()) {
 
                     case EQ:
-                        np = cb.equal(stringField,
-                                f.getDateValue() == null ? f.getValue() : f
-                                        .getDateValue());
+                        if (f.getDateValue() != null) {
+                            np = cb.equal(stringField, f.getDateValue());
+                        } else {
+                            np = cb.equal(stringField, getValueForPath(stringField, f.getValue()));
+                        }
                         break;
                     case EQIC:
-                        np = cb.equal(cb.lower(stringField), f.getDateValue() == null ? f
-                                .getValue().toLowerCase() : f.getDateValue());
+                        if (f.getDateValue() != null) {
+                            np = cb.equal(stringField, f.getDateValue());
+                        } else if (f.getValue() != null) {
+                            np = cb.equal(cb.lower(stringField), f.getValue().toLowerCase());
+                        }
                         break;
                     case NEQ:
-                        np = cb.notEqual(stringField,
-                                f.getDateValue() == null ? f.getValue() : f
-                                        .getDateValue());
+                        if (f.getDateValue() != null) {
+                            np = cb.notEqual(stringField, f.getDateValue());
+                        } else{
+                            np = cb.notEqual(stringField, getValueForPath(stringField, f.getValue()));
+                        }
                         break;
                     case NEQIC:
-                        np = cb.notEqual(cb.lower(stringField), f.getDateValue() == null ? f
-                                .getValue().toLowerCase() : f.getDateValue());
+                        if (f.getDateValue() != null) {
+                            np = cb.notEqual(stringField, f.getDateValue());
+                        } else if (f.getValue() != null) {
+                            np = cb.notEqual(cb.lower(stringField), f.getValue().toLowerCase());
+                        }
                         break;
                     case LIKE:
                         np = cb.like(stringField, f.getValue());
@@ -351,6 +361,18 @@ public class JPAUtils {
 
             return getFieldFromEntity(entity.getSuperclass(), fieldName);
         }
+    }
+
+    private static Object getValueForPath(Path path, String value) {
+
+        if (value == null) return null;
+
+        Class c = path.getModel().getBindableJavaType();
+
+        if (c.isEnum())
+            return Enum.valueOf(c, value.toUpperCase());
+
+        return value;
     }
 
     private static <G> Path<G> getCriteraField(String fieldName, Root<?> r) {

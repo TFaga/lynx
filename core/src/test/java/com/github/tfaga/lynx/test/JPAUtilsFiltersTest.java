@@ -539,4 +539,38 @@ public class JPAUtilsFiltersTest {
         JPAUtils.queryEntities(em, User.class, q);
         Assert.fail("No exception was thrown");
     }
+
+    @Test
+    public void testNullFilter() {
+
+        QueryFilter qf = new QueryFilter();
+        qf.setField("description");
+        qf.setOperation(FilterOperation.EQ);
+        qf.setValue("null");
+
+        QueryParameters q = new QueryParameters();
+        q.getFilters().add(qf);
+
+        List<Project> projects = JPAUtils.queryEntities(em, Project.class, q);
+
+        Assert.assertNotNull(projects);
+        Assert.assertEquals(1, projects.size());
+    }
+
+    @Test
+    public void testEnumFilter() {
+
+        QueryFilter qf = new QueryFilter();
+        qf.setField("status");
+        qf.setOperation(FilterOperation.EQ);
+        qf.setValue("ACTIVE");
+
+        QueryParameters q = new QueryParameters();
+        q.getFilters().add(qf);
+
+        List<Project> projects = JPAUtils.queryEntities(em, Project.class, q);
+
+        Assert.assertNotNull(projects);
+        Assert.assertEquals(50, projects.size());
+    }
 }
