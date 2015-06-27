@@ -30,7 +30,9 @@ import javax.persistence.metamodel.Metamodel;
 import javax.persistence.metamodel.SingularAttribute;
 
 /**
- * @author Tilen
+ * @author Tilen Faganel
+ * @version 1.0.0
+ * @since 1.0.0
  */
 public class JPAUtils {
 

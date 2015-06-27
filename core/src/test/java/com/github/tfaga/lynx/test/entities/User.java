@@ -13,6 +13,8 @@ import javax.persistence.TemporalType;
 
 /**
  * @author Tilen Faganel
+ * @version 1.0.0
+ * @since 1.0.0
  */
 @Entity
 public class User {

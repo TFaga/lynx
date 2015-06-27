@@ -6,11 +6,12 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 /**
- * @author Tilen
+ * @author Tilen Faganel
+ * @version 1.0.0
+ * @since 1.0.0
  */
 @Entity
 public class Project {

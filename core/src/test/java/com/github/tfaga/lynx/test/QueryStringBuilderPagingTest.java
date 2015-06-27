@@ -12,6 +12,8 @@ import java.net.URISyntaxException;
 
 /**
  * @author Tilen Faganel
+ * @version 1.0.0
+ * @since 1.0.0
  */
 public class QueryStringBuilderPagingTest {
 
