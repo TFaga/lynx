@@ -154,7 +154,7 @@ public class JPAUtils {
                 }
             } catch (IllegalArgumentException e) {
 
-                throw new NoSuchEntityFieldException(e.getMessage(), qo.getField());
+                throw new NoSuchEntityFieldException(e.getMessage(), qo.getField(), r.getJavaType().getSimpleName());
             }
         });
 
@@ -269,7 +269,7 @@ public class JPAUtils {
                 }
             } catch (IllegalArgumentException e) {
 
-                throw new NoSuchEntityFieldException(e.getMessage(), f.getField());
+                throw new NoSuchEntityFieldException(e.getMessage(), f.getField(), r.getJavaType().getSimpleName());
             }
 
             predicate = cb.and(predicate, np);
@@ -287,7 +287,7 @@ public class JPAUtils {
                 return r.get(f).alias(f);
             } catch (IllegalArgumentException e) {
 
-                throw new NoSuchEntityFieldException(e.getMessage(), f);
+                throw new NoSuchEntityFieldException(e.getMessage(), f, r.getJavaType().getSimpleName());
             }
         }).collect(Collectors.toList());
 
@@ -295,7 +295,7 @@ public class JPAUtils {
             fields.add(r.get(idField).alias(idField));
         } catch (IllegalArgumentException e) {
 
-            throw new NoSuchEntityFieldException(e.getMessage(), idField);
+            throw new NoSuchEntityFieldException(e.getMessage(), idField, r.getJavaType().getSimpleName());
         }
 
         return fields.stream().distinct().collect(Collectors.toList());
@@ -327,7 +327,7 @@ public class JPAUtils {
                     f.set(el, o);
                 } catch (NoSuchFieldException | IllegalAccessException e1) {
 
-                    throw new NoSuchEntityFieldException(e1.getMessage(), te.getAlias());
+                    throw new NoSuchEntityFieldException(e1.getMessage(), te.getAlias(), entity.getSimpleName());
                 }
             }
 

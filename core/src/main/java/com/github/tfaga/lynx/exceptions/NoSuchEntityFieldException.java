@@ -8,15 +8,21 @@ package com.github.tfaga.lynx.exceptions;
 public class NoSuchEntityFieldException extends IllegalArgumentException {
 
     private String field;
+    private String entity;
 
-    public NoSuchEntityFieldException(String msg, String field) {
+    public NoSuchEntityFieldException(String msg, String field, String entity) {
 
         super(msg);
 
         this.field = field;
+        this.entity = entity;
     }
 
     public String getField() {
         return field;
+    }
+
+    public String getEntity() {
+        return entity;
     }
 }
