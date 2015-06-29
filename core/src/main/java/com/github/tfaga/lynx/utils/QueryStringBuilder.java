@@ -327,7 +327,7 @@ public class QueryStringBuilder {
 
         QueryOrder o = new QueryOrder();
 
-        String[] pair = value.split(" ");
+        String[] pair = value.split("(\\s|\\+)");
 
         if (pair[0].isEmpty()) {
 
