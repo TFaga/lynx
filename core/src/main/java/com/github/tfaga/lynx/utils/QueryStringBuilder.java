@@ -377,7 +377,7 @@ public class QueryStringBuilder {
 
         if (value == null || value.isEmpty()) return filterList;
 
-        List<String[]> filters = Arrays.stream(value.split("[ ]+(?=([^']*'[^']*')*[^']*$)"))
+        List<String[]> filters = Arrays.stream(value.split("[(\\s|\\+)]+(?=([^']*'[^']*')*[^']*$)"))
                 .map(f -> f.split("[:]+(?=([^']*'[^']*')*[^']*$)"))
                 .collect(Collectors.toList());
 
