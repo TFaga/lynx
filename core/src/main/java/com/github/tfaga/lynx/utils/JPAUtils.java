@@ -65,25 +65,28 @@ public class JPAUtils {
         CriteriaQuery<Tuple> ct = cb.createTupleQuery();
 
         Root<T> r = cq.from(entity);
+        Root<T> rt = ct.from(entity);
 
         if (!q.getFilters().isEmpty()) {
 
             Predicate whereQuery = createWhereQuery(cb, r, q);
+            Predicate whereQueryTuple = createWhereQuery(cb, rt, q);
 
             cq.where(whereQuery);
-            ct.where(whereQuery);
+            ct.where(whereQueryTuple);
         }
 
         if (!q.getOrder().isEmpty()) {
 
             List<Order> orders = createOrderQuery(cb, r, q);
+            List<Order> ordersTuple = createOrderQuery(cb, rt, q);
 
             cq.orderBy(orders);
-            ct.orderBy(orders);
+            ct.orderBy(ordersTuple);
         }
 
         cq.select(r);
-        ct.multiselect(createFieldsSelect(r, q, getEntityIdField(em, entity)));
+        ct.multiselect(createFieldsSelect(rt, q, getEntityIdField(em, entity)));
 
         TypedQuery<T> tq = em.createQuery(cq);
         TypedQuery<Tuple> tqt = em.createQuery(ct);
@@ -382,6 +385,9 @@ public class JPAUtils {
         try {
             if (c.isEnum())
                 return Enum.valueOf(c, value.toUpperCase());
+
+            if (c.equals(Boolean.class))
+                return Boolean.parseBoolean(value);
         } catch (IllegalArgumentException e) {
 
             throw new NoSuchEnumException(e.getMessage(), path.getAlias(), value);
