@@ -43,6 +43,12 @@ public class QueryFilter {
         this.dateValue = dateValue;
     }
 
+    public QueryFilter(String field, FilterOperation operation, List<String> values) {
+        this.field = field;
+        this.operation = operation;
+        this.values = values;
+    }
+
     public String getField() {
         return field;
     }
