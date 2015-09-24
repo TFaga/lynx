@@ -2,6 +2,7 @@ package com.github.tfaga.lynx.beans;
 
 import com.github.tfaga.lynx.enums.OrderDirection;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
@@ -9,7 +10,9 @@ import java.util.Objects;
  * @version 1.0.0
  * @since 1.0.0
  */
-public class QueryOrder {
+public class QueryOrder implements Serializable {
+
+    private final static long serialVersionUID = 1L;
 
     private String field;
 

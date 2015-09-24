@@ -2,6 +2,7 @@ package com.github.tfaga.lynx.beans;
 
 import com.github.tfaga.lynx.utils.QueryStringBuilder;
 
+import java.io.Serializable;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +12,9 @@ import java.util.List;
  * @version 1.0.0
  * @since 1.0.0
  */
-public class QueryParameters {
+public class QueryParameters implements Serializable {
+
+    private final static long serialVersionUID = 1L;
 
     private Long limit;
     private Long offset;

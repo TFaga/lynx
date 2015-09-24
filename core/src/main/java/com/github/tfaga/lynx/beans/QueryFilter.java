@@ -2,6 +2,7 @@ package com.github.tfaga.lynx.beans;
 
 import com.github.tfaga.lynx.enums.FilterOperation;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -11,7 +12,9 @@ import java.util.List;
  * @version 1.0.0
  * @since 1.0.0
  */
-public class QueryFilter {
+public class QueryFilter implements Serializable {
+
+    private final static long serialVersionUID = 1L;
 
     private String field;
 
