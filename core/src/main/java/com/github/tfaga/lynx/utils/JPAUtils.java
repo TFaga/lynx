@@ -170,9 +170,6 @@ public class JPAUtils {
 
         for (QueryFilter f : q.getFilters()) {
 
-            if (f.getValue() == null && f.getDateValue() == null && f.getValues().isEmpty())
-                continue;
-
             Predicate np = null;
 
             try {

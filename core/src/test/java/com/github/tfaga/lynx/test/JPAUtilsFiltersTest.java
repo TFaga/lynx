@@ -167,7 +167,7 @@ public class JPAUtilsFiltersTest {
         List<User> users = JPAUtils.queryEntities(em, User.class, q);
 
         Assert.assertNotNull(users);
-        Assert.assertEquals(100, users.size());
+        Assert.assertEquals(0, users.size());
     }
 
     @Test
