@@ -424,8 +424,11 @@ public class QueryStringBuilder {
                         throw new QueryFormatException(msg, key, QueryFormatError.NO_SUCH_CONSTANT);
                     }
 
-                    if (f[2].matches("^\\[.*\\]$") && (qf.getOperation() == FilterOperation.IN ||
-                            qf.getOperation() == FilterOperation.NIN)) {
+                    if (f[2].matches("^\\[.*\\]$") &&
+                            (qf.getOperation() == FilterOperation.IN ||
+                            qf.getOperation() == FilterOperation.NIN ||
+                            qf.getOperation() == FilterOperation.NINIC ||
+                            qf.getOperation() == FilterOperation.INIC)) {
 
                         String values = f[2].replaceAll("(^\\[)|(\\]$)", "");
 

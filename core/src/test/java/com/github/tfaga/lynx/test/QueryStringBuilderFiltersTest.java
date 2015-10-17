@@ -156,6 +156,58 @@ public class QueryStringBuilderFiltersTest {
     }
 
     @Test
+    public void testInicFilter() {
+
+        QueryParameters query = QueryParameters.query("where=username:inic:[Garryz,johnF]").build();
+
+        Assert.assertNotNull(query);
+        Assert.assertNotNull(query.getFilters());
+        Assert.assertEquals(1, query.getFilters().size());
+        Assert.assertEquals("username", query.getFilters().get(0).getField());
+        Assert.assertNotNull(query.getFilters().get(0).getOperation());
+        Assert.assertEquals(FilterOperation.INIC, query.getFilters().get(0).getOperation());
+        Assert.assertNull(query.getFilters().get(0).getValue());
+        Assert.assertEquals(2, query.getFilters().get(0).getValues().size());
+        Assert.assertEquals("Garryz", query.getFilters().get(0).getValues().get(0));
+        Assert.assertEquals("johnF", query.getFilters().get(0).getValues().get(1));
+    }
+
+    @Test
+    public void testNinFilter() {
+
+        QueryParameters query = QueryParameters.query("where=username:nin:[garryz,johnf,johng]").build();
+
+        Assert.assertNotNull(query);
+        Assert.assertNotNull(query.getFilters());
+        Assert.assertEquals(1, query.getFilters().size());
+        Assert.assertEquals("username", query.getFilters().get(0).getField());
+        Assert.assertNotNull(query.getFilters().get(0).getOperation());
+        Assert.assertEquals(FilterOperation.NIN, query.getFilters().get(0).getOperation());
+        Assert.assertNull(query.getFilters().get(0).getValue());
+        Assert.assertEquals(3, query.getFilters().get(0).getValues().size());
+        Assert.assertEquals("garryz", query.getFilters().get(0).getValues().get(0));
+        Assert.assertEquals("johnf", query.getFilters().get(0).getValues().get(1));
+        Assert.assertEquals("johng", query.getFilters().get(0).getValues().get(2));
+    }
+
+    @Test
+    public void testNinicFilter() {
+
+        QueryParameters query = QueryParameters.query("where=username:ninic:[joHnf,johng]").build();
+
+        Assert.assertNotNull(query);
+        Assert.assertNotNull(query.getFilters());
+        Assert.assertEquals(1, query.getFilters().size());
+        Assert.assertEquals("username", query.getFilters().get(0).getField());
+        Assert.assertNotNull(query.getFilters().get(0).getOperation());
+        Assert.assertEquals(FilterOperation.NINIC, query.getFilters().get(0).getOperation());
+        Assert.assertNull(query.getFilters().get(0).getValue());
+        Assert.assertEquals(2, query.getFilters().get(0).getValues().size());
+        Assert.assertEquals("joHnf", query.getFilters().get(0).getValues().get(0));
+        Assert.assertEquals("johng", query.getFilters().get(0).getValues().get(1));
+    }
+
+    @Test
     public void testInFilterEmptyElements() {
 
         QueryParameters query = QueryParameters.query("where=username:in:[johnf,,,,garryz]").build();
@@ -274,7 +326,7 @@ public class QueryStringBuilderFiltersTest {
     }
 
     @Test
-    public void testQuotesInInFilter() {
+     public void testQuotesInInFilter() {
 
         QueryParameters query = QueryParameters.query("where=country:in:['Czech Republic',China]").build();
 
@@ -288,6 +340,24 @@ public class QueryStringBuilderFiltersTest {
         Assert.assertEquals(2, query.getFilters().get(0).getValues().size());
         Assert.assertEquals("Czech Republic", query.getFilters().get(0).getValues().get(0));
         Assert.assertEquals("China", query.getFilters().get(0).getValues().get(1));
+    }
+
+    @Test
+    public void testQuotesInInicFilter() {
+
+        QueryParameters query = QueryParameters.query("where=country:inic:['Czech Republic',China,'United States']").build();
+
+        Assert.assertNotNull(query);
+        Assert.assertNotNull(query.getFilters());
+        Assert.assertEquals(1, query.getFilters().size());
+        Assert.assertEquals("country", query.getFilters().get(0).getField());
+        Assert.assertNotNull(query.getFilters().get(0).getOperation());
+        Assert.assertEquals(FilterOperation.INIC, query.getFilters().get(0).getOperation());
+        Assert.assertNull(query.getFilters().get(0).getValue());
+        Assert.assertEquals(3, query.getFilters().get(0).getValues().size());
+        Assert.assertEquals("Czech Republic", query.getFilters().get(0).getValues().get(0));
+        Assert.assertEquals("China", query.getFilters().get(0).getValues().get(1));
+        Assert.assertEquals("United States", query.getFilters().get(0).getValues().get(2));
     }
 
     @Test
@@ -305,6 +375,23 @@ public class QueryStringBuilderFiltersTest {
         Assert.assertEquals(2, query.getFilters().get(0).getValues().size());
         Assert.assertEquals("Czech Republic", query.getFilters().get(0).getValues().get(0));
         Assert.assertEquals("Nigeria", query.getFilters().get(0).getValues().get(1));
+    }
+
+    @Test
+    public void testQuotesInNinicFilter() {
+
+        QueryParameters query = QueryParameters.query("where=country:ninic:['Czech Republic','United States']").build();
+
+        Assert.assertNotNull(query);
+        Assert.assertNotNull(query.getFilters());
+        Assert.assertEquals(1, query.getFilters().size());
+        Assert.assertEquals("country", query.getFilters().get(0).getField());
+        Assert.assertNotNull(query.getFilters().get(0).getOperation());
+        Assert.assertEquals(FilterOperation.NINIC, query.getFilters().get(0).getOperation());
+        Assert.assertNull(query.getFilters().get(0).getValue());
+        Assert.assertEquals(2, query.getFilters().get(0).getValues().size());
+        Assert.assertEquals("Czech Republic", query.getFilters().get(0).getValues().get(0));
+        Assert.assertEquals("United States", query.getFilters().get(0).getValues().get(1));
     }
 
     @Test
