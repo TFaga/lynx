@@ -474,6 +474,8 @@ public class QueryStringBuilder {
 
     private String decodeUrl(String url) {
 
+        if (url == null) return null;
+
         try {
             if (!URLEncoder.encode(url, StandardCharsets.UTF_8.displayName()).equals(url)) {
                 return URLDecoder.decode(url, StandardCharsets.UTF_8.displayName());
