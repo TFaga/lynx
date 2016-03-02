@@ -23,26 +23,6 @@ public class QueryParameters implements Serializable {
     private List<String> fields;
     private List<QueryFilter> filters;
 
-    public static QueryStringBuilder uri(URI uri) {
-        return new QueryStringBuilder().uri(uri);
-    }
-
-    public static QueryStringBuilder uriEncoded(String uri) {
-        return new QueryStringBuilder().uriEncoded(uri);
-    }
-
-    public static QueryStringBuilder uri(String uri) {
-        return new QueryStringBuilder().uri(uri);
-    }
-
-    public static QueryStringBuilder queryEncoded(String queryString) {
-        return new QueryStringBuilder().queryEncoded(queryString);
-    }
-
-    public static QueryStringBuilder query(String queryString) {
-        return new QueryStringBuilder().query(queryString);
-    }
-
     public Long getLimit() {
         return limit;
     }
@@ -89,5 +69,27 @@ public class QueryParameters implements Serializable {
             filters = new ArrayList<>();
 
         return filters;
+    }
+
+    // Static methods for creating the query builder
+
+    public static QueryStringBuilder uri(URI uri) {
+        return new QueryStringBuilder().uri(uri);
+    }
+
+    public static QueryStringBuilder uriEncoded(String uri) {
+        return new QueryStringBuilder().uriEncoded(uri);
+    }
+
+    public static QueryStringBuilder uri(String uri) {
+        return new QueryStringBuilder().uri(uri);
+    }
+
+    public static QueryStringBuilder queryEncoded(String queryString) {
+        return new QueryStringBuilder().queryEncoded(queryString);
+    }
+
+    public static QueryStringBuilder query(String queryString) {
+        return new QueryStringBuilder().query(queryString);
     }
 }
