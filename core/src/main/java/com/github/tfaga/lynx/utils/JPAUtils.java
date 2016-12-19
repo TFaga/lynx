@@ -8,10 +8,7 @@ import com.github.tfaga.lynx.exceptions.NoSuchEnumException;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -380,15 +377,19 @@ public class JPAUtils {
         Class c = path.getModel().getBindableJavaType();
 
         try {
+
             if (c.isEnum())
                 return Enum.valueOf(c, value.toUpperCase());
-
-            if (c.equals(Boolean.class))
-                return Boolean.parseBoolean(value);
         } catch (IllegalArgumentException e) {
 
             throw new NoSuchEnumException(e.getMessage(), path.getAlias(), value);
         }
+
+        if (c.equals(Boolean.class))
+            return Boolean.parseBoolean(value);
+
+        if (c.equals(UUID.class))
+            return UUID.fromString(value);
 
         return value;
     }
