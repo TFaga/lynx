@@ -38,6 +38,19 @@ public class QueryStringBuilderOrderTest {
     }
 
     @Test
+    public void testSingleOrderWithPlus() {
+
+        QueryParameters query = QueryParameters.query("order=username+DESC").build();
+
+        Assert.assertNotNull(query);
+        Assert.assertNotNull(query.getOrder());
+        Assert.assertEquals(1, query.getOrder().size());
+        Assert.assertEquals("username", query.getOrder().get(0).getField());
+        Assert.assertNotNull(query.getOrder().get(0).getOrder());
+        Assert.assertEquals(OrderDirection.DESC, query.getOrder().get(0).getOrder());
+    }
+
+    @Test
     public void testOrderWithoutDirection() {
 
         QueryParameters query = QueryParameters.query("sort=username").build();
@@ -191,5 +204,4 @@ public class QueryStringBuilderOrderTest {
         Assert.assertNotNull(query.getOrder().get(1).getOrder());
         Assert.assertEquals(OrderDirection.ASC, query.getOrder().get(1).getOrder());
     }
-
 }

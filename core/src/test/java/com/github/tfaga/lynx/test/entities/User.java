@@ -35,6 +35,8 @@ public class User {
 
     private Integer role;
 
+    private Boolean confirmed = false;
+
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
 
@@ -95,6 +97,14 @@ public class User {
 
     public void setRole(Integer role) {
         this.role = role;
+    }
+
+    public Boolean isConfirmed() {
+        return confirmed;
+    }
+
+    public void setConfirmed(Boolean confirmed) {
+        this.confirmed = confirmed;
     }
 
     public Date getCreatedAt() {

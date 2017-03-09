@@ -1,5 +1,6 @@
 package com.github.tfaga.lynx.test;
 
+import com.github.tfaga.lynx.beans.QueryFilter;
 import com.github.tfaga.lynx.beans.QueryParameters;
 import com.github.tfaga.lynx.enums.FilterOperation;
 import com.github.tfaga.lynx.enums.QueryFormatError;
@@ -59,6 +60,24 @@ public class QueryStringBuilderFiltersTest {
     public void testMultipleFilters() {
 
         QueryParameters query = QueryParameters.query("where=username:eq:'test test' lastname:gte:gale").build();
+
+        Assert.assertNotNull(query);
+        Assert.assertNotNull(query.getFilters());
+        Assert.assertEquals(2, query.getFilters().size());
+        Assert.assertEquals("username", query.getFilters().get(0).getField());
+        Assert.assertNotNull(query.getFilters().get(0).getOperation());
+        Assert.assertEquals(FilterOperation.EQ, query.getFilters().get(0).getOperation());
+        Assert.assertEquals("test test", query.getFilters().get(0).getValue());
+        Assert.assertEquals("lastname", query.getFilters().get(1).getField());
+        Assert.assertNotNull(query.getFilters().get(1).getOperation());
+        Assert.assertEquals(FilterOperation.GTE, query.getFilters().get(1).getOperation());
+        Assert.assertEquals("gale", query.getFilters().get(1).getValue());
+    }
+
+    @Test
+    public void testMultipleFiltersWithPlus() {
+
+        QueryParameters query = QueryParameters.query("where=username:eq:'test test'+lastname:gte:gale").build();
 
         Assert.assertNotNull(query);
         Assert.assertNotNull(query.getFilters());
@@ -311,10 +330,22 @@ public class QueryStringBuilderFiltersTest {
     }
 
     @Test
-    public void testUriDecoded() {
+    public void testQueryEncodedNull() {
+
+        QueryParameters query = QueryParameters.queryEncoded(null).build();
+
+        Assert.assertNotNull(query);
+        Assert.assertNotNull(query.getFilters());
+        Assert.assertEquals(0, query.getFilters().size());
+    }
+
+    @Test
+    public void testUriEncoded() {
 
         QueryParameters query = QueryParameters.uriEncoded("api.github" +
                 ".com/tfaga/repos?where=firstname:like:Kar%25%20").build();
+
+        Boolean a = Boolean.parseBoolean("asdadas");
 
         Assert.assertNotNull(query);
         Assert.assertNotNull(query.getFilters());
@@ -323,6 +354,12 @@ public class QueryStringBuilderFiltersTest {
         Assert.assertNotNull(query.getFilters().get(0).getOperation());
         Assert.assertEquals(FilterOperation.LIKE, query.getFilters().get(0).getOperation());
         Assert.assertEquals("Kar%", query.getFilters().get(0).getValue());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testUriEncodedNull() {
+
+        QueryParameters query = QueryParameters.uriEncoded(null).build();
     }
 
     @Test

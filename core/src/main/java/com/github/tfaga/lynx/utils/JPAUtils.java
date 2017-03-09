@@ -380,16 +380,16 @@ public class JPAUtils {
 
             if (c.isEnum())
                 return Enum.valueOf(c, value.toUpperCase());
+
+            if (c.equals(Boolean.class))
+                return Boolean.parseBoolean(value);
+
+            if (c.equals(UUID.class))
+                return UUID.fromString(value);
         } catch (IllegalArgumentException e) {
 
             throw new NoSuchEnumException(e.getMessage(), path.getAlias(), value);
         }
-
-        if (c.equals(Boolean.class))
-            return Boolean.parseBoolean(value);
-
-        if (c.equals(UUID.class))
-            return UUID.fromString(value);
 
         return value;
     }

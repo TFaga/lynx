@@ -3,7 +3,6 @@ package com.github.tfaga.lynx.test;
 import com.github.tfaga.lynx.beans.QueryOrder;
 import com.github.tfaga.lynx.beans.QueryParameters;
 import com.github.tfaga.lynx.enums.OrderDirection;
-import com.github.tfaga.lynx.enums.QueryFormatError;
 import com.github.tfaga.lynx.exceptions.NoSuchEntityFieldException;
 import com.github.tfaga.lynx.test.entities.Project;
 import com.github.tfaga.lynx.test.entities.User;

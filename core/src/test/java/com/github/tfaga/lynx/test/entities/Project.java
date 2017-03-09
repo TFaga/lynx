@@ -2,11 +2,8 @@ package com.github.tfaga.lynx.test.entities;
 
 import com.github.tfaga.lynx.test.entities.enums.ProjectStatus;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
+import java.util.UUID;
 
 /**
  * @author Tilen Faganel
@@ -19,6 +16,9 @@ public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    @Column(name = "public_id")
+    private UUID publicId;
 
     private String name;
 
@@ -35,6 +35,14 @@ public class Project {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public UUID getPublicId() {
+        return publicId;
+    }
+
+    public void setPublicId(UUID publicId) {
+        this.publicId = publicId;
     }
 
     public String getName() {

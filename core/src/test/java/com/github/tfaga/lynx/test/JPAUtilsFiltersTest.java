@@ -593,6 +593,111 @@ public class JPAUtilsFiltersTest {
         Assert.assertEquals(0, projects.size());
     }
 
+    @Test
+    public void testBooleanFilter() {
+
+        QueryFilter qf = new QueryFilter();
+        qf.setField("confirmed");
+        qf.setOperation(FilterOperation.EQ);
+        qf.setValue("true");
+
+        QueryParameters q = new QueryParameters();
+        q.getFilters().add(qf);
+
+        List<User> users = JPAUtils.queryEntities(em, User.class, q);
+
+        Assert.assertNotNull(users);
+        Assert.assertEquals(55, users.size());
+    }
+
+    @Test
+    public void testBooleanInFilter() {
+
+        QueryFilter qf = new QueryFilter();
+        qf.setField("confirmed");
+        qf.setOperation(FilterOperation.IN);
+        qf.getValues().add("False");
+
+        QueryParameters q = new QueryParameters();
+        q.getFilters().add(qf);
+
+        List<User> users = JPAUtils.queryEntities(em, User.class, q);
+
+        Assert.assertNotNull(users);
+        Assert.assertEquals(45, users.size());
+    }
+
+    @Test
+    public void testBooleanNinFilter() {
+
+        QueryFilter qf = new QueryFilter();
+        qf.setField("confirmed");
+        qf.setOperation(FilterOperation.NIN);
+        qf.getValues().add("FALSE");
+        qf.getValues().add("trUe");
+
+        QueryParameters q = new QueryParameters();
+        q.getFilters().add(qf);
+
+        List<User> users = JPAUtils.queryEntities(em, User.class, q);
+
+        Assert.assertNotNull(users);
+        Assert.assertEquals(0, users.size());
+    }
+
+    @Test
+    public void testUuidFilter() {
+
+        QueryFilter qf = new QueryFilter();
+        qf.setField("publicId");
+        qf.setOperation(FilterOperation.EQ);
+        qf.setValue("b3781a0e-fb85-45d1-bd5f-d38802a546d2");
+
+        QueryParameters q = new QueryParameters();
+        q.getFilters().add(qf);
+
+        List<Project> projects = JPAUtils.queryEntities(em, Project.class, q);
+
+        Assert.assertNotNull(projects);
+        Assert.assertEquals(0, projects.size());
+    }
+
+    @Test
+    public void testUuidInFilter() {
+
+        QueryFilter qf = new QueryFilter();
+        qf.setField("publicId");
+        qf.setOperation(FilterOperation.IN);
+        qf.getValues().add("b3781a0e-fb85-45d1-bd5f-d38802a546d2");
+        qf.getValues().add("6a749969-9990-4ef0-856a-7e2533b6dc9e");
+
+        QueryParameters q = new QueryParameters();
+        q.getFilters().add(qf);
+
+        List<Project> projects = JPAUtils.queryEntities(em, Project.class, q);
+
+        Assert.assertNotNull(projects);
+        Assert.assertEquals(0, projects.size());
+    }
+
+    @Test
+    public void testUuidNinFilter() {
+
+        QueryFilter qf = new QueryFilter();
+        qf.setField("publicId");
+        qf.setOperation(FilterOperation.NIN);
+        qf.getValues().add("b3781a0e-fb85-45d1-bd5f-d38802a546d2");
+        qf.getValues().add("6a749969-9990-4ef0-856a-7e2533b6dc9e");
+
+        QueryParameters q = new QueryParameters();
+        q.getFilters().add(qf);
+
+        List<Project> projects = JPAUtils.queryEntities(em, Project.class, q);
+
+        Assert.assertNotNull(projects);
+        Assert.assertEquals(0, projects.size());
+    }
+
     @Test(expected = NoSuchEnumException.class)
     public void testEnumNonexistantFilter() {
 
