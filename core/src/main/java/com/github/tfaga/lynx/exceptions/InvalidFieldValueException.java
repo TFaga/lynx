@@ -5,12 +5,12 @@ package com.github.tfaga.lynx.exceptions;
  * @version 1.0.0
  * @since 1.0.0
  */
-public class NoSuchEnumException extends RuntimeException {
+public class InvalidFieldValueException extends RuntimeException {
 
     private String field;
     private String value;
 
-    public NoSuchEnumException(String msg, String field, String value) {
+    public InvalidFieldValueException(String msg, String field, String value) {
 
         super(msg);
 

@@ -4,7 +4,7 @@ import com.github.tfaga.lynx.beans.QueryFilter;
 import com.github.tfaga.lynx.beans.QueryParameters;
 import com.github.tfaga.lynx.enums.OrderDirection;
 import com.github.tfaga.lynx.exceptions.NoSuchEntityFieldException;
-import com.github.tfaga.lynx.exceptions.NoSuchEnumException;
+import com.github.tfaga.lynx.exceptions.InvalidFieldValueException;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -388,7 +388,7 @@ public class JPAUtils {
                 return UUID.fromString(value);
         } catch (IllegalArgumentException e) {
 
-            throw new NoSuchEnumException(e.getMessage(), path.getAlias(), value);
+            throw new InvalidFieldValueException(e.getMessage(), path.getAlias(), value);
         }
 
         return value;

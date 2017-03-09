@@ -4,7 +4,7 @@ import com.github.tfaga.lynx.beans.QueryFilter;
 import com.github.tfaga.lynx.beans.QueryParameters;
 import com.github.tfaga.lynx.enums.FilterOperation;
 import com.github.tfaga.lynx.exceptions.NoSuchEntityFieldException;
-import com.github.tfaga.lynx.exceptions.NoSuchEnumException;
+import com.github.tfaga.lynx.exceptions.InvalidFieldValueException;
 import com.github.tfaga.lynx.test.entities.Project;
 import com.github.tfaga.lynx.test.entities.User;
 import com.github.tfaga.lynx.test.rules.JpaRule;
@@ -698,7 +698,7 @@ public class JPAUtilsFiltersTest {
         Assert.assertEquals(0, projects.size());
     }
 
-    @Test(expected = NoSuchEnumException.class)
+    @Test(expected = InvalidFieldValueException.class)
     public void testEnumNonexistantFilter() {
 
         QueryFilter qf = new QueryFilter();
