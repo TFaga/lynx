@@ -14,4 +14,5 @@ install: mvn install -Dmaven.javadoc.skip=true -Dsource.skip=true -DskipTests=tr
   -V
 script: mvn test
 after_success:
+- ls -la
 - mvn deploy -DskipTests=true --settings ./settings.xml
