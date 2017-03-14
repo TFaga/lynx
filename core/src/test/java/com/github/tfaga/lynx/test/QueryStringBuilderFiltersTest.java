@@ -444,4 +444,20 @@ public class QueryStringBuilderFiltersTest {
         Assert.assertEquals(FilterOperation.ISNULL, query.getFilters().get(0).getOperation());
         Assert.assertNull(query.getFilters().get(0).getValue());
     }
+
+    @Test
+    public void testAndSignInFilter() {
+
+        QueryParameters query = QueryParameters.query("limit=30&where=title:like:'Tools & Furniture'").build();
+
+        Assert.assertNotNull(query);
+        Assert.assertNotNull(query.getFilters());
+        Assert.assertEquals(1, query.getFilters().size());
+        Assert.assertEquals("title", query.getFilters().get(0).getField());
+        Assert.assertNotNull(query.getFilters().get(0).getOperation());
+        Assert.assertEquals(FilterOperation.LIKE, query.getFilters().get(0).getOperation());
+        Assert.assertEquals("Tools & Furniture", query.getFilters().get(0).getValue());
+        Assert.assertNotNull(query.getLimit());
+        Assert.assertEquals(30, query.getLimit().longValue());
+    }
 }

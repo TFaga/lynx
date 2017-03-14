@@ -179,7 +179,7 @@ public class QueryStringBuilder {
 
         if (query == null || query.isEmpty()) return params;
 
-        for (String pair : query.split("&")) {
+        for (String pair : query.split("&+(?=([^']*'[^']*')*[^']*$)")) {
 
             int idxOfPair = pair.indexOf("=");
 
