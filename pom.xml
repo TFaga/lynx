@@ -68,7 +68,7 @@
             <dependency>
                 <groupId>com.github.tfaga.lynx</groupId>
                 <artifactId>lynx-core</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
