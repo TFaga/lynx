@@ -402,9 +402,17 @@ public class JPAUtils {
 
         Path<G> path = r.get(fields[0]);
 
+        if (path.getJavaType().equals(List.class)) {
+            path = r.join(fields[0]);
+        }
+
         for (int i = 1; i < fields.length; i++) {
 
             path = path.get(fields[i]);
+
+            if (path.getJavaType().equals(List.class)) {
+                path = r.join(fields[i]);
+            }
         }
 
         return path;
