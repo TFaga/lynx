@@ -379,7 +379,7 @@ public class JPAUtils {
         try {
 
             if (c.isEnum())
-                return Enum.valueOf(c, value.toUpperCase());
+                return Enum.valueOf(c, value);
 
             if (c.equals(Boolean.class))
                 return Boolean.parseBoolean(value);
