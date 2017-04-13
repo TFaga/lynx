@@ -131,7 +131,7 @@ public class JPAUtilsFiltersTest {
         List<User> users = JPAUtils.queryEntities(em, User.class, q);
 
         Assert.assertNotNull(users);
-        Assert.assertEquals(0, users.size());
+        Assert.assertEquals(100, users.size());
     }
 
     @Test
@@ -167,7 +167,7 @@ public class JPAUtilsFiltersTest {
         List<User> users = JPAUtils.queryEntities(em, User.class, q);
 
         Assert.assertNotNull(users);
-        Assert.assertEquals(0, users.size());
+        Assert.assertEquals(100, users.size());
     }
 
     @Test
@@ -411,6 +411,23 @@ public class JPAUtilsFiltersTest {
     }
 
     @Test
+    public void testDateEq() {
+
+        QueryFilter qf = new QueryFilter();
+        qf.setField("createdAt");
+        qf.setOperation(FilterOperation.EQ);
+        qf.setValue("2014-09-11T12:35:07Z");
+
+        QueryParameters q = new QueryParameters();
+        q.getFilters().add(qf);
+
+        List<User> users = JPAUtils.queryEntities(em, User.class, q);
+
+        Assert.assertNotNull(users);
+        Assert.assertEquals(1, users.size());
+    }
+
+    @Test
     public void testInic() {
 
         QueryFilter qf = new QueryFilter();
@@ -480,7 +497,7 @@ public class JPAUtilsFiltersTest {
         Assert.assertEquals(8, projects.size());
     }
 
-    @Test(expected = PersistenceException.class)
+    @Test
     public void testManyToOneRelationOnlyField() {
 
         QueryFilter qf = new QueryFilter();
@@ -491,8 +508,10 @@ public class JPAUtilsFiltersTest {
         QueryParameters q = new QueryParameters();
         q.getFilters().add(qf);
 
-        JPAUtils.queryEntities(em, Project.class, q);
-        Assert.fail("No exception was thrown");
+        List<Project> projects  = JPAUtils.queryEntities(em, Project.class, q);
+
+        Assert.assertNotNull(projects);
+        Assert.assertEquals(100, projects.size());
     }
 
     @Test
@@ -526,7 +545,7 @@ public class JPAUtilsFiltersTest {
         Assert.assertEquals(89, users.size());
     }
 
-    @Test(expected = PersistenceException.class)
+    @Test
     public void testOneToManyRelationOnlyFieldInteger() {
 
         QueryFilter qf = new QueryFilter();
@@ -537,8 +556,10 @@ public class JPAUtilsFiltersTest {
         QueryParameters q = new QueryParameters();
         q.getFilters().add(qf);
 
-        JPAUtils.queryEntities(em, User.class, q);
-        Assert.fail("No exception was thrown");
+        List<User> users = JPAUtils.queryEntities(em, User.class, q);
+
+        Assert.assertNotNull(users);
+        Assert.assertEquals(100, users.size());
     }
 
     @Test
