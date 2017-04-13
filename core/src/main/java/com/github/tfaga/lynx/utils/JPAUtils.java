@@ -9,6 +9,8 @@ import com.github.tfaga.lynx.exceptions.InvalidFieldValueException;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -24,9 +26,7 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
-import javax.persistence.metamodel.EntityType;
-import javax.persistence.metamodel.Metamodel;
-import javax.persistence.metamodel.SingularAttribute;
+import javax.persistence.metamodel.*;
 
 /**
  * @author Tilen Faganel
@@ -180,98 +180,138 @@ public class JPAUtils {
             Predicate np = null;
 
             try {
+                Path entityField = getCriteraField(f.getField(), r);
 
-                Path<String> stringField = getCriteraField(f.getField(), r);
-                Path<Date> dateField = getCriteraField(f.getField(), r);
+                if (!((Attribute) entityField.getModel()).getPersistentAttributeType()
+                        .equals(Attribute.PersistentAttributeType.BASIC)) {
+                    continue;
+                }
+
+                @SuppressWarnings("unchecked")
+                Path<String> stringField = (Path<String>) entityField;
+                @SuppressWarnings("unchecked")
+                Path<Date> dateField = (Path<Date>) entityField;
+                @SuppressWarnings("unchecked")
+                Path<Comparable> compField = (Path<Comparable>) entityField;
 
                 switch (f.getOperation()) {
 
                     case EQ:
-                        if (f.getDateValue() != null) {
-                            np = cb.equal(stringField, f.getDateValue());
-                        } else {
-                            np = cb.equal(stringField, getValueForPath(stringField, f.getValue()));
+                        if (f.getDateValue() != null && entityField.getJavaType().equals(Date.class)) {
+                            np = cb.equal(entityField, f.getDateValue());
+                        } else if (f.getValue() != null) {
+                            np = cb.equal(entityField, getValueForPath(entityField, f.getValue()));
                         }
                         break;
                     case EQIC:
-                        if (f.getDateValue() != null) {
-                            np = cb.equal(stringField, f.getDateValue());
-                        } else if (f.getValue() != null) {
+                        if (entityField.getJavaType().equals(String.class) && f.getValue() != null) {
                             np = cb.equal(cb.lower(stringField), f.getValue().toLowerCase());
                         }
                         break;
                     case NEQ:
-                        if (f.getDateValue() != null) {
-                            np = cb.notEqual(stringField, f.getDateValue());
-                        } else{
-                            np = cb.notEqual(stringField, getValueForPath(stringField, f.getValue()));
+                        if (f.getDateValue() != null && entityField.getJavaType().equals(Date.class)) {
+                            np = cb.notEqual(entityField, f.getDateValue());
+                        } else if (f.getValue() != null) {
+                            np = cb.notEqual(entityField, getValueForPath(entityField, f.getValue()));
                         }
                         break;
                     case NEQIC:
-                        if (f.getDateValue() != null) {
-                            np = cb.notEqual(stringField, f.getDateValue());
-                        } else if (f.getValue() != null) {
+                        if (entityField.getJavaType().equals(String.class) && f.getValue() != null) {
                             np = cb.notEqual(cb.lower(stringField), f.getValue().toLowerCase());
                         }
                         break;
                     case LIKE:
-                        np = cb.like(stringField, f.getValue());
+                        if (entityField.getJavaType().equals(String.class) && f.getValue() != null) {
+                            np = cb.like(stringField, f.getValue());
+                        }
                         break;
                     case LIKEIC:
-                        np = cb.like(cb.lower(stringField), f.getValue().toLowerCase());
+                        if (entityField.getJavaType().equals(String.class) && f.getValue() != null) {
+                            np = cb.like(cb.lower(stringField), f.getValue().toLowerCase());
+                        }
                         break;
                     case GT:
-                        if (f.getDateValue() != null) {
-                            np = cb.greaterThan(dateField, f.getDateValue());
-                        } else {
-                            np = cb.greaterThan(stringField, f.getValue());
+                        if (Date.class.isAssignableFrom(entityField.getJavaType()) ||
+                                Number.class.isAssignableFrom(entityField.getJavaType()) ||
+                                String.class.isAssignableFrom(entityField.getJavaType())) {
+
+                            if (f.getDateValue() != null && entityField.getJavaType().equals(Date.class)) {
+                                np = cb.greaterThan(dateField, f.getDateValue());
+                            } else if (f.getValue() != null) {
+                                np = cb.greaterThan(compField, (Comparable) getValueForPath(stringField, f.getValue()));
+                            }
                         }
                         break;
                     case GTE:
-                        if (f.getDateValue() != null) {
-                            np = cb.greaterThanOrEqualTo(dateField, f.getDateValue());
-                        } else {
-                            np = cb.greaterThanOrEqualTo(stringField, f.getValue());
+                        if (Date.class.isAssignableFrom(entityField.getJavaType()) ||
+                                Number.class.isAssignableFrom(entityField.getJavaType()) ||
+                                String.class.isAssignableFrom(entityField.getJavaType())) {
+
+                            if (f.getDateValue() != null && entityField.getJavaType().equals(Date.class)) {
+                                np = cb.greaterThanOrEqualTo(dateField, f.getDateValue());
+                            } else if (f.getValue() != null) {
+                                np = cb.greaterThanOrEqualTo(compField, (Comparable) getValueForPath(stringField, f.getValue()));
+                            }
                         }
                         break;
                     case LT:
-                        if (f.getDateValue() != null) {
-                            np = cb.lessThan(dateField, f.getDateValue());
-                        } else {
-                            np = cb.lessThan(stringField, f.getValue());
+                        if (Date.class.isAssignableFrom(entityField.getJavaType()) ||
+                                Number.class.isAssignableFrom(entityField.getJavaType()) ||
+                                String.class.isAssignableFrom(entityField.getJavaType())) {
+
+                            if (f.getDateValue() != null && entityField.getJavaType().equals(Date.class)) {
+                                np = cb.lessThan(dateField, f.getDateValue());
+                            } else if (f.getValue() != null) {
+                                np = cb.lessThan(compField, (Comparable) getValueForPath(stringField, f.getValue()));
+                            }
                         }
                         break;
                     case LTE:
-                        if (f.getDateValue() != null) {
-                            np = cb.lessThanOrEqualTo(dateField, f.getDateValue());
-                        } else {
-                            np = cb.lessThanOrEqualTo(stringField, f.getValue());
+                        if (Date.class.isAssignableFrom(entityField.getJavaType()) ||
+                                Number.class.isAssignableFrom(entityField.getJavaType()) ||
+                                String.class.isAssignableFrom(entityField.getJavaType())) {
+
+                            if (f.getDateValue() != null && entityField.getJavaType().equals(Date.class)) {
+                                np = cb.lessThanOrEqualTo(dateField, f.getDateValue());
+                            } else if (f.getValue() != null) {
+                                np = cb.lessThanOrEqualTo(compField, (Comparable) getValueForPath(stringField, f.getValue()));
+                            }
                         }
                         break;
                     case IN:
                         np = stringField.in(f.getValues().stream()
-                                .map(s -> getValueForPath(stringField, s)).collect(Collectors
+                                .filter(Objects::nonNull)
+                                .map(s -> getValueForPath(entityField, s)).collect(Collectors
                                         .toList()));
                         break;
                     case INIC:
-                        np = cb.lower(stringField)
-                                .in(f.getValues().stream().map(String::toLowerCase)
-                                        .collect(Collectors.toList()));
+                        if (entityField.getJavaType().equals(String.class)) {
+                            np = cb.lower(stringField)
+                                    .in(f.getValues().stream()
+                                            .filter(Objects::nonNull)
+                                            .map(String::toLowerCase)
+                                            .collect(Collectors.toList()));
+                        }
                         break;
                     case NIN:
                         np = cb.not(stringField.in(f.getValues().stream()
-                                .map(s -> getValueForPath(stringField, s)).collect(Collectors.toList())));
+                                .filter(Objects::nonNull)
+                                .map(s -> getValueForPath(entityField, s)).collect(Collectors.toList())));
                         break;
                     case NINIC:
-                        np = cb.not(cb.lower(stringField)
-                                .in(f.getValues().stream().map(String::toLowerCase)
-                                        .collect(Collectors.toList())));
+                        if (entityField.getJavaType().equals(String.class)) {
+                            np = cb.not(cb.lower(stringField)
+                                    .in(f.getValues().stream()
+                                            .filter(Objects::nonNull)
+                                            .map(String::toLowerCase)
+                                            .collect(Collectors.toList())));
+                        }
                         break;
                     case ISNULL:
-                        np = cb.isNull(stringField);
+                        np = cb.isNull(entityField);
                         break;
                     case ISNOTNULL:
-                        np = cb.isNotNull(stringField);
+                        np = cb.isNotNull(entityField);
                         break;
                 }
             } catch (IllegalArgumentException e) {
@@ -279,7 +319,9 @@ public class JPAUtils {
                 throw new NoSuchEntityFieldException(e.getMessage(), f.getField(), r.getJavaType().getSimpleName());
             }
 
-            predicate = cb.and(predicate, np);
+            if (np != null) {
+                predicate = cb.and(predicate, np);
+            }
         }
 
         return predicate;
@@ -388,15 +430,18 @@ public class JPAUtils {
 
         try {
 
-            if (c.isEnum())
-                return Enum.valueOf(c, value);
+            if (c.equals(Date.class))
+                return Date.from(ZonedDateTime.parse(value).toInstant());
 
             if (c.equals(Boolean.class))
                 return Boolean.parseBoolean(value);
 
+            if (c.isEnum())
+                return Enum.valueOf(c, value);
+
             if (c.equals(UUID.class))
                 return UUID.fromString(value);
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | DateTimeParseException e) {
 
             throw new InvalidFieldValueException(e.getMessage(), path.getAlias(), value);
         }

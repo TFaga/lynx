@@ -7,31 +7,43 @@ import com.github.tfaga.lynx.exceptions.NoSuchEntityFieldException;
 import com.github.tfaga.lynx.exceptions.InvalidFieldValueException;
 import com.github.tfaga.lynx.test.entities.Project;
 import com.github.tfaga.lynx.test.entities.User;
-import com.github.tfaga.lynx.test.rules.JpaRule;
+import com.github.tfaga.lynx.test.utils.JpaUtil;
 import com.github.tfaga.lynx.utils.JPAUtils;
 
 import org.junit.Assert;
-import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import java.time.ZonedDateTime;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceException;
 
 /**
  * @author Tilen Faganel
  * @version 1.0.0
  * @since 1.0.0
  */
+@RunWith(Parameterized.class)
 public class JPAUtilsFiltersTest {
 
-    @ClassRule
-    public static JpaRule server = new JpaRule();
+    @Parameterized.Parameters
+    public static Collection<EntityManager> data() {
 
-    private EntityManager em = server.getEntityManager();
+        JpaUtil jpaUtil = JpaUtil.getInstance();
+
+        return Arrays.asList(
+                jpaUtil.getEclipselinkEntityManager(),
+                jpaUtil.getHibernateEntityManager()
+        );
+    }
+
+    @Parameterized.Parameter
+    public EntityManager em;
 
     @Test
     public void testSingleFilter() {
@@ -131,7 +143,7 @@ public class JPAUtilsFiltersTest {
         List<User> users = JPAUtils.queryEntities(em, User.class, q);
 
         Assert.assertNotNull(users);
-        Assert.assertEquals(0, users.size());
+        Assert.assertEquals(100, users.size());
     }
 
     @Test
@@ -167,7 +179,7 @@ public class JPAUtilsFiltersTest {
         List<User> users = JPAUtils.queryEntities(em, User.class, q);
 
         Assert.assertNotNull(users);
-        Assert.assertEquals(0, users.size());
+        Assert.assertEquals(100, users.size());
     }
 
     @Test
@@ -411,6 +423,23 @@ public class JPAUtilsFiltersTest {
     }
 
     @Test
+    public void testDateEq() {
+
+        QueryFilter qf = new QueryFilter();
+        qf.setField("createdAt");
+        qf.setOperation(FilterOperation.EQ);
+        qf.setValue("2014-09-11T12:35:07Z");
+
+        QueryParameters q = new QueryParameters();
+        q.getFilters().add(qf);
+
+        List<User> users = JPAUtils.queryEntities(em, User.class, q);
+
+        Assert.assertNotNull(users);
+        Assert.assertEquals(1, users.size());
+    }
+
+    @Test
     public void testInic() {
 
         QueryFilter qf = new QueryFilter();
@@ -480,7 +509,7 @@ public class JPAUtilsFiltersTest {
         Assert.assertEquals(8, projects.size());
     }
 
-    @Test(expected = PersistenceException.class)
+    @Test
     public void testManyToOneRelationOnlyField() {
 
         QueryFilter qf = new QueryFilter();
@@ -491,8 +520,10 @@ public class JPAUtilsFiltersTest {
         QueryParameters q = new QueryParameters();
         q.getFilters().add(qf);
 
-        JPAUtils.queryEntities(em, Project.class, q);
-        Assert.fail("No exception was thrown");
+        List<Project> projects  = JPAUtils.queryEntities(em, Project.class, q);
+
+        Assert.assertNotNull(projects);
+        Assert.assertEquals(100, projects.size());
     }
 
     @Test
@@ -526,7 +557,7 @@ public class JPAUtilsFiltersTest {
         Assert.assertEquals(89, users.size());
     }
 
-    @Test(expected = PersistenceException.class)
+    @Test
     public void testOneToManyRelationOnlyFieldInteger() {
 
         QueryFilter qf = new QueryFilter();
@@ -537,8 +568,10 @@ public class JPAUtilsFiltersTest {
         QueryParameters q = new QueryParameters();
         q.getFilters().add(qf);
 
-        JPAUtils.queryEntities(em, User.class, q);
-        Assert.fail("No exception was thrown");
+        List<User> users = JPAUtils.queryEntities(em, User.class, q);
+
+        Assert.assertNotNull(users);
+        Assert.assertEquals(100, users.size());
     }
 
     @Test

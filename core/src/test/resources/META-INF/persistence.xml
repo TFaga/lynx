@@ -5,23 +5,52 @@
              xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence
              http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
              version="2.1">
-    <persistence-unit name="lynx" transaction-type="RESOURCE_LOCAL">
+    <persistence-unit name="lynx-eclipselink" transaction-type="RESOURCE_LOCAL">
+
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
 
         <class>com.github.tfaga.lynx.test.entities.User</class>
         <class>com.github.tfaga.lynx.test.entities.Project</class>
 
         <properties>
-            <property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />
+            <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/>
             <property name="javax.persistence.jdbc.url"
-                      value="jdbc:h2:mem:lynx;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE" />
-            <property name="javax.persistence.jdbc.user" value="sa" />
-            <property name="javax.persistence.jdbc.password" value="sa" />
+                      value="jdbc:h2:mem:lynx-el;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE"/>
+            <property name="javax.persistence.jdbc.user" value="sa"/>
+            <property name="javax.persistence.jdbc.password" value="sa"/>
 
             <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
             <property name="javax.persistence.schema-generation.create-source" value="metadata"/>
             <property name="javax.persistence.schema-generation.drop-source" value="metadata"/>
 
             <property name="javax.persistence.sql-load-script-source" value="db_init.sql"/>
+
+            <property name="eclipselink.logging.level.sql" value="FINE"/>
+        </properties>
+
+    </persistence-unit>
+
+    <persistence-unit name="lynx-hibernate" transaction-type="RESOURCE_LOCAL">
+
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+
+        <class>com.github.tfaga.lynx.test.entities.User</class>
+        <class>com.github.tfaga.lynx.test.entities.Project</class>
+
+        <properties>
+            <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/>
+            <property name="javax.persistence.jdbc.url"
+                      value="jdbc:h2:mem:lynx-hib;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE"/>
+            <property name="javax.persistence.jdbc.user" value="sa"/>
+            <property name="javax.persistence.jdbc.password" value="sa"/>
+
+            <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
+            <property name="javax.persistence.schema-generation.create-source" value="metadata"/>
+            <property name="javax.persistence.schema-generation.drop-source" value="metadata"/>
+
+            <property name="javax.persistence.sql-load-script-source" value="db_init.sql"/>
+
+            <property name="hibernate.show_sql" value="true"/>
         </properties>
 
     </persistence-unit>

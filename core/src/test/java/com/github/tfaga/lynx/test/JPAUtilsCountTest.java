@@ -4,26 +4,39 @@ import com.github.tfaga.lynx.beans.QueryFilter;
 import com.github.tfaga.lynx.beans.QueryParameters;
 import com.github.tfaga.lynx.enums.FilterOperation;
 import com.github.tfaga.lynx.test.entities.User;
-import com.github.tfaga.lynx.test.rules.JpaRule;
+import com.github.tfaga.lynx.test.utils.JpaUtil;
 import com.github.tfaga.lynx.utils.JPAUtils;
 
 import org.junit.Assert;
-import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import javax.persistence.EntityManager;
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * @author Tilen Faganel
  * @version 1.0.0
  * @since 1.0.0
  */
+@RunWith(Parameterized.class)
 public class JPAUtilsCountTest {
 
-    @ClassRule
-    public static JpaRule server = new JpaRule();
+    @Parameterized.Parameters
+    public static Collection<EntityManager> data() {
 
-    private EntityManager em = server.getEntityManager();
+        JpaUtil jpaUtil = JpaUtil.getInstance();
+
+        return Arrays.asList(
+                jpaUtil.getEclipselinkEntityManager(),
+                jpaUtil.getHibernateEntityManager()
+        );
+    }
+
+    @Parameterized.Parameter
+    public EntityManager em;
 
     @Test
     public void testEmptyQueryCount() {

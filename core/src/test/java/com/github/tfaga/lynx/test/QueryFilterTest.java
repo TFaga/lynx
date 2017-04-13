@@ -5,8 +5,6 @@ import com.github.tfaga.lynx.enums.FilterOperation;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;

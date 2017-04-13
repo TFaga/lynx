@@ -6,13 +6,16 @@ import com.github.tfaga.lynx.enums.OrderDirection;
 import com.github.tfaga.lynx.exceptions.NoSuchEntityFieldException;
 import com.github.tfaga.lynx.test.entities.Project;
 import com.github.tfaga.lynx.test.entities.User;
-import com.github.tfaga.lynx.test.rules.JpaRule;
+import com.github.tfaga.lynx.test.utils.JpaUtil;
 import com.github.tfaga.lynx.utils.JPAUtils;
 
 import org.junit.Assert;
-import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -22,12 +25,22 @@ import javax.persistence.EntityManager;
  * @version 1.0.0
  * @since 1.0.0
  */
+@RunWith(Parameterized.class)
 public class JPAUtilsOrderTest {
 
-    @ClassRule
-    public static JpaRule server = new JpaRule();
+    @Parameterized.Parameters
+    public static Collection<EntityManager> data() {
 
-    private EntityManager em = server.getEntityManager();
+        JpaUtil jpaUtil = JpaUtil.getInstance();
+
+        return Arrays.asList(
+                jpaUtil.getEclipselinkEntityManager(),
+                jpaUtil.getHibernateEntityManager()
+        );
+    }
+
+    @Parameterized.Parameter
+    public EntityManager em;
 
     @Test
     public void testSingleOrder() {
