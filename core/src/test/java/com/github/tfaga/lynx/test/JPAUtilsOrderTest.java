@@ -245,9 +245,9 @@ public class JPAUtilsOrderTest {
         Assert.assertNotNull(users);
         Assert.assertEquals(100, users.size());
         Assert.assertNotNull(users.get(0).getLastname());
-        Assert.assertEquals("Holmes", users.get(0).getLastname());
+        Assert.assertEquals("Rose", users.get(0).getLastname());
         Assert.assertNotNull(users.get(99).getLastname());
-        Assert.assertEquals("Turner", users.get(99).getLastname());
+        Assert.assertEquals("Hall", users.get(99).getLastname());
     }
 
     @Test

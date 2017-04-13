@@ -1,6 +1,7 @@
 package com.github.tfaga.lynx.utils;
 
 import com.github.tfaga.lynx.beans.QueryFilter;
+import com.github.tfaga.lynx.beans.QueryOrder;
 import com.github.tfaga.lynx.beans.QueryParameters;
 import com.github.tfaga.lynx.enums.OrderDirection;
 import com.github.tfaga.lynx.exceptions.NoSuchEntityFieldException;
@@ -73,10 +74,10 @@ public class JPAUtils {
             ct.where(whereQueryTuple);
         }
 
-        if (!q.getOrder().isEmpty()) {
+        if (!q.getOrder().isEmpty()) {           
 
-            List<Order> orders = createOrderQuery(cb, r, q);
-            List<Order> ordersTuple = createOrderQuery(cb, rt, q);
+            List<Order> orders = createOrderQuery(cb, r, q, getEntityIdField(em, entity));
+            List<Order> ordersTuple = createOrderQuery(cb, rt, q, getEntityIdField(em, entity));
 
             cq.orderBy(orders);
             ct.orderBy(ordersTuple);
@@ -134,8 +135,12 @@ public class JPAUtils {
 
         return em.createQuery(cq).getSingleResult();
     }
-
+    
     public static List<Order> createOrderQuery(CriteriaBuilder cb, Root<?> r, QueryParameters q) {
+    	return createOrderQuery(cb, r, q, null);
+    }
+
+    public static List<Order> createOrderQuery(CriteriaBuilder cb, Root<?> r, QueryParameters q, String id) {
 
         List<Order> orders = new ArrayList<>();
 
@@ -157,6 +162,11 @@ public class JPAUtils {
                 throw new NoSuchEntityFieldException(e.getMessage(), qo.getField(), r.getJavaType().getSimpleName());
             }
         });
+        
+        //Add sort by id for correct pagination when field has same values
+        if (orders.size()>0 && id!=null) {
+        	orders.add(cb.asc(getCriteraField(id, r)));
+        }
 
         return orders;
     }
