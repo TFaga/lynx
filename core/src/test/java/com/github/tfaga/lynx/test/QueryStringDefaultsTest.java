@@ -1,7 +1,6 @@
 package com.github.tfaga.lynx.test;
 
 import com.github.tfaga.lynx.beans.QueryParameters;
-import com.github.tfaga.lynx.utils.QueryStringBuilder;
 import com.github.tfaga.lynx.utils.QueryStringDefaults;
 import org.junit.Assert;
 import org.junit.Test;

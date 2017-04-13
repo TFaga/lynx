@@ -1,6 +1,5 @@
 package com.github.tfaga.lynx.test;
 
-import com.github.tfaga.lynx.beans.QueryFilter;
 import com.github.tfaga.lynx.beans.QueryParameters;
 import com.github.tfaga.lynx.enums.FilterOperation;
 import com.github.tfaga.lynx.enums.QueryFormatError;
