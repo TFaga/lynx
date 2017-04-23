@@ -555,6 +555,36 @@ public class JPAUtilsFiltersTest {
 
         Assert.assertNotNull(users);
         Assert.assertEquals(89, users.size());
+
+    @Test
+    public void testOneToManyRelationMultiple() {
+
+        QueryFilter qf = new QueryFilter();
+        qf.setField("projects.name");
+        qf.setOperation(FilterOperation.EQ);
+        qf.setValue("Orange");
+
+        QueryParameters q = new QueryParameters();
+        q.getFilters().add(qf);
+
+        List<User> users = JPAUtils.queryEntities(em, User.class, q);
+
+        Assert.assertNotNull(users);
+        Assert.assertEquals(3, users.size());
+
+        qf = new QueryFilter();
+        qf.setField("projects.name");
+        qf.setOperation(FilterOperation.IN);
+        qf.getValues().add("Maroon");
+        qf.getValues().add("Orange");
+
+        q = new QueryParameters();
+        q.getFilters().add(qf);
+
+        users = JPAUtils.queryEntities(em, User.class, q);
+
+        Assert.assertNotNull(users);
+        Assert.assertEquals(9, users.size());
     }
 
     @Test
