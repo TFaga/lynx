@@ -49,12 +49,6 @@ public class JPAUtilsPagingTest {
         Assert.assertEquals(100, users.size());
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testNullQueryWrongMethod() {
-
-        JPAUtils.queryEntities(em, User.class, null);
-    }
-
     @Test
     public void testNullQuery() {
 

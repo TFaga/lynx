@@ -8,6 +8,7 @@ import com.github.tfaga.lynx.enums.OrderDirection;
 import com.github.tfaga.lynx.exceptions.NoSuchEntityFieldException;
 import com.github.tfaga.lynx.exceptions.InvalidFieldValueException;
 import com.github.tfaga.lynx.exceptions.InvalidEntityFieldException;
+import com.github.tfaga.lynx.interfaces.CriteriaFilter;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -38,13 +39,20 @@ public class JPAUtils {
         return queryEntities(em, entity, new QueryParameters());
     }
 
-    public static <T> Long queryEntitiesCount(EntityManager em, Class<T> entity) {
+    public static <T> List<T> queryEntities(EntityManager em, Class<T> entity, QueryParameters q) {
 
-        return queryEntitiesCount(em, entity, new QueryParameters());
+        return queryEntities(em, entity, q, null);
+    }
+
+    public static <T> List<T> queryEntities(EntityManager em, Class<T> entity, CriteriaFilter<T> customFilter) {
+        return queryEntities(em, entity, new QueryParameters(), customFilter);
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> List<T> queryEntities(EntityManager em, Class<T> entity, QueryParameters q) {
+    public static <T> List<T> queryEntities(EntityManager em, Class<T> entity, QueryParameters q, CriteriaFilter<T> customFilter) {
+
+        if (em == null || entity == null)
+            throw new IllegalArgumentException("The entity manager and the entity cannot be null.");
 
         if (q == null)
             throw new IllegalArgumentException("Query parameters can't be null. " +
@@ -69,15 +77,24 @@ public class JPAUtils {
 
         Root<T> r = cq.from(entity);
 
+        Predicate wherePredicate = null;
+
         if (!q.getFilters().isEmpty()) {
 
             CriteriaWhereQuery criteriaWhereQuery = createWhereQueryInternal(cb, r, q);
 
             requiresDistinct = criteriaWhereQuery.containsToMany();
+            wherePredicate = criteriaWhereQuery.getPredicate();
+        }
 
-            Predicate whereQuery = criteriaWhereQuery.getPredicate();
+        if (customFilter != null) {
 
-            cq.where(whereQuery);
+            wherePredicate = customFilter.createPredicate(
+                    wherePredicate == null ? cb.conjunction() : wherePredicate, cb, r);
+        }
+
+        if (wherePredicate != null) {
+            cq.where(wherePredicate);
         }
 
         if (!q.getOrder().isEmpty()) {
@@ -116,8 +133,25 @@ public class JPAUtils {
         }
     }
 
-    public static <T> Long queryEntitiesCount(EntityManager em, Class<T> entity, QueryParameters
-            q) {
+    public static <T> Long queryEntitiesCount(EntityManager em, Class<T> entity) {
+
+        return queryEntitiesCount(em, entity, new QueryParameters());
+    }
+
+    public static <T> Long queryEntitiesCount(EntityManager em, Class<T> entity, QueryParameters q) {
+
+        return queryEntitiesCount(em, entity, q, null);
+    }
+
+    public static <T> Long queryEntitiesCount(EntityManager em, Class<T> entity, CriteriaFilter<T> customFilter) {
+
+        return queryEntitiesCount(em, entity, new QueryParameters(), customFilter);
+    }
+
+    public static <T> Long queryEntitiesCount(EntityManager em, Class<T> entity, QueryParameters q, CriteriaFilter<T> customFilter) {
+
+        if (em == null || entity == null)
+            throw new IllegalArgumentException("The entity manager and the entity cannot be null.");
 
         if (q == null)
             throw new IllegalArgumentException("Query parameters can't be null. " +
@@ -126,18 +160,35 @@ public class JPAUtils {
 
         log.finest("Querying entity count: '" + entity.getSimpleName() + "' with parameters: " + q);
 
+        Boolean requiresDistinct = false;
+
         CriteriaBuilder cb = em.getCriteriaBuilder();
 
         CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 
         Root<T> r = cq.from(entity);
 
+        Predicate wherePredicate = null;
+
         if (!q.getFilters().isEmpty()) {
 
-            cq.where(createWhereQuery(cb, r, q));
+            CriteriaWhereQuery criteriaWhereQuery = createWhereQueryInternal(cb, r, q);
+
+            requiresDistinct = criteriaWhereQuery.containsToMany();
+            wherePredicate = criteriaWhereQuery.getPredicate();
         }
 
-        cq.select(cb.count(r));
+        if (customFilter != null) {
+
+            wherePredicate = customFilter.createPredicate(
+                    wherePredicate == null ? cb.conjunction() : wherePredicate, cb, r);
+        }
+
+        if (wherePredicate != null) {
+            cq.where(wherePredicate);
+        }
+
+        cq.select(cb.count(r)).distinct(requiresDistinct);
 
         return em.createQuery(cq).getSingleResult();
     }

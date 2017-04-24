@@ -47,12 +47,6 @@ public class JPAUtilsCountTest {
         Assert.assertEquals((long)100, count.longValue());
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testEmptyQueryWrongMethodCount() {
-
-        JPAUtils.queryEntitiesCount(em, User.class, null);
-    }
-
     @Test
     public void testQueryCount() {
 
