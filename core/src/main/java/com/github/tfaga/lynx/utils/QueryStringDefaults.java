@@ -1,7 +1,5 @@
 package com.github.tfaga.lynx.utils;
 
-import java.net.URI;
-
 /**
  * @author Tilen Faganel
  */
