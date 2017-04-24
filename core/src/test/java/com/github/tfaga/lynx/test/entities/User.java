@@ -3,13 +3,7 @@ package com.github.tfaga.lynx.test.entities;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 
 /**
  * @author Tilen Faganel
@@ -17,6 +11,7 @@ import javax.persistence.TemporalType;
  * @since 1.0.0
  */
 @Entity
+@Table(name = "users")
 public class User {
 
     @Id

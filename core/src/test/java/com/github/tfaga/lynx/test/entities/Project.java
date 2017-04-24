@@ -11,6 +11,7 @@ import java.util.UUID;
  * @since 1.0.0
  */
 @Entity
+@Table(name = "projects")
 public class Project {
 
     @Id
