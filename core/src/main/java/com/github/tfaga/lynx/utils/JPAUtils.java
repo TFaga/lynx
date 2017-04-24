@@ -114,62 +114,6 @@ public class JPAUtils {
 
             return createEntityFromTuple((List<Tuple>)tq.getResultList(), entity);
         }
-
-
-//        CriteriaQuery<T> cq = cb.createQuery(entity);
-//
-//        CriteriaQuery<Tuple> ct = cb.createTupleQuery();
-//
-//        Root<T> r = cq.from(entity);
-//        Root<T> rt = ct.from(entity);
-//
-//        // Filters
-//        if (!q.getFilters().isEmpty()) {
-//
-//            CriteriaWhereQuery criteriaWhereQuery = createWhereQueryInternal(cb, r, q);
-//
-//            requiresDistinct = criteriaWhereQuery.containsToMany();
-//
-//            Predicate whereQuery = criteriaWhereQuery.getPredicate();
-//            Predicate whereQueryTuple = createWhereQueryInternal(cb, rt, q).getPredicate();
-//
-//            cq.where(whereQuery);
-//            ct.where(whereQueryTuple);
-//        }
-//
-//        // Order
-//        List<Order> orders = createOrderQuery(cb, r, q, getEntityIdField(em, entity));
-//        List<Order> ordersTuple = createOrderQuery(cb, rt, q, getEntityIdField(em, entity));
-//
-//        cq.orderBy(orders);
-//        ct.orderBy(ordersTuple);
-//
-//        // Select
-//        cq.select(r).distinct(requiresDistinct);
-//        ct.multiselect(createFieldsSelect(rt, q, getEntityIdField(em, entity))).distinct(requiresDistinct);
-//
-//        TypedQuery<T> tq = em.createQuery(cq);
-//        TypedQuery<Tuple> tqt = em.createQuery(ct);
-//
-//        if (q.getLimit() != null && q.getLimit() > -1) {
-//
-//            tq.setMaxResults(q.getLimit().intValue());
-//            tqt.setMaxResults(q.getLimit().intValue());
-//        }
-//
-//        if (q.getOffset() != null && q.getOffset() > -1) {
-//
-//            tq.setFirstResult(q.getOffset().intValue());
-//            tqt.setFirstResult(q.getOffset().intValue());
-//        }
-//
-//        if (q.getFields().isEmpty()) {
-//
-//            return tq.getResultList();
-//        } else {
-//
-//            return createEntityFromTuple(tqt.getResultList(), entity);
-//        }
     }
 
     public static <T> Long queryEntitiesCount(EntityManager em, Class<T> entity, QueryParameters
