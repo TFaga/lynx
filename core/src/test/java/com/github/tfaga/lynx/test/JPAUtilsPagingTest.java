@@ -1,6 +1,8 @@
 package com.github.tfaga.lynx.test;
 
+import com.github.tfaga.lynx.beans.QueryOrder;
 import com.github.tfaga.lynx.beans.QueryParameters;
+import com.github.tfaga.lynx.enums.OrderDirection;
 import com.github.tfaga.lynx.test.entities.User;
 import com.github.tfaga.lynx.test.utils.JpaUtil;
 import com.github.tfaga.lynx.utils.JPAUtils;
@@ -97,18 +99,31 @@ public class JPAUtilsPagingTest {
     @Test
     public void testLimitWithOffset() {
 
+        QueryOrder qo = new QueryOrder();
+        qo.setField("id");
+        qo.setOrder(OrderDirection.ASC);
+
         QueryParameters q = new QueryParameters();
         q.setLimit(25);
-        q.setOffset(40);
+        q.setOffset(0);
+        q.getOrder().add(qo);
 
         List<User> users = JPAUtils.queryEntities(em, User.class, q);
 
         Assert.assertNotNull(users);
         Assert.assertEquals(25, users.size());
-        Assert.assertNotNull(users.get(0).getId());
-        Assert.assertEquals(41, users.get(0).getId().intValue());
+
+        q.setOffset(24);
+
+        List<User> usersOffseted = JPAUtils.queryEntities(em, User.class, q);
+
+        Assert.assertNotNull(usersOffseted);
+        Assert.assertEquals(25, usersOffseted.size());
+
         Assert.assertNotNull(users.get(24).getId());
-        Assert.assertEquals(65, users.get(24).getId().intValue());
+        Assert.assertNotNull(usersOffseted.get(0).getId());
+        Assert.assertEquals(users.get(24).getId().intValue(), usersOffseted.get(0).getId().intValue());
+//        Assert.assertEquals(65, users.get(24).getId().intValue());
     }
 
     @Test

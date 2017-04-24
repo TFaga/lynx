@@ -1,11 +1,13 @@
 package com.github.tfaga.lynx.utils;
 
+import com.github.tfaga.lynx.beans.CriteriaField;
+import com.github.tfaga.lynx.beans.CriteriaWhereQuery;
 import com.github.tfaga.lynx.beans.QueryFilter;
-import com.github.tfaga.lynx.beans.QueryOrder;
 import com.github.tfaga.lynx.beans.QueryParameters;
 import com.github.tfaga.lynx.enums.OrderDirection;
 import com.github.tfaga.lynx.exceptions.NoSuchEntityFieldException;
 import com.github.tfaga.lynx.exceptions.InvalidFieldValueException;
+import com.github.tfaga.lynx.exceptions.InvalidEntityFieldException;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -19,13 +21,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Tuple;
 import javax.persistence.TupleElement;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Selection;
+import javax.persistence.criteria.*;
 import javax.persistence.metamodel.*;
 
 /**
@@ -47,6 +43,7 @@ public class JPAUtils {
         return queryEntitiesCount(em, entity, new QueryParameters());
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> List<T> queryEntities(EntityManager em, Class<T> entity, QueryParameters q) {
 
         if (q == null)
@@ -56,58 +53,123 @@ public class JPAUtils {
 
         log.finest("Querying entity: '" + entity.getSimpleName() + "' with parameters: " + q);
 
+        Boolean requiresDistinct = false;
+
         CriteriaBuilder cb = em.getCriteriaBuilder();
 
-        CriteriaQuery<T> cq = cb.createQuery(entity);
+        CriteriaQuery<?> cq;
 
-        CriteriaQuery<Tuple> ct = cb.createTupleQuery();
+        if (q.getFields().isEmpty()) {
+
+            cq = cb.createQuery(entity);
+        } else {
+
+            cq = cb.createTupleQuery();
+        }
 
         Root<T> r = cq.from(entity);
-        Root<T> rt = ct.from(entity);
 
         if (!q.getFilters().isEmpty()) {
 
-            Predicate whereQuery = createWhereQuery(cb, r, q);
-            Predicate whereQueryTuple = createWhereQuery(cb, rt, q);
+            CriteriaWhereQuery criteriaWhereQuery = createWhereQueryInternal(cb, r, q);
+
+            requiresDistinct = criteriaWhereQuery.containsToMany();
+
+            Predicate whereQuery = criteriaWhereQuery.getPredicate();
 
             cq.where(whereQuery);
-            ct.where(whereQueryTuple);
         }
 
-        if (!q.getOrder().isEmpty()) {           
+        if (!q.getOrder().isEmpty()) {
 
             List<Order> orders = createOrderQuery(cb, r, q, getEntityIdField(em, entity));
-            List<Order> ordersTuple = createOrderQuery(cb, rt, q, getEntityIdField(em, entity));
 
             cq.orderBy(orders);
-            ct.orderBy(ordersTuple);
         }
 
-        cq.select(r);
-        ct.multiselect(createFieldsSelect(rt, q, getEntityIdField(em, entity)));
+        if (q.getFields().isEmpty()) {
 
-        TypedQuery<T> tq = em.createQuery(cq);
-        TypedQuery<Tuple> tqt = em.createQuery(ct);
+            cq.select((Selection) r).distinct(requiresDistinct);
+        } else {
+
+            cq.multiselect(createFieldsSelect(r, q, getEntityIdField(em, entity))).distinct(requiresDistinct);
+        }
+
+        TypedQuery<?> tq = em.createQuery(cq);
 
         if (q.getLimit() != null && q.getLimit() > -1) {
 
             tq.setMaxResults(q.getLimit().intValue());
-            tqt.setMaxResults(q.getLimit().intValue());
         }
 
         if (q.getOffset() != null && q.getOffset() > -1) {
 
             tq.setFirstResult(q.getOffset().intValue());
-            tqt.setFirstResult(q.getOffset().intValue());
         }
 
         if (q.getFields().isEmpty()) {
 
-            return tq.getResultList();
+            return (List<T>) tq.getResultList();
         } else {
 
-            return createEntityFromTuple(tqt.getResultList(), entity);
+            return createEntityFromTuple((List<Tuple>)tq.getResultList(), entity);
         }
+
+
+//        CriteriaQuery<T> cq = cb.createQuery(entity);
+//
+//        CriteriaQuery<Tuple> ct = cb.createTupleQuery();
+//
+//        Root<T> r = cq.from(entity);
+//        Root<T> rt = ct.from(entity);
+//
+//        // Filters
+//        if (!q.getFilters().isEmpty()) {
+//
+//            CriteriaWhereQuery criteriaWhereQuery = createWhereQueryInternal(cb, r, q);
+//
+//            requiresDistinct = criteriaWhereQuery.containsToMany();
+//
+//            Predicate whereQuery = criteriaWhereQuery.getPredicate();
+//            Predicate whereQueryTuple = createWhereQueryInternal(cb, rt, q).getPredicate();
+//
+//            cq.where(whereQuery);
+//            ct.where(whereQueryTuple);
+//        }
+//
+//        // Order
+//        List<Order> orders = createOrderQuery(cb, r, q, getEntityIdField(em, entity));
+//        List<Order> ordersTuple = createOrderQuery(cb, rt, q, getEntityIdField(em, entity));
+//
+//        cq.orderBy(orders);
+//        ct.orderBy(ordersTuple);
+//
+//        // Select
+//        cq.select(r).distinct(requiresDistinct);
+//        ct.multiselect(createFieldsSelect(rt, q, getEntityIdField(em, entity))).distinct(requiresDistinct);
+//
+//        TypedQuery<T> tq = em.createQuery(cq);
+//        TypedQuery<Tuple> tqt = em.createQuery(ct);
+//
+//        if (q.getLimit() != null && q.getLimit() > -1) {
+//
+//            tq.setMaxResults(q.getLimit().intValue());
+//            tqt.setMaxResults(q.getLimit().intValue());
+//        }
+//
+//        if (q.getOffset() != null && q.getOffset() > -1) {
+//
+//            tq.setFirstResult(q.getOffset().intValue());
+//            tqt.setFirstResult(q.getOffset().intValue());
+//        }
+//
+//        if (q.getFields().isEmpty()) {
+//
+//            return tq.getResultList();
+//        } else {
+//
+//            return createEntityFromTuple(tqt.getResultList(), entity);
+//        }
     }
 
     public static <T> Long queryEntitiesCount(EntityManager em, Class<T> entity, QueryParameters
@@ -135,9 +197,9 @@ public class JPAUtils {
 
         return em.createQuery(cq).getSingleResult();
     }
-    
+
     public static List<Order> createOrderQuery(CriteriaBuilder cb, Root<?> r, QueryParameters q) {
-    	return createOrderQuery(cb, r, q, null);
+        return createOrderQuery(cb, r, q, null);
     }
 
     public static List<Order> createOrderQuery(CriteriaBuilder cb, Root<?> r, QueryParameters q, String id) {
@@ -148,41 +210,83 @@ public class JPAUtils {
 
             try {
 
-                Path<String> field = getCriteraField(qo.getField(), r);
+                CriteriaField field = getCriteriaField(qo.getField(), r);
+
+                if (field.containsToMany()) {
+                    throw new InvalidEntityFieldException(
+                            "OneToMany and ManyToMany relations are not supported by the order query",
+                            qo.getField(), r.getJavaType().getSimpleName());
+                }
 
                 if (qo.getOrder() == OrderDirection.DESC) {
 
-                    orders.add(cb.desc(field));
+                    orders.add(cb.desc(field.getPath()));
                 } else {
 
-                    orders.add(cb.asc(field));
+                    orders.add(cb.asc(field.getPath()));
                 }
             } catch (IllegalArgumentException e) {
 
                 throw new NoSuchEntityFieldException(e.getMessage(), qo.getField(), r.getJavaType().getSimpleName());
             }
         });
-        
+
         //Add sort by id for correct pagination when field has same values
-        if (orders.size()>0 && id!=null) {
-        	orders.add(cb.asc(getCriteraField(id, r)));
+        if (id != null) {
+            orders.add(cb.asc(getCriteriaField(id, r).getPath()));
         }
 
         return orders;
     }
 
     public static Predicate createWhereQuery(CriteriaBuilder cb, Root<?> r, QueryParameters q) {
+        return createWhereQueryInternal(cb, r, q).getPredicate();
+    }
+
+    public static List<Selection<?>> createFieldsSelect(Root<?> r, QueryParameters q, String
+            idField) {
+
+        List<Selection<?>> fields = q.getFields().stream().map(f -> {
+
+            try {
+                return r.get(f).alias(f);
+            } catch (IllegalArgumentException e) {
+
+                throw new NoSuchEntityFieldException(e.getMessage(), f, r.getJavaType().getSimpleName());
+            }
+        }).collect(Collectors.toList());
+
+        try {
+            fields.add(r.get(idField).alias(idField));
+        } catch (IllegalArgumentException e) {
+
+            throw new NoSuchEntityFieldException(e.getMessage(), idField, r.getJavaType().getSimpleName());
+        }
+
+        return fields.stream().distinct().collect(Collectors.toList());
+    }
+
+    // Temporary methods to not break the public API
+
+    private static CriteriaWhereQuery createWhereQueryInternal(CriteriaBuilder cb, Root<?> r, QueryParameters q) {
 
         Predicate predicate = cb.conjunction();
+        Boolean containsToMany = false;
 
         for (QueryFilter f : q.getFilters()) {
 
             Predicate np = null;
 
             try {
-                Path entityField = getCriteraField(f.getField(), r);
+                CriteriaField criteriaField = getCriteriaField(f.getField(), r);
 
-                if (!((Attribute) entityField.getModel()).getPersistentAttributeType()
+                if (criteriaField.containsToMany()) {
+                    containsToMany = true;
+                }
+
+                Path entityField = criteriaField.getPath();
+
+                if (entityField.getModel() == null || !((Attribute) entityField.getModel()).getPersistentAttributeType()
                         .equals(Attribute.PersistentAttributeType.BASIC)) {
                     continue;
                 }
@@ -324,31 +428,10 @@ public class JPAUtils {
             }
         }
 
-        return predicate;
+        return new CriteriaWhereQuery(predicate, containsToMany);
     }
 
-    public static List<Selection<?>> createFieldsSelect(Root<?> r, QueryParameters q, String
-            idField) {
-
-        List<Selection<?>> fields = q.getFields().stream().map(f -> {
-
-            try {
-                return r.get(f).alias(f);
-            } catch (IllegalArgumentException e) {
-
-                throw new NoSuchEntityFieldException(e.getMessage(), f, r.getJavaType().getSimpleName());
-            }
-        }).collect(Collectors.toList());
-
-        try {
-            fields.add(r.get(idField).alias(idField));
-        } catch (IllegalArgumentException e) {
-
-            throw new NoSuchEntityFieldException(e.getMessage(), idField, r.getJavaType().getSimpleName());
-        }
-
-        return fields.stream().distinct().collect(Collectors.toList());
-    }
+    ///// Private helper methods
 
     private static <T> List<T> createEntityFromTuple(List<Tuple> tuples, Class<T> entity) {
 
@@ -449,27 +532,39 @@ public class JPAUtils {
         return value;
     }
 
-    private static <G> Path<G> getCriteraField(String fieldName, Root<?> r) {
+    private static CriteriaField getCriteriaField(String fieldName, Root<?> r) {
 
         if (fieldName == null) fieldName = "";
 
         String fields[] = fieldName.split("\\.");
 
-        Path<G> path = r.get(fields[0]);
+        From from = r;
+        Path path = r;
+        Boolean containsToMany = false;
 
-        if (path.getJavaType().equals(List.class)) {
-            path = r.join(fields[0]);
-        }
+        for (String field : fields) {
 
-        for (int i = 1; i < fields.length; i++) {
+            path = from.get(field);
 
-            path = path.get(fields[i]);
+            if (path.getModel() == null &&
+                    (path.getJavaType().equals(List.class) || path.getJavaType().equals(Set.class))) {
 
-            if (path.getJavaType().equals(List.class)) {
-                path = r.join(fields[i]);
+                containsToMany = true;
+                from = from.join(field);
+            } else {
+
+                switch (((Attribute) path.getModel()).getPersistentAttributeType()) {
+                    case ONE_TO_MANY:
+                    case MANY_TO_MANY:
+                        containsToMany = true;
+                    case ONE_TO_ONE:
+                    case MANY_TO_ONE:
+                        from = from.join(field);
+                        break;
+                }
             }
         }
 
-        return path;
+        return new CriteriaField(path, containsToMany);
     }
 }

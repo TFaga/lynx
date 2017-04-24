@@ -4,6 +4,7 @@ import com.github.tfaga.lynx.beans.QueryOrder;
 import com.github.tfaga.lynx.beans.QueryParameters;
 import com.github.tfaga.lynx.enums.OrderDirection;
 import com.github.tfaga.lynx.exceptions.NoSuchEntityFieldException;
+import com.github.tfaga.lynx.exceptions.InvalidEntityFieldException;
 import com.github.tfaga.lynx.test.entities.Project;
 import com.github.tfaga.lynx.test.entities.User;
 import com.github.tfaga.lynx.test.utils.JpaUtil;
@@ -16,7 +17,9 @@ import org.junit.runners.Parameterized;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 
@@ -143,7 +146,8 @@ public class JPAUtilsOrderTest {
         QueryParameters q = new QueryParameters();
         q.getOrder().add(qo);
 
-        List<User> users = JPAUtils.queryEntities(em, User.class, q);
+        List<User> users = JPAUtils.queryEntities(em, User.class, q)
+                .stream().sorted(Comparator.comparing(User::getId)).collect(Collectors.toList());
 
         Assert.assertNotNull(users);
         Assert.assertEquals(100, users.size());
@@ -231,7 +235,7 @@ public class JPAUtilsOrderTest {
         Assert.assertEquals("Yellow", projects.get(99).getName());
     }
 
-    @Test
+    @Test(expected = InvalidEntityFieldException.class)
     public void testOneToMany() {
 
         QueryOrder qo = new QueryOrder();
@@ -240,17 +244,11 @@ public class JPAUtilsOrderTest {
         QueryParameters q = new QueryParameters();
         q.getOrder().add(qo);
 
-        List<User> users = JPAUtils.queryEntities(em, User.class, q);
-
-        Assert.assertNotNull(users);
-        Assert.assertEquals(100, users.size());
-        Assert.assertNotNull(users.get(0).getLastname());
-        Assert.assertEquals("Rose", users.get(0).getLastname());
-        Assert.assertNotNull(users.get(99).getLastname());
-        Assert.assertEquals("Hall", users.get(99).getLastname());
+        JPAUtils.queryEntities(em, User.class, q);
+        Assert.fail("No exception was thrown");
     }
 
-    @Test
+    @Test(expected = InvalidEntityFieldException.class)
     public void testOneToManyOnlyField() {
 
         QueryOrder qo = new QueryOrder();
@@ -259,13 +257,7 @@ public class JPAUtilsOrderTest {
         QueryParameters q = new QueryParameters();
         q.getOrder().add(qo);
 
-        List<User> users = JPAUtils.queryEntities(em, User.class, q);
-
-        Assert.assertNotNull(users);
-        Assert.assertEquals(100, users.size());
-        Assert.assertNotNull(users.get(0).getLastname());
-        Assert.assertEquals("Warren", users.get(0).getLastname());
-        Assert.assertNotNull(users.get(99).getLastname());
-        Assert.assertEquals("Baker", users.get(99).getLastname());
+        JPAUtils.queryEntities(em, User.class, q);
+        Assert.fail("No exception was thrown");
     }
 }
