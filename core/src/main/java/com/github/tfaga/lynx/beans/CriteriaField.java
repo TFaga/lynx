@@ -5,7 +5,7 @@ import java.io.Serializable;
 
 /**
  * @author Tilen Faganel
- * @since 1.0.0
+ * @since 1.1.0
  */
 public class CriteriaField implements Serializable {
 
