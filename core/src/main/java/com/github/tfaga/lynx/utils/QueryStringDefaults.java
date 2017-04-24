@@ -7,9 +7,42 @@ import java.net.URI;
  */
 public class QueryStringDefaults {
 
+    private Boolean paginationEnabled = true;
+    private Boolean filtersEnabled = true;
+    private Boolean orderEnabled = true;
+    private Boolean fieldsEnabled = true;
+
     private Long maxLimit = 100L;
     private Long defaultLimit = 10L;
     private Long defaultOffset = 0L;
+
+    public QueryStringDefaults enablePagination(Boolean enable) {
+
+        paginationEnabled = enable;
+
+        return this;
+    }
+
+    public QueryStringDefaults enableFilters(Boolean enable) {
+
+        filtersEnabled = enable;
+
+        return this;
+    }
+
+    public QueryStringDefaults enableOrder(Boolean enable) {
+
+        orderEnabled = enable;
+
+        return this;
+    }
+
+    public QueryStringDefaults enableFields(Boolean enable) {
+
+        fieldsEnabled = enable;
+
+        return this;
+    }
 
     public QueryStringDefaults maxLimit(int limit) {
 
@@ -51,6 +84,10 @@ public class QueryStringDefaults {
         return new QueryStringBuilder()
                 .maxLimit(maxLimit)
                 .defaultLimit(defaultLimit)
-                .defaultOffset(defaultOffset);
+                .defaultOffset(defaultOffset)
+                .enablePagination(paginationEnabled)
+                .enableFilters(filtersEnabled)
+                .enableOrder(orderEnabled)
+                .enableFields(fieldsEnabled);
     }
 }

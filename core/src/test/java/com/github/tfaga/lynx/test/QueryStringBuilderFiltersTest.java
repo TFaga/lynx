@@ -459,4 +459,40 @@ public class QueryStringBuilderFiltersTest {
         Assert.assertNotNull(query.getLimit());
         Assert.assertEquals(30, query.getLimit().longValue());
     }
+
+    @Test
+    public void testEnabledFilters() {
+
+        QueryParameters query = QueryParameters.query("filter=username:eq:test").enableFilters(true).build();
+
+        Assert.assertNotNull(query);
+        Assert.assertNotNull(query.getFilters());
+        Assert.assertEquals(1, query.getFilters().size());
+
+        Assert.assertNotNull(query.getFilters().get(0));
+        Assert.assertEquals("username", query.getFilters().get(0).getField());
+        Assert.assertEquals(FilterOperation.EQ, query.getFilters().get(0).getOperation());
+        Assert.assertEquals("test", query.getFilters().get(0).getValue());
+
+        query = QueryParameters.query("filter=username:eq:test").build();
+
+        Assert.assertNotNull(query);
+        Assert.assertNotNull(query.getFilters());
+        Assert.assertEquals(1, query.getFilters().size());
+
+        Assert.assertNotNull(query.getFilters().get(0));
+        Assert.assertEquals("username", query.getFilters().get(0).getField());
+        Assert.assertEquals(FilterOperation.EQ, query.getFilters().get(0).getOperation());
+        Assert.assertEquals("test", query.getFilters().get(0).getValue());
+    }
+
+    @Test
+    public void testDisabledFilters() {
+
+        QueryParameters query = QueryParameters.query("filter=username:eq:test").enableFilters(false).build();
+
+        Assert.assertNotNull(query);
+        Assert.assertNotNull(query.getFilters());
+        Assert.assertEquals(0, query.getFilters().size());
+    }
 }

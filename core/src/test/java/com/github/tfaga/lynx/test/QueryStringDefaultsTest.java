@@ -1,6 +1,8 @@
 package com.github.tfaga.lynx.test;
 
 import com.github.tfaga.lynx.beans.QueryParameters;
+import com.github.tfaga.lynx.enums.FilterOperation;
+import com.github.tfaga.lynx.enums.OrderDirection;
 import com.github.tfaga.lynx.utils.QueryStringDefaults;
 import org.junit.Assert;
 import org.junit.Test;
@@ -85,5 +87,149 @@ public class QueryStringDefaultsTest {
         Assert.assertNotNull(query.getOffset());
         Assert.assertEquals(200, query.getLimit().longValue());
         Assert.assertEquals(20, query.getOffset().longValue());
+    }
+
+    @Test
+    public void testEnabledPagination() {
+
+        QueryParameters query = new QueryStringDefaults().enablePagination(true).builder()
+                .query("limit=100&offset=200").build();
+
+        Assert.assertNotNull(query);
+        Assert.assertNotNull(query.getLimit());
+        Assert.assertNotNull(query.getOffset());
+        Assert.assertEquals(100, query.getLimit().longValue());
+        Assert.assertEquals(200, query.getOffset().longValue());
+
+        query = new QueryStringDefaults().builder()
+                .query("limit=100&offset=200").build();
+
+        Assert.assertNotNull(query);
+        Assert.assertNotNull(query.getLimit());
+        Assert.assertNotNull(query.getOffset());
+        Assert.assertEquals(100, query.getLimit().longValue());
+        Assert.assertEquals(200, query.getOffset().longValue());
+    }
+
+    @Test
+    public void testDisabledPagination() {
+
+        QueryParameters query = new QueryStringDefaults().enablePagination(false).builder()
+                .query("limit=100&offset=200").build();
+
+        Assert.assertNotNull(query);
+        Assert.assertNull(query.getLimit());
+        Assert.assertNull(query.getOffset());
+    }
+
+    @Test
+    public void testEnabledFilters() {
+
+        QueryParameters query = new QueryStringDefaults().enableFilters(true).builder()
+                .query("where=name:eq:tilen").build();
+
+        Assert.assertNotNull(query);
+        Assert.assertNotNull(query.getFilters());
+        Assert.assertEquals(1, query.getFilters().size());
+
+        Assert.assertNotNull(query.getFilters().get(0));
+        Assert.assertEquals("name", query.getFilters().get(0).getField());
+        Assert.assertEquals(FilterOperation.EQ, query.getFilters().get(0).getOperation());
+        Assert.assertEquals("tilen", query.getFilters().get(0).getValue());
+
+        query = new QueryStringDefaults().builder()
+                .query("where=name:eq:tilen").build();
+
+        Assert.assertNotNull(query);
+        Assert.assertNotNull(query.getFilters());
+        Assert.assertEquals(1, query.getFilters().size());
+
+        Assert.assertNotNull(query.getFilters().get(0));
+        Assert.assertEquals("name", query.getFilters().get(0).getField());
+        Assert.assertEquals(FilterOperation.EQ, query.getFilters().get(0).getOperation());
+        Assert.assertEquals("tilen", query.getFilters().get(0).getValue());
+    }
+
+    @Test
+    public void testDisabledFilters() {
+
+        QueryParameters query = new QueryStringDefaults().enableFilters(false).builder()
+                .query("where=name:eq:tilen").build();
+
+        Assert.assertNotNull(query);
+        Assert.assertNotNull(query.getFilters());
+        Assert.assertEquals(0, query.getFilters().size());
+    }
+
+    @Test
+    public void testEnabledOrder() {
+
+        QueryParameters query = new QueryStringDefaults().enableOrder(true).builder()
+                .query("order=name ASC").build();
+
+        Assert.assertNotNull(query);
+        Assert.assertNotNull(query.getOrder());
+        Assert.assertEquals(1, query.getOrder().size());
+
+        Assert.assertNotNull(query.getOrder().get(0));
+        Assert.assertEquals("name", query.getOrder().get(0).getField());
+        Assert.assertEquals(OrderDirection.ASC, query.getOrder().get(0).getOrder());
+
+        query = new QueryStringDefaults().builder()
+                .query("order=name ASC").build();
+
+        Assert.assertNotNull(query);
+        Assert.assertNotNull(query.getOrder());
+        Assert.assertEquals(1, query.getOrder().size());
+
+        Assert.assertNotNull(query.getOrder().get(0));
+        Assert.assertEquals("name", query.getOrder().get(0).getField());
+        Assert.assertEquals(OrderDirection.ASC, query.getOrder().get(0).getOrder());
+    }
+
+    @Test
+    public void testDisabledOrder() {
+
+        QueryParameters query = new QueryStringDefaults().enableOrder(false).builder()
+                .query("order=name ASC").build();
+
+        Assert.assertNotNull(query);
+        Assert.assertNotNull(query.getOrder());
+        Assert.assertEquals(0, query.getOrder().size());
+    }
+
+    @Test
+    public void testEnabledFields() {
+
+        QueryParameters query = new QueryStringDefaults().enableFields(true).builder()
+                .query("fields=name,email").build();
+
+        Assert.assertNotNull(query);
+        Assert.assertNotNull(query.getFields());
+        Assert.assertEquals(2, query.getFields().size());
+
+        Assert.assertEquals("name", query.getFields().get(0));
+        Assert.assertEquals("email", query.getFields().get(1));
+
+        query = new QueryStringDefaults().builder()
+                .query("fields=name,email").build();
+
+        Assert.assertNotNull(query);
+        Assert.assertNotNull(query.getFields());
+        Assert.assertEquals(2, query.getFields().size());
+
+        Assert.assertEquals("name", query.getFields().get(0));
+        Assert.assertEquals("email", query.getFields().get(1));
+    }
+
+    @Test
+    public void testDisabledFields() {
+
+        QueryParameters query = new QueryStringDefaults().enableFields(false).builder()
+                .query("fields=name,email").build();
+
+        Assert.assertNotNull(query);
+        Assert.assertNotNull(query.getFields());
+        Assert.assertEquals(0, query.getFields().size());
     }
 }

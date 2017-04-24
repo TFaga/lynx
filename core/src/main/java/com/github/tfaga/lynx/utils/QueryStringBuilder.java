@@ -15,10 +15,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -47,6 +44,11 @@ public class QueryStringBuilder {
     public static final String FILTER_DELIMITER_ALT = "where";
 
     private String query;
+
+    private Boolean paginationEnabled = true;
+    private Boolean filtersEnabled = true;
+    private Boolean orderEnabled = true;
+    private Boolean fieldsEnabled = true;
 
     private Long maxLimit;
     private Long defaultLimit;
@@ -107,6 +109,42 @@ public class QueryStringBuilder {
     public QueryStringBuilder query(String queryString) {
 
         query = queryString;
+
+        return this;
+    }
+
+    public QueryStringBuilder enablePagination(Boolean enable) {
+
+        if (enable == null) throw new IllegalArgumentException("The enable boolean cannot be null");
+
+        paginationEnabled = enable;
+
+        return this;
+    }
+
+    public QueryStringBuilder enableFilters(Boolean enable) {
+
+        if (enable == null) throw new IllegalArgumentException("The enable boolean cannot be null");
+
+        filtersEnabled = enable;
+
+        return this;
+    }
+
+    public QueryStringBuilder enableOrder(Boolean enable) {
+
+        if (enable == null) throw new IllegalArgumentException("The enable boolean cannot be null");
+
+        orderEnabled = enable;
+
+        return this;
+    }
+
+    public QueryStringBuilder enableFields(Boolean enable) {
+
+        if (enable == null) throw new IllegalArgumentException("The enable boolean cannot be null");
+
+        fieldsEnabled = enable;
 
         return this;
     }
@@ -174,8 +212,8 @@ public class QueryStringBuilder {
 
         QueryParameters params = new QueryParameters();
 
-        if (defaultLimit != null) params.setLimit(defaultLimit);
-        if (defaultOffset != null) params.setOffset(defaultOffset);
+        if (paginationEnabled && defaultLimit != null) params.setLimit(defaultLimit);
+        if (paginationEnabled && defaultOffset != null) params.setOffset(defaultOffset);
 
         if (query == null || query.isEmpty()) return params;
 
@@ -215,43 +253,54 @@ public class QueryStringBuilder {
             case LIMIT_DELIMITER:
             case LIMIT_DELIMITER_ALT:
 
-                params.setLimit(buildLimit(key, value));
+                if (paginationEnabled) {
+                    params.setLimit(buildLimit(key, value));
+                }
 
                 break;
 
             case OFFSET_DELIMITER:
             case OFFSET_DELIMITER_ALT:
 
-                params.setOffset(buildOffset(key, value));
+                if (paginationEnabled) {
+                    params.setOffset(buildOffset(key, value));
+                }
 
                 break;
 
             case ORDER_DELIMITER:
             case ORDER_DELIMITER_ALT:
 
-                params.getOrder().clear();
+                if (orderEnabled) {
+                    params.getOrder().clear();
 
-                Arrays.stream(value.split(",")).map(o -> buildOrder(key, o))
-                        .filter(o -> o != null).distinct()
-                        .forEach(o -> params.getOrder().add(o));
+                    Arrays.stream(value.split(",")).map(o -> buildOrder(key, o))
+                            .filter(Objects::nonNull).distinct()
+                            .forEach(o -> params.getOrder().add(o));
+                }
 
                 break;
 
             case FIELDS_DELIMITER:
             case FIELDS_DELIMITER_ALT:
 
-                params.getFields().clear();
+                if (fieldsEnabled) {
+                    params.getFields().clear();
 
-                params.getFields().addAll(buildFields(value));
+                    params.getFields().addAll(buildFields(value));
+                }
 
                 break;
 
             case FILTER_DELIMITER:
             case FILTER_DELIMITER_ALT:
 
-                params.getFilters().clear();
+                if (filtersEnabled) {
+                    params.getFilters().clear();
 
-                params.getFilters().addAll(buildFilter(key, value));
+                    params.getFilters().addAll(buildFilter(key, value));
+
+                }
 
                 break;
         }

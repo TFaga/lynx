@@ -326,4 +326,34 @@ public class QueryStringBuilderPagingTest {
         Assert.assertEquals(222, query.getLimit().longValue());
         Assert.assertEquals(4335, query.getOffset().longValue());
     }
+
+    @Test
+    public void testEnabledPagination() {
+
+        QueryParameters query = QueryParameters.query("offset=123&limit=22").enablePagination(true).build();
+
+        Assert.assertNotNull(query);
+        Assert.assertNotNull(query.getLimit());
+        Assert.assertNotNull(query.getOffset());
+        Assert.assertEquals(22, query.getLimit().longValue());
+        Assert.assertEquals(123, query.getOffset().longValue());
+
+        query = QueryParameters.query("offset=123&limit=22").build();
+
+        Assert.assertNotNull(query);
+        Assert.assertNotNull(query.getLimit());
+        Assert.assertNotNull(query.getOffset());
+        Assert.assertEquals(22, query.getLimit().longValue());
+        Assert.assertEquals(123, query.getOffset().longValue());
+    }
+
+    @Test
+    public void testDisabledPagination() {
+
+        QueryParameters query = QueryParameters.query("offset=123&limit=22").enablePagination(false).build();
+
+        Assert.assertNotNull(query);
+        Assert.assertNull(query.getLimit());
+        Assert.assertNull(query.getOffset());
+    }
 }

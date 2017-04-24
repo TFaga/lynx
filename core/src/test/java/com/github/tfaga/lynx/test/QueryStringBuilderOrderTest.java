@@ -204,4 +204,38 @@ public class QueryStringBuilderOrderTest {
         Assert.assertNotNull(query.getOrder().get(1).getOrder());
         Assert.assertEquals(OrderDirection.ASC, query.getOrder().get(1).getOrder());
     }
+
+    @Test
+    public void testEnabledOrder() {
+
+        QueryParameters query = QueryParameters.query("order=username DESC").enableOrder(true).build();
+
+        Assert.assertNotNull(query);
+        Assert.assertNotNull(query.getOrder());
+        Assert.assertEquals(1, query.getOrder().size());
+
+        Assert.assertNotNull(query.getOrder().get(0));
+        Assert.assertEquals("username", query.getOrder().get(0).getField());
+        Assert.assertEquals(OrderDirection.DESC, query.getOrder().get(0).getOrder());
+
+        query = QueryParameters.query("order=username DESC").build();
+
+        Assert.assertNotNull(query);
+        Assert.assertNotNull(query.getOrder());
+        Assert.assertEquals(1, query.getOrder().size());
+
+        Assert.assertNotNull(query.getOrder().get(0));
+        Assert.assertEquals("username", query.getOrder().get(0).getField());
+        Assert.assertEquals(OrderDirection.DESC, query.getOrder().get(0).getOrder());
+    }
+
+    @Test
+    public void testDisabledOrder() {
+
+        QueryParameters query = QueryParameters.query("order=username DESC").enableOrder(false).build();
+
+        Assert.assertNotNull(query);
+        Assert.assertNotNull(query.getOrder());
+        Assert.assertEquals(0, query.getOrder().size());
+    }
 }
