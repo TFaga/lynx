@@ -1,16 +1,21 @@
 language: java
+
 env:
   global:
   - secure: HTnv7vROVcySijtu9C4RfyaY+9CF5Nk9F/y+aiSrLQV4JbM3sMTVEBknhcxRzJbB32O2dRvlaoMjqjp89rRV/2KwepevISWoiU9oYccKqoBZQ6gWt/ms1cUiTNYggDbvztfNggmZ9UNVnVBBb9H6kdAze5g1ANeDZ7Tfljm63rw=
   - secure: JWkB9gpPVJeJsLppmXie+oLaDTQL3SYTZHT+AODrkP/l2IOMuNYhOYrw9oEaXKucKKfuWXcP4/bktyf2DBfnoagiLtHWCjP803olZ4FnCX4CzKHYkmcRoc2A6FHq+F1iBjINaj3bLMgMoTFv4nXoR7M6Tt8Mmkda46xI5LAZNds=
   - secure: RplNqMzjsCQm/3TXKfSETw/haPBRReYcA1PuHc+8D3yz9xC/me4ynuuhMaeOK9+z/4MSeaMVcu1fW08yLqWsFvw6PCnR+XEXKRrDClzZaCD9jqO6J/h6qgzf6Uyjb896CWfsLzOg2zmxs/TQFUQ1ThUNJgxW2zbvSxBEZZqoGVU=
+
 jdk:
 - oraclejdk8
-before_install:
-- openssl aes-256-cbc -K $encrypted_9cb8d6eff452_key -iv $encrypted_9cb8d6eff452_iv
-  -in gpg.tar.enc -out gpg.tar -d
-- tar xvf gpg.tar
+
 install: mvn install -DskipTests=true -V
 script: mvn test
+
 after_success:
-- mvn source:jar javadoc:jar deploy -Pdeploy -DskipTests=true --settings ./settings.xml
+# Deploy to OSSHR
+- if [[ $TRAVIS_PULL_REQUEST == "false" && ($TRAVIS_BRANCH == "master" || $TRAVIS_TAG) ]]; then
+    openssl aes-256-cbc -K $encrypted_9cb8d6eff452_key -iv $encrypted_9cb8d6eff452_iv -in gpg.tar.enc -out gpg.tar -d;
+    tar xvf gpg.tar;
+    mvn source:jar javadoc:jar deploy -Pdeploy -DskipTests=true --settings ./settings.xml;
+  fi
