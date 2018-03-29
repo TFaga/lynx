@@ -5,11 +5,20 @@ import com.github.tfaga.lynx.beans.CriteriaWhereQuery;
 import com.github.tfaga.lynx.beans.QueryFilter;
 import com.github.tfaga.lynx.beans.QueryParameters;
 import com.github.tfaga.lynx.enums.OrderDirection;
-import com.github.tfaga.lynx.exceptions.NoSuchEntityFieldException;
-import com.github.tfaga.lynx.exceptions.InvalidFieldValueException;
 import com.github.tfaga.lynx.exceptions.InvalidEntityFieldException;
+import com.github.tfaga.lynx.exceptions.InvalidFieldValueException;
+import com.github.tfaga.lynx.exceptions.NoSuchEntityFieldException;
 import com.github.tfaga.lynx.interfaces.CriteriaFilter;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Tuple;
+import javax.persistence.TupleElement;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.*;
+import javax.persistence.metamodel.Attribute;
+import javax.persistence.metamodel.EntityType;
+import javax.persistence.metamodel.Metamodel;
+import javax.persistence.metamodel.SingularAttribute;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.time.ZonedDateTime;
@@ -17,13 +26,6 @@ import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-
-import javax.persistence.EntityManager;
-import javax.persistence.Tuple;
-import javax.persistence.TupleElement;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.*;
-import javax.persistence.metamodel.*;
 
 /**
  * @author Tilen Faganel
@@ -554,6 +556,7 @@ public class JPAUtils {
                         containsToMany = true;
                     case ONE_TO_ONE:
                     case MANY_TO_ONE:
+                    case EMBEDDED:
                         from = from.join(field);
                         break;
                 }
