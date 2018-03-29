@@ -90,6 +90,22 @@ public class JPAUtilsFieldsTest {
         Assert.assertEquals(1, users.get(0).getId().intValue());
     }
 
+    @Test
+    public void testIdParameter() {
+
+        QueryParameters q = new QueryParameters();
+        q.getFields().add("id");
+
+        List<User> users = JPAUtils.queryEntities(em, User.class, q);
+
+        Assert.assertNotNull(users);
+        Assert.assertEquals(100, users.size());
+        Assert.assertNotNull(users.get(0).getId());
+        Assert.assertNull(users.get(0).getFirstname());
+        Assert.assertNotNull(users.get(99).getId());
+        Assert.assertNull(users.get(99).getFirstname());
+    }
+
     // Currently unsupported
     @Test(expected = NoSuchEntityFieldException.class)
     public void testEmbeddedField() {

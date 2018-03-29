@@ -240,10 +240,10 @@ public class JPAUtils {
         return createWhereQueryInternal(cb, r, q).getPredicate();
     }
 
-    public static List<Selection<?>> createFieldsSelect(Root<?> r, QueryParameters q, String
-            idField) {
+    public static List<Selection<?>> createFieldsSelect(Root<?> r, QueryParameters q, String idField) {
 
-        List<Selection<?>> fields = q.getFields().stream().map(f -> {
+        List<Selection<?>> fields = q.getFields().stream().distinct()
+                .filter(f -> !f.equals(idField)).map(f -> {
 
             try {
                 return r.get(f).alias(f);
@@ -254,13 +254,14 @@ public class JPAUtils {
         }).collect(Collectors.toList());
 
         try {
+
             fields.add(r.get(idField).alias(idField));
         } catch (IllegalArgumentException e) {
 
             throw new NoSuchEntityFieldException(e.getMessage(), idField, r.getJavaType().getSimpleName());
         }
 
-        return fields.stream().distinct().collect(Collectors.toList());
+        return fields;
     }
 
     // Temporary methods to not break the public API
