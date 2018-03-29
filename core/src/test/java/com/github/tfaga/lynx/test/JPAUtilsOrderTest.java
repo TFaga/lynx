@@ -3,25 +3,23 @@ package com.github.tfaga.lynx.test;
 import com.github.tfaga.lynx.beans.QueryOrder;
 import com.github.tfaga.lynx.beans.QueryParameters;
 import com.github.tfaga.lynx.enums.OrderDirection;
-import com.github.tfaga.lynx.exceptions.NoSuchEntityFieldException;
 import com.github.tfaga.lynx.exceptions.InvalidEntityFieldException;
+import com.github.tfaga.lynx.exceptions.NoSuchEntityFieldException;
 import com.github.tfaga.lynx.test.entities.Project;
 import com.github.tfaga.lynx.test.entities.User;
 import com.github.tfaga.lynx.test.utils.JpaUtil;
 import com.github.tfaga.lynx.utils.JPAUtils;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+import javax.persistence.EntityManager;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import javax.persistence.EntityManager;
 
 /**
  * @author Tilen Faganel
@@ -96,12 +94,12 @@ public class JPAUtilsOrderTest {
         q.getOrder().add(qo);
 
         qo = new QueryOrder();
-        qo.setField("country");
+        qo.setField("lastname");
         qo.setOrder(OrderDirection.ASC);
         q.getOrder().add(qo);
 
         qo = new QueryOrder();
-        qo.setField("lastname");
+        qo.setField("firstname");
         qo.setOrder(OrderDirection.DESC);
         q.getOrder().add(qo);
 
@@ -111,12 +109,12 @@ public class JPAUtilsOrderTest {
         Assert.assertEquals(100, users.size());
         Assert.assertNotNull(users.get(0).getFirstname());
         Assert.assertNotNull(users.get(0).getLastname());
-        Assert.assertEquals("Mark", users.get(0).getFirstname());
-        Assert.assertEquals("West", users.get(0).getLastname());
+        Assert.assertEquals("Larry", users.get(0).getFirstname());
+        Assert.assertEquals("Bailey", users.get(0).getLastname());
         Assert.assertNotNull(users.get(99).getFirstname());
         Assert.assertNotNull(users.get(99).getLastname());
-        Assert.assertEquals("Julia", users.get(99).getFirstname());
-        Assert.assertEquals("Gonzalez", users.get(99).getLastname());
+        Assert.assertEquals("Bonnie", users.get(99).getFirstname());
+        Assert.assertEquals("Willis", users.get(99).getLastname());
     }
 
     @Test
@@ -233,6 +231,27 @@ public class JPAUtilsOrderTest {
         Assert.assertEquals("Goldenrod", projects.get(0).getName());
         Assert.assertNotNull(projects.get(99).getName());
         Assert.assertEquals("Yellow", projects.get(99).getName());
+    }
+
+    @Test
+    public void testEmbedded() {
+
+        QueryOrder qo = new QueryOrder();
+        qo.setField("address.country");
+
+        QueryParameters q = new QueryParameters();
+        q.getOrder().add(qo);
+
+        List<User> users = JPAUtils.queryEntities(em, User.class, q);
+
+        Assert.assertNotNull(users);
+        Assert.assertEquals(100, users.size());
+        Assert.assertNotNull(users.get(0).getAddress());
+        Assert.assertNotNull(users.get(0).getAddress().getCountry());
+        Assert.assertEquals("Argentina", users.get(0).getAddress().getCountry());
+        Assert.assertNotNull(users.get(99).getAddress());
+        Assert.assertNotNull(users.get(99).getAddress().getCountry());
+        Assert.assertEquals("Venezuela", users.get(99).getAddress().getCountry());
     }
 
     @Test(expected = InvalidEntityFieldException.class)

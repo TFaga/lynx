@@ -1,9 +1,8 @@
 package com.github.tfaga.lynx.test.entities;
 
+import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
-
-import javax.persistence.*;
 
 /**
  * @author Tilen Faganel
@@ -24,13 +23,13 @@ public class User {
 
     private String email;
 
-    private String country;
-
     private String ip_address;
 
     private Integer role;
 
     private Boolean confirmed = false;
+
+    private Address address;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
@@ -70,14 +69,6 @@ public class User {
         this.email = email;
     }
 
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(String country) {
-        this.country = country;
-    }
-
     public String getIp_address() {
         return ip_address;
     }
@@ -100,6 +91,14 @@ public class User {
 
     public void setConfirmed(Boolean confirmed) {
         this.confirmed = confirmed;
+    }
+
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
     }
 
     public Date getCreatedAt() {

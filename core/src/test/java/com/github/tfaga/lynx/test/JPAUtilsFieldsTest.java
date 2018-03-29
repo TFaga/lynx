@@ -5,17 +5,15 @@ import com.github.tfaga.lynx.exceptions.NoSuchEntityFieldException;
 import com.github.tfaga.lynx.test.entities.User;
 import com.github.tfaga.lynx.test.utils.JpaUtil;
 import com.github.tfaga.lynx.utils.JPAUtils;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+import javax.persistence.EntityManager;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-
-import javax.persistence.EntityManager;
 
 /**
  * @author Tilen Faganel
@@ -59,7 +57,7 @@ public class JPAUtilsFieldsTest {
 
         QueryParameters q = new QueryParameters();
         q.getFields().add("firstname");
-        q.getFields().add("country");
+        q.getFields().add("email");
         q.getFields().add("role");
 
         List<User> users = JPAUtils.queryEntities(em, User.class, q);
@@ -67,11 +65,11 @@ public class JPAUtilsFieldsTest {
         Assert.assertNotNull(users);
         Assert.assertEquals(100, users.size());
         Assert.assertNotNull(users.get(0).getFirstname());
-        Assert.assertNotNull(users.get(0).getCountry());
+        Assert.assertNotNull(users.get(0).getEmail());
         Assert.assertNotNull(users.get(0).getRole());
         Assert.assertNull(users.get(0).getLastname());
         Assert.assertEquals("Jason", users.get(0).getFirstname());
-        Assert.assertEquals("China", users.get(0).getCountry());
+        Assert.assertEquals("jramos0@ox.ac.uk", users.get(0).getEmail());
         Assert.assertEquals(0, users.get(0).getRole().intValue());
     }
 
@@ -90,6 +88,16 @@ public class JPAUtilsFieldsTest {
         Assert.assertNull(users.get(0).getFirstname());
         Assert.assertEquals("Ramos", users.get(0).getLastname());
         Assert.assertEquals(1, users.get(0).getId().intValue());
+    }
+
+    // Currently unsupported
+    @Test(expected = NoSuchEntityFieldException.class)
+    public void testEmbeddedField() {
+
+        QueryParameters q = new QueryParameters();
+        q.getFields().add("address.country");
+
+        JPAUtils.queryEntities(em, User.class, q);
     }
 
     @Test(expected = NoSuchEntityFieldException.class)

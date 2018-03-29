@@ -6,7 +6,6 @@ import com.github.tfaga.lynx.enums.FilterOperation;
 import com.github.tfaga.lynx.test.entities.User;
 import com.github.tfaga.lynx.test.utils.JpaUtil;
 import com.github.tfaga.lynx.utils.JPAUtils;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -62,9 +61,9 @@ public class JPAUtilsCountTest {
         q.getFilters().add(qf);
 
         qf = new QueryFilter();
-        qf.setField("country");
+        qf.setField("email");
         qf.setOperation(FilterOperation.LIKE);
-        qf.setValue("%ina");
+        qf.setValue("%@mozilla.org");
         q.getFilters().add(qf);
 
         Long count = JPAUtils.queryEntitiesCount(em, User.class, q);

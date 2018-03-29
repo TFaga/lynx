@@ -3,25 +3,23 @@ package com.github.tfaga.lynx.test;
 import com.github.tfaga.lynx.beans.QueryFilter;
 import com.github.tfaga.lynx.beans.QueryParameters;
 import com.github.tfaga.lynx.enums.FilterOperation;
-import com.github.tfaga.lynx.exceptions.NoSuchEntityFieldException;
 import com.github.tfaga.lynx.exceptions.InvalidFieldValueException;
+import com.github.tfaga.lynx.exceptions.NoSuchEntityFieldException;
 import com.github.tfaga.lynx.test.entities.Project;
 import com.github.tfaga.lynx.test.entities.User;
 import com.github.tfaga.lynx.test.utils.JpaUtil;
 import com.github.tfaga.lynx.utils.JPAUtils;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+import javax.persistence.EntityManager;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-
-import javax.persistence.EntityManager;
 
 /**
  * @author Tilen Faganel
@@ -116,9 +114,9 @@ public class JPAUtilsFiltersTest {
         q.getFilters().add(qf);
 
         qf = new QueryFilter();
-        qf.setField("country");
+        qf.setField("email");
         qf.setOperation(FilterOperation.LIKE);
-        qf.setValue("%ina");
+        qf.setValue("%@mozilla.org");
         q.getFilters().add(qf);
 
         List<User> users = JPAUtils.queryEntities(em, User.class, q);
@@ -603,6 +601,29 @@ public class JPAUtilsFiltersTest {
 
         Assert.assertNotNull(users);
         Assert.assertEquals(60, users.size());
+    }
+
+    @Test
+    public void testEmbeddedRelation() {
+
+        QueryFilter qf = new QueryFilter();
+        qf.setField("address.country");
+        qf.setOperation(FilterOperation.EQ);
+        qf.setValue("China");
+
+        QueryParameters q = new QueryParameters();
+        q.getFilters().add(qf);
+
+        List<User> users = JPAUtils.queryEntities(em, User.class, q);
+
+        Assert.assertNotNull(users);
+        Assert.assertEquals(24, users.size());
+        Assert.assertNotNull(users.get(0).getAddress());
+        Assert.assertNotNull(users.get(0).getAddress().getCountry());
+        Assert.assertEquals("China", users.get(0).getAddress().getCountry());
+        Assert.assertNotNull(users.get(23).getAddress());
+        Assert.assertNotNull(users.get(23).getAddress().getCountry());
+        Assert.assertEquals("China", users.get(23).getAddress().getCountry());
     }
 
     @Test
