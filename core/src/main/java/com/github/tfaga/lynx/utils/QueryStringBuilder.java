@@ -17,6 +17,8 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -310,19 +312,7 @@ public class QueryStringBuilder {
 
         log.finest("Building offset string: " + value);
 
-        Long offset;
-
-        try {
-
-            offset = Long.parseLong(value);
-        } catch (NumberFormatException e) {
-
-            String msg = "Value for '" + key + "' is not a number: '" + value + "'";
-
-            log.finest(msg);
-
-            throw new QueryFormatException(msg, key, QueryFormatError.NOT_A_NUMBER);
-        }
+        Long offset = parseLong(key, value);
 
         if (offset < 0) {
 
@@ -340,19 +330,7 @@ public class QueryStringBuilder {
 
         log.finest("Building limit string: " + value);
 
-        Long limit;
-
-        try {
-
-            limit = Long.parseLong(value);
-        } catch (NumberFormatException e) {
-
-            String msg = "Value for '" + key + "' is not a number: '" + value + "'";
-
-            log.finest(msg);
-
-            throw new QueryFormatException(msg, key, QueryFormatError.NOT_A_NUMBER);
-        }
+        Long limit = parseLong(key, value);
 
         if (limit < 0) {
 
@@ -426,26 +404,17 @@ public class QueryStringBuilder {
 
         if (value == null || value.isEmpty()) return filterList;
 
-        List<String[]> filters = Arrays.stream(value.split("[(\\s|\\+)]+(?=([^']*'[^']*')*[^']*$)"))
-                .map(f -> f.split("[:]+(?=([^']*'[^']*')*[^']*$)"))
+        Pattern filterPattern = Pattern.compile("[:]+(?=([^']*'[^']*')*[^']*$)") ;
+
+        List<String[]> filters = Arrays.stream(value.split("[(\\s|+)]+(?=([^']*'[^']*')*[^']*$)"))
+                .map(filterPattern::split)
                 .collect(Collectors.toList());
 
         filters.stream().filter(f -> f.length == 2).forEach(f -> {
 
             QueryFilter qf = new QueryFilter();
             qf.setField(f[0]);
-
-            try {
-
-                qf.setOperation(FilterOperation.valueOf(f[1].toUpperCase()));
-            } catch (IllegalArgumentException e) {
-
-                String msg = "Constant in '" + key + "' does not exist: '" + value + "'";
-
-                log.finest(msg);
-
-                throw new QueryFormatException(msg, key, QueryFormatError.NO_SUCH_CONSTANT);
-            }
+            qf.setOperation(parseFilterOperation(key, f[1].toUpperCase()));
 
             if (qf.getOperation() == FilterOperation.ISNULL || qf.getOperation() ==
                     FilterOperation.ISNOTNULL) {
@@ -454,41 +423,38 @@ public class QueryStringBuilder {
             }
         });
 
+        Pattern valueListPattern = Pattern.compile("^\\[(.*)]$");
+        Pattern valuesPattern = Pattern.compile("[,]+(?=([^']*'[^']*')*[^']*$)");
+
+        Pattern valueDateTimePattern = Pattern.compile("^dt'(.*)'$");
+        Pattern valuePattern = Pattern.compile("(^')|('$)");
+
         filters.stream()
                 .filter(f -> f.length == 3)
                 .forEach(f -> {
 
                     QueryFilter qf = new QueryFilter();
                     qf.setField(f[0]);
+                    qf.setOperation(parseFilterOperation(key, f[1].toUpperCase()));
 
-                    try {
+                    Matcher matcher;
 
-                        qf.setOperation(FilterOperation.valueOf(f[1].toUpperCase()));
-                    } catch (IllegalArgumentException e) {
-
-                        String msg = "Constant in '" + key + "' does not exist: '" + value + "'";
-
-                        log.finest(msg);
-
-                        throw new QueryFormatException(msg, key, QueryFormatError.NO_SUCH_CONSTANT);
-                    }
-
-                    if (f[2].matches("^\\[.*\\]$") &&
+                    if ((matcher = valueListPattern.matcher(f[2])).find() &&
                             (qf.getOperation() == FilterOperation.IN ||
                             qf.getOperation() == FilterOperation.NIN ||
                             qf.getOperation() == FilterOperation.NINIC ||
                             qf.getOperation() == FilterOperation.INIC)) {
 
-                        String values = f[2].replaceAll("(^\\[)|(\\]$)", "");
+                        String values = matcher.group(1);
 
-                        Arrays.stream(values.split("[,]+(?=([^']*'[^']*')*[^']*$)"))
+                        Arrays.stream(valuesPattern.split(values))
                                 .filter(e -> !e.isEmpty()).distinct()
-                                .map(e -> e.replaceAll("(^')|('$)", ""))
+                                .map(e -> valuePattern.matcher(e).replaceAll(""))
                                 .forEach(e -> qf.getValues().add(e));
 
-                    } else if (f[2].matches("^dt'.*'$")) {
+                    } else if ((matcher = valueDateTimePattern.matcher(f[2])).find()) {
 
-                        Date d = parseDate(f[2].replaceAll("(^dt')|('$)", ""));
+                        Date d = parseDate(matcher.group(1));
 
                         if (d == null) {
 
@@ -502,7 +468,7 @@ public class QueryStringBuilder {
                         qf.setDateValue(d);
                     } else {
 
-                        qf.setValue(f[2].replaceAll("(^')|('$)", ""));
+                        qf.setValue(valuePattern.matcher(f[2]).replaceAll(""));
                     }
 
                     filterList.add(qf);
@@ -518,6 +484,36 @@ public class QueryStringBuilder {
         } catch (DateTimeParseException e) {
 
             return null;
+        }
+    }
+
+    private Long parseLong(String key, String value) {
+
+        try {
+
+            return Long.parseLong(value);
+        } catch (NumberFormatException e) {
+
+            String msg = "Value for '" + key + "' is not a number: '" + value + "'";
+
+            log.finest(msg);
+
+            throw new QueryFormatException(msg, key, QueryFormatError.NOT_A_NUMBER);
+        }
+    }
+
+    private FilterOperation parseFilterOperation(String key, String value) {
+
+        try {
+
+            return FilterOperation.valueOf(value);
+        } catch (IllegalArgumentException e) {
+
+            String msg = "Constant in '" + key + "' does not exist: '" + value + "'";
+
+            log.finest(msg);
+
+            throw new QueryFormatException(msg, key, QueryFormatError.NO_SUCH_CONSTANT);
         }
     }
 
