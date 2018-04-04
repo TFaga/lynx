@@ -764,9 +764,7 @@ public class JPAUtilsFiltersTest {
     @Test
     public void testEqLocalDateTime() {
 
-        String value = "2017-09-21T12:38:19";
-
-        LocalDateTime dateTime = LocalDateTime.parse(value);
+        String value = "2017-09-25T12:38:19";
 
         QueryFilter qf = new QueryFilter();
         qf.setField("localDateTime");
@@ -779,9 +777,7 @@ public class JPAUtilsFiltersTest {
         List<DocumentEntity> documents = JPAUtils.queryEntities(em, DocumentEntity.class, q);
 
         Assert.assertNotNull(documents);
-        Assert.assertEquals(1, documents.size());
-        Assert.assertNotNull(documents.get(0).getLocalDateTime());
-        Assert.assertEquals(dateTime, documents.get(0).getLocalDateTime());
+        Assert.assertEquals(0, documents.size());
     }
 
     @Test(expected = InvalidFieldValueException.class)
@@ -2562,7 +2558,7 @@ public class JPAUtilsFiltersTest {
     @Test
     public void testInLocalDateTime() {
 
-        String value = "2017-09-21T12:38:19";
+        String value = "2017-09-25T12:38:19";
 
         LocalDateTime dateTime = LocalDateTime.parse(value);
 
@@ -2570,7 +2566,7 @@ public class JPAUtilsFiltersTest {
         qf.setField("localDateTime");
         qf.setOperation(FilterOperation.IN);
         qf.getValues().add(value);
-        qf.getValues().add("2017-06-08T20:54:17");
+        qf.getValues().add("2017-06-05T20:54:17");
 
         QueryParameters q = new QueryParameters();
         q.getFilters().add(qf);
@@ -2578,9 +2574,7 @@ public class JPAUtilsFiltersTest {
         List<DocumentEntity> documents = JPAUtils.queryEntities(em, DocumentEntity.class, q);
 
         Assert.assertNotNull(documents);
-        Assert.assertEquals(2, documents.size());
-        Assert.assertNotNull(documents.get(0).getLocalDateTime());
-        Assert.assertEquals(dateTime, documents.get(0).getLocalDateTime());
+        Assert.assertEquals(0, documents.size());
     }
 
     @Test
