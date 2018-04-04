@@ -2,7 +2,7 @@ package com.github.tfaga.lynx.test;
 
 import com.github.tfaga.lynx.beans.QueryParameters;
 import com.github.tfaga.lynx.exceptions.NoSuchEntityFieldException;
-import com.github.tfaga.lynx.test.entities.User;
+import com.github.tfaga.lynx.test.entities.AccountEntity;
 import com.github.tfaga.lynx.test.utils.JpaUtil;
 import com.github.tfaga.lynx.utils.JPAUtils;
 import org.junit.Assert;
@@ -41,53 +41,50 @@ public class JPAUtilsFieldsTest {
     public void testSingleField() {
 
         QueryParameters q = new QueryParameters();
-        q.getFields().add("firstname");
+        q.getFields().add("name");
 
-        List<User> users = JPAUtils.queryEntities(em, User.class, q);
+        List<AccountEntity> accounts = JPAUtils.queryEntities(em, AccountEntity.class, q);
 
-        Assert.assertNotNull(users);
-        Assert.assertEquals(100, users.size());
-        Assert.assertNotNull(users.get(0).getFirstname());
-        Assert.assertNull(users.get(0).getLastname());
-        Assert.assertEquals("Jason", users.get(0).getFirstname());
+        Assert.assertNotNull(accounts);
+        Assert.assertEquals(50, accounts.size());
+        Assert.assertNotNull(accounts.get(0).getName());
+        Assert.assertNull(accounts.get(0).getValue());
+        Assert.assertEquals("Evvie", accounts.get(0).getName());
     }
 
     @Test
     public void testMultipleFields() {
 
         QueryParameters q = new QueryParameters();
-        q.getFields().add("firstname");
-        q.getFields().add("email");
-        q.getFields().add("role");
+        q.getFields().add("name");
+        q.getFields().add("value");
 
-        List<User> users = JPAUtils.queryEntities(em, User.class, q);
+        List<AccountEntity> accounts = JPAUtils.queryEntities(em, AccountEntity.class, q);
 
-        Assert.assertNotNull(users);
-        Assert.assertEquals(100, users.size());
-        Assert.assertNotNull(users.get(0).getFirstname());
-        Assert.assertNotNull(users.get(0).getEmail());
-        Assert.assertNotNull(users.get(0).getRole());
-        Assert.assertNull(users.get(0).getLastname());
-        Assert.assertEquals("Jason", users.get(0).getFirstname());
-        Assert.assertEquals("jramos0@ox.ac.uk", users.get(0).getEmail());
-        Assert.assertEquals(0, users.get(0).getRole().intValue());
+        Assert.assertNotNull(accounts);
+        Assert.assertEquals(50, accounts.size());
+        Assert.assertNotNull(accounts.get(0).getName());
+        Assert.assertNotNull(accounts.get(0).getValue());
+        Assert.assertNull(accounts.get(0).getSize());
+        Assert.assertEquals("Evvie", accounts.get(0).getName());
+        Assert.assertEquals(34, accounts.get(0).getValue().intValue());
     }
 
     @Test
     public void testIdAvailable() {
 
         QueryParameters q = new QueryParameters();
-        q.getFields().add("lastname");
+        q.getFields().add("name");
 
-        List<User> users = JPAUtils.queryEntities(em, User.class, q);
+        List<AccountEntity> accounts = JPAUtils.queryEntities(em, AccountEntity.class, q);
 
-        Assert.assertNotNull(users);
-        Assert.assertEquals(100, users.size());
-        Assert.assertNotNull(users.get(0).getLastname());
-        Assert.assertNotNull(users.get(0).getId());
-        Assert.assertNull(users.get(0).getFirstname());
-        Assert.assertEquals("Ramos", users.get(0).getLastname());
-        Assert.assertEquals(1, users.get(0).getId().intValue());
+        Assert.assertNotNull(accounts);
+        Assert.assertEquals(50, accounts.size());
+        Assert.assertNotNull(accounts.get(0).getName());
+        Assert.assertNotNull(accounts.get(0).getId());
+        Assert.assertNull(accounts.get(0).getValue());
+        Assert.assertEquals("Evvie", accounts.get(0).getName());
+        Assert.assertEquals(1, accounts.get(0).getId().intValue());
     }
 
     @Test
@@ -96,14 +93,14 @@ public class JPAUtilsFieldsTest {
         QueryParameters q = new QueryParameters();
         q.getFields().add("id");
 
-        List<User> users = JPAUtils.queryEntities(em, User.class, q);
+        List<AccountEntity> accounts = JPAUtils.queryEntities(em, AccountEntity.class, q);
 
-        Assert.assertNotNull(users);
-        Assert.assertEquals(100, users.size());
-        Assert.assertNotNull(users.get(0).getId());
-        Assert.assertNull(users.get(0).getFirstname());
-        Assert.assertNotNull(users.get(99).getId());
-        Assert.assertNull(users.get(99).getFirstname());
+        Assert.assertNotNull(accounts);
+        Assert.assertEquals(50, accounts.size());
+        Assert.assertNotNull(accounts.get(0).getId());
+        Assert.assertNull(accounts.get(0).getName());
+        Assert.assertNotNull(accounts.get(49).getId());
+        Assert.assertNull(accounts.get(49).getName());
     }
 
     // Currently unsupported
@@ -113,7 +110,7 @@ public class JPAUtilsFieldsTest {
         QueryParameters q = new QueryParameters();
         q.getFields().add("address.country");
 
-        JPAUtils.queryEntities(em, User.class, q);
+        JPAUtils.queryEntities(em, AccountEntity.class, q);
     }
 
     @Test(expected = NoSuchEntityFieldException.class)
@@ -122,6 +119,6 @@ public class JPAUtilsFieldsTest {
         QueryParameters q = new QueryParameters();
         q.getFields().add("something");
 
-        JPAUtils.queryEntities(em, User.class, q);
+        JPAUtils.queryEntities(em, AccountEntity.class, q);
     }
 }

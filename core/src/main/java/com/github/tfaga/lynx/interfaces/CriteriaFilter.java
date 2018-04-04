@@ -5,6 +5,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 /**
+ * @author Tilen Faganel
  * @since 1.1.0
  */
 @FunctionalInterface

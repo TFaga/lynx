@@ -3,7 +3,7 @@ package com.github.tfaga.lynx.test;
 import com.github.tfaga.lynx.beans.QueryFilter;
 import com.github.tfaga.lynx.beans.QueryParameters;
 import com.github.tfaga.lynx.enums.FilterOperation;
-import com.github.tfaga.lynx.test.entities.User;
+import com.github.tfaga.lynx.test.entities.AccountEntity;
 import com.github.tfaga.lynx.test.utils.JpaUtil;
 import com.github.tfaga.lynx.utils.JPAUtils;
 import org.junit.Assert;
@@ -40,10 +40,10 @@ public class JPAUtilsCountTest {
     @Test
     public void testEmptyQueryCount() {
 
-        Long count = JPAUtils.queryEntitiesCount(em, User.class);
+        Long count = JPAUtils.queryEntitiesCount(em, AccountEntity.class);
 
         Assert.assertNotNull(count);
-        Assert.assertEquals((long)100, count.longValue());
+        Assert.assertEquals((long)50, count.longValue());
     }
 
     @Test
@@ -52,21 +52,21 @@ public class JPAUtilsCountTest {
         QueryParameters q = new QueryParameters();
 
         QueryFilter qf = new QueryFilter();
-        qf.setField("firstname");
+        qf.setField("name");
         qf.setOperation(FilterOperation.IN);
-        qf.getValues().add("Bruce");
-        qf.getValues().add("Karen");
-        qf.getValues().add("Sandra");
-        qf.getValues().add("Laura");
+        qf.getValues().add("Caryl");
+        qf.getValues().add("Jarred");
+        qf.getValues().add("Hamlin");
+        qf.getValues().add("Retha");
         q.getFilters().add(qf);
 
         qf = new QueryFilter();
-        qf.setField("email");
+        qf.setField("address.country");
         qf.setOperation(FilterOperation.LIKE);
-        qf.setValue("%@mozilla.org");
+        qf.setValue("C%");
         q.getFilters().add(qf);
 
-        Long count = JPAUtils.queryEntitiesCount(em, User.class, q);
+        Long count = JPAUtils.queryEntitiesCount(em, AccountEntity.class, q);
 
         Assert.assertNotNull(count);
         Assert.assertEquals((long)2, count.longValue());

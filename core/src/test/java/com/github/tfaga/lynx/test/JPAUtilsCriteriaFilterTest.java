@@ -3,7 +3,7 @@ package com.github.tfaga.lynx.test;
 import com.github.tfaga.lynx.beans.QueryFilter;
 import com.github.tfaga.lynx.beans.QueryParameters;
 import com.github.tfaga.lynx.enums.FilterOperation;
-import com.github.tfaga.lynx.test.entities.User;
+import com.github.tfaga.lynx.test.entities.AccountEntity;
 import com.github.tfaga.lynx.test.utils.JpaUtil;
 import com.github.tfaga.lynx.utils.JPAUtils;
 import org.junit.Assert;
@@ -40,115 +40,102 @@ public class JPAUtilsCriteriaFilterTest {
     @Test
     public void testQueryWithoutCriteriaFilter() {
 
-        List<User> users = JPAUtils.queryEntities(em, User.class, new QueryParameters());
+        List<AccountEntity> accounts = JPAUtils.queryEntities(em, AccountEntity.class, new QueryParameters());
 
-        Assert.assertNotNull(users);
-        Assert.assertEquals(100, users.size());
+        Assert.assertNotNull(accounts);
+        Assert.assertEquals(50, accounts.size());
     }
 
     @Test
     public void testQueryCriteriaFilter() {
 
-        List<User> users = JPAUtils.queryEntities(em, User.class,
-                (p, cb, r) -> cb.and(p, cb.equal(r.get("firstname"), "Antonio")));
+        List<AccountEntity> accounts = JPAUtils.queryEntities(em, AccountEntity.class,
+                (p, cb, r) -> cb.and(p, cb.equal(r.get("name"), "Selena")));
 
-        Assert.assertNotNull(users);
-        Assert.assertEquals(3, users.size());
+        Assert.assertNotNull(accounts);
+        Assert.assertEquals(1, accounts.size());
 
-        Assert.assertNotNull(users.get(0));
-        Assert.assertEquals("Antonio", users.get(0).getFirstname());
-        Assert.assertNotNull(users.get(1));
-        Assert.assertEquals("Antonio", users.get(1).getFirstname());
-        Assert.assertNotNull(users.get(2));
-        Assert.assertEquals("Antonio", users.get(2).getFirstname());
+        Assert.assertNotNull(accounts.get(0));
+        Assert.assertEquals("Selena", accounts.get(0).getName());
 
-        Long usersCount = JPAUtils.queryEntitiesCount(em, User.class,
-                (p, cb, r) -> cb.and(p, cb.equal(r.get("firstname"), "Antonio")));
+        Long accountsCount = JPAUtils.queryEntitiesCount(em, AccountEntity.class,
+                (p, cb, r) -> cb.and(p, cb.equal(r.get("name"), "Selena")));
 
-        Assert.assertNotNull(usersCount);
-        Assert.assertEquals(3, usersCount.longValue());
+        Assert.assertNotNull(accountsCount);
+        Assert.assertEquals(1, accountsCount.longValue());
     }
 
     @Test
     public void testQueryCriteriaFilterWithParamsAnd() {
 
         QueryFilter qf = new QueryFilter();
-        qf.setField("lastname");
+        qf.setField("address.country");
         qf.setOperation(FilterOperation.EQ);
-        qf.setValue("Turner");
+        qf.setValue("China");
 
         QueryParameters q = new QueryParameters();
         q.getFilters().add(qf);
 
-        List<User> users = JPAUtils.queryEntities(em, User.class, q,
-                (p, cb, r) -> cb.and(p, cb.equal(r.get("firstname"), "Antonio")));
+        List<AccountEntity> accounts = JPAUtils.queryEntities(em, AccountEntity.class, q,
+                (p, cb, r) -> cb.and(p, cb.equal(r.get("name"), "Stafford")));
 
-        Assert.assertNotNull(users);
-        Assert.assertEquals(1, users.size());
+        Assert.assertNotNull(accounts);
+        Assert.assertEquals(1, accounts.size());
 
-        Assert.assertNotNull(users.get(0));
-        Assert.assertEquals("Antonio", users.get(0).getFirstname());
-        Assert.assertEquals("Turner", users.get(0).getLastname());
+        Assert.assertNotNull(accounts.get(0));
+        Assert.assertEquals("Stafford", accounts.get(0).getName());
 
-        Long usersCount = JPAUtils.queryEntitiesCount(em, User.class, q,
-                (p, cb, r) -> cb.and(p, cb.equal(r.get("firstname"), "Antonio")));
+        Long accountsCount = JPAUtils.queryEntitiesCount(em, AccountEntity.class, q,
+                (p, cb, r) -> cb.and(p, cb.equal(r.get("name"), "Stafford")));
 
-        Assert.assertNotNull(usersCount);
-        Assert.assertEquals(1, usersCount.longValue());
+        Assert.assertNotNull(accountsCount);
+        Assert.assertEquals(1, accountsCount.longValue());
     }
 
     @Test
     public void testQueryCriteriaFilterWithParamsOr() {
 
         QueryFilter qf = new QueryFilter();
-        qf.setField("lastname");
+        qf.setField("name");
         qf.setOperation(FilterOperation.EQ);
-        qf.setValue("Turner");
+        qf.setValue("Elena");
 
         QueryParameters q = new QueryParameters();
         q.getFilters().add(qf);
 
-        List<User> users = JPAUtils.queryEntities(em, User.class, q,
-                (p, cb, r) -> cb.or(p, cb.equal(r.get("firstname"), "Antonio")));
+        List<AccountEntity> accounts = JPAUtils.queryEntities(em, AccountEntity.class, q,
+                (p, cb, r) -> cb.or(p, cb.equal(r.get("name"), "Stafford")));
 
-        Assert.assertNotNull(users);
-        Assert.assertEquals(4, users.size());
+        Assert.assertNotNull(accounts);
+        Assert.assertEquals(2, accounts.size());
 
-        Assert.assertNotNull(users.get(0));
-        Assert.assertEquals("Antonio", users.get(0).getFirstname());
-        Assert.assertEquals("Mills", users.get(0).getLastname());
-        Assert.assertNotNull(users.get(1));
-        Assert.assertEquals("Antonio", users.get(1).getFirstname());
-        Assert.assertEquals("Carroll", users.get(1).getLastname());
-        Assert.assertNotNull(users.get(2));
-        Assert.assertEquals("Antonio", users.get(2).getFirstname());
-        Assert.assertEquals("Turner", users.get(2).getLastname());
-        Assert.assertNotNull(users.get(3));
-        Assert.assertEquals("Bonnie", users.get(3).getFirstname());
-        Assert.assertEquals("Turner", users.get(3).getLastname());
+        Assert.assertNotNull(accounts.get(0));
+        Assert.assertEquals("Elena", accounts.get(0).getName());
+        Assert.assertNotNull(accounts.get(1));
+        Assert.assertEquals("Stafford", accounts.get(1).getName());
 
-        Long usersCount = JPAUtils.queryEntitiesCount(em, User.class, q,
-                (p, cb, r) -> cb.or(p, cb.equal(r.get("firstname"), "Antonio")));
+        Long usersCount = JPAUtils.queryEntitiesCount(em, AccountEntity.class, q,
+                (p, cb, r) -> cb.or(p, cb.equal(r.get("name"), "Stafford")));
 
         Assert.assertNotNull(usersCount);
-        Assert.assertEquals(4, usersCount.longValue());
+        Assert.assertEquals(2, usersCount.longValue());
     }
 
     @Test
     public void testQueryWithCriteriaFilterAndWithFields() {
 
         QueryParameters q = new QueryParameters();
-        q.getFields().add("firstname");
+        q.getFields().add("name");
 
-        List<User> users = JPAUtils.queryEntities(em, User.class, q,
-                (p, cb, r) -> cb.and(p, cb.equal(r.get("lastname"), "Stewart")));
+        List<AccountEntity> accounts = JPAUtils.queryEntities(em, AccountEntity.class, q,
+                (p, cb, r) -> cb.and(p, cb.equal(r.get("value"), 46)));
 
-        Assert.assertNotNull(users);
-        Assert.assertEquals(1, users.size());
+        Assert.assertNotNull(accounts);
+        Assert.assertEquals(3, accounts.size());
 
-        Assert.assertNotNull(users.get(0));
-        Assert.assertNotNull(users.get(0).getFirstname());
-        Assert.assertNull(users.get(0).getLastname());
-        Assert.assertEquals("Donald", users.get(0).getFirstname());
+        Assert.assertNotNull(accounts.get(0));
+        Assert.assertNotNull(accounts.get(0).getName());
+        Assert.assertNull(accounts.get(0).getValue());
+        Assert.assertEquals("Lauritz", accounts.get(0).getName());
     }
 }

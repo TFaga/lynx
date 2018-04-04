@@ -9,8 +9,18 @@
 
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
 
-        <class>com.github.tfaga.lynx.test.entities.User</class>
-        <class>com.github.tfaga.lynx.test.entities.Project</class>
+        <class>com.github.tfaga.lynx.test.entities.DocumentEntity</class>
+        <class>com.github.tfaga.lynx.test.entities.AccountEntity</class>
+
+        <class>com.github.tfaga.lynx.test.converters.CustomObjectAttributeConverter</class>
+        <class>com.github.tfaga.lynx.test.converters.DurationAttributeConverter</class>
+        <class>com.github.tfaga.lynx.test.converters.InstantAttributeConverter</class>
+        <class>com.github.tfaga.lynx.test.converters.LocalDateAttributeConverter</class>
+        <class>com.github.tfaga.lynx.test.converters.LocalDateTimeAttributeConverter</class>
+        <class>com.github.tfaga.lynx.test.converters.LocalTimeAttributeConverter</class>
+        <class>com.github.tfaga.lynx.test.converters.OffsetDateTimeAttributeConverter</class>
+        <class>com.github.tfaga.lynx.test.converters.OffsetTimeAttributeConverter</class>
+        <class>com.github.tfaga.lynx.test.converters.UuidAttributeConverter</class>
 
         <properties>
             <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/>
@@ -34,8 +44,8 @@
 
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
-        <class>com.github.tfaga.lynx.test.entities.User</class>
-        <class>com.github.tfaga.lynx.test.entities.Project</class>
+        <class>com.github.tfaga.lynx.test.entities.DocumentEntity</class>
+        <class>com.github.tfaga.lynx.test.entities.AccountEntity</class>
 
         <properties>
             <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/>

@@ -5,9 +5,11 @@ import com.github.tfaga.lynx.beans.CriteriaWhereQuery;
 import com.github.tfaga.lynx.beans.QueryFilter;
 import com.github.tfaga.lynx.beans.QueryParameters;
 import com.github.tfaga.lynx.enums.OrderDirection;
+import com.github.tfaga.lynx.exceptions.ConversionException;
 import com.github.tfaga.lynx.exceptions.InvalidEntityFieldException;
 import com.github.tfaga.lynx.exceptions.InvalidFieldValueException;
 import com.github.tfaga.lynx.exceptions.NoSuchEntityFieldException;
+import com.github.tfaga.lynx.helper.ConversionHelper;
 import com.github.tfaga.lynx.interfaces.CriteriaFilter;
 
 import javax.persistence.EntityManager;
@@ -21,15 +23,15 @@ import javax.persistence.metamodel.Metamodel;
 import javax.persistence.metamodel.SingularAttribute;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeParseException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
  * @author Tilen Faganel
- * @version 1.0.0
  * @since 1.0.0
  */
 public class JPAUtils {
@@ -291,121 +293,89 @@ public class JPAUtils {
 
                 @SuppressWarnings("unchecked")
                 Path<String> stringField = (Path<String>) entityField;
-                @SuppressWarnings("unchecked")
-                Path<Date> dateField = (Path<Date>) entityField;
-                @SuppressWarnings("unchecked")
-                Path<Comparable> compField = (Path<Comparable>) entityField;
 
                 switch (f.getOperation()) {
 
                     case EQ:
-                        if (f.getDateValue() != null && entityField.getJavaType().equals(Date.class)) {
-                            np = cb.equal(entityField, f.getDateValue());
-                        } else if (f.getValue() != null) {
+                        if (f.getValue() != null) {
                             np = cb.equal(entityField, getValueForPath(entityField, f.getValue()));
                         }
                         break;
                     case EQIC:
-                        if (entityField.getJavaType().equals(String.class) && f.getValue() != null) {
-                            np = cb.equal(cb.lower(stringField), f.getValue().toLowerCase());
+                        if (isClassStringLike(entityField.getJavaType()) && f.getValue() != null) {
+                            np = cb.equal(cb.lower(stringField),
+                                    getValueForPath(entityField, f.getValue().toLowerCase()));
                         }
                         break;
                     case NEQ:
-                        if (f.getDateValue() != null && entityField.getJavaType().equals(Date.class)) {
-                            np = cb.notEqual(entityField, f.getDateValue());
-                        } else if (f.getValue() != null) {
+                        if (f.getValue() != null) {
                             np = cb.notEqual(entityField, getValueForPath(entityField, f.getValue()));
                         }
                         break;
                     case NEQIC:
-                        if (entityField.getJavaType().equals(String.class) && f.getValue() != null) {
-                            np = cb.notEqual(cb.lower(stringField), f.getValue().toLowerCase());
+                        if (isClassStringLike(entityField.getJavaType()) && f.getValue() != null) {
+                            np = cb.notEqual(cb.lower(stringField),
+                                    getValueForPath(entityField, f.getValue().toLowerCase()));
                         }
                         break;
                     case LIKE:
-                        if (entityField.getJavaType().equals(String.class) && f.getValue() != null) {
+                        if (entityField.getJavaType() == String.class && f.getValue() != null) {
                             np = cb.like(stringField, f.getValue());
                         }
                         break;
                     case LIKEIC:
-                        if (entityField.getJavaType().equals(String.class) && f.getValue() != null) {
+                        if (entityField.getJavaType() == String.class && f.getValue() != null) {
                             np = cb.like(cb.lower(stringField), f.getValue().toLowerCase());
                         }
                         break;
                     case GT:
-                        if (Date.class.isAssignableFrom(entityField.getJavaType()) ||
-                                Number.class.isAssignableFrom(entityField.getJavaType()) ||
-                                String.class.isAssignableFrom(entityField.getJavaType())) {
-
-                            if (f.getDateValue() != null && entityField.getJavaType().equals(Date.class)) {
-                                np = cb.greaterThan(dateField, f.getDateValue());
-                            } else if (f.getValue() != null) {
-                                np = cb.greaterThan(compField, (Comparable) getValueForPath(stringField, f.getValue()));
-                            }
+                        if (isClassComparable(entityField.getJavaType()) && f.getValue() != null) {
+                            np = cb.greaterThan(entityField, (Comparable) getValueForPath(stringField, f.getValue()));
                         }
                         break;
                     case GTE:
-                        if (Date.class.isAssignableFrom(entityField.getJavaType()) ||
-                                Number.class.isAssignableFrom(entityField.getJavaType()) ||
-                                String.class.isAssignableFrom(entityField.getJavaType())) {
-
-                            if (f.getDateValue() != null && entityField.getJavaType().equals(Date.class)) {
-                                np = cb.greaterThanOrEqualTo(dateField, f.getDateValue());
-                            } else if (f.getValue() != null) {
-                                np = cb.greaterThanOrEqualTo(compField, (Comparable) getValueForPath(stringField, f.getValue()));
-                            }
+                        if (isClassComparable(entityField.getJavaType()) && f.getValue() != null) {
+                            np = cb.greaterThanOrEqualTo(entityField, (Comparable) getValueForPath(stringField, f.getValue()));
                         }
                         break;
                     case LT:
-                        if (Date.class.isAssignableFrom(entityField.getJavaType()) ||
-                                Number.class.isAssignableFrom(entityField.getJavaType()) ||
-                                String.class.isAssignableFrom(entityField.getJavaType())) {
-
-                            if (f.getDateValue() != null && entityField.getJavaType().equals(Date.class)) {
-                                np = cb.lessThan(dateField, f.getDateValue());
-                            } else if (f.getValue() != null) {
-                                np = cb.lessThan(compField, (Comparable) getValueForPath(stringField, f.getValue()));
-                            }
+                        if (isClassComparable(entityField.getJavaType()) && f.getValue() != null) {
+                            np = cb.lessThan(entityField, (Comparable) getValueForPath(stringField, f.getValue()));
                         }
                         break;
                     case LTE:
-                        if (Date.class.isAssignableFrom(entityField.getJavaType()) ||
-                                Number.class.isAssignableFrom(entityField.getJavaType()) ||
-                                String.class.isAssignableFrom(entityField.getJavaType())) {
-
-                            if (f.getDateValue() != null && entityField.getJavaType().equals(Date.class)) {
-                                np = cb.lessThanOrEqualTo(dateField, f.getDateValue());
-                            } else if (f.getValue() != null) {
-                                np = cb.lessThanOrEqualTo(compField, (Comparable) getValueForPath(stringField, f.getValue()));
-                            }
+                        if (isClassComparable(entityField.getJavaType()) && f.getValue() != null) {
+                            np = cb.lessThanOrEqualTo(entityField, (Comparable) getValueForPath(stringField, f.getValue()));
                         }
                         break;
                     case IN:
-                        np = stringField.in(f.getValues().stream()
+                        np = entityField.in(f.getValues().stream()
                                 .filter(Objects::nonNull)
                                 .map(s -> getValueForPath(entityField, s)).collect(Collectors
                                         .toList()));
                         break;
                     case INIC:
-                        if (entityField.getJavaType().equals(String.class)) {
+                        if (isClassStringLike(entityField.getJavaType())) {
                             np = cb.lower(stringField)
                                     .in(f.getValues().stream()
                                             .filter(Objects::nonNull)
                                             .map(String::toLowerCase)
+                                            .map(s ->  getValueForPath(entityField, s))
                                             .collect(Collectors.toList()));
                         }
                         break;
                     case NIN:
-                        np = cb.not(stringField.in(f.getValues().stream()
+                        np = cb.not(entityField.in(f.getValues().stream()
                                 .filter(Objects::nonNull)
                                 .map(s -> getValueForPath(entityField, s)).collect(Collectors.toList())));
                         break;
                     case NINIC:
-                        if (entityField.getJavaType().equals(String.class)) {
+                        if (isClassStringLike(entityField.getJavaType())) {
                             np = cb.not(cb.lower(stringField)
                                     .in(f.getValues().stream()
                                             .filter(Objects::nonNull)
                                             .map(String::toLowerCase)
+                                            .map(s ->  getValueForPath(entityField, s))
                                             .collect(Collectors.toList())));
                         }
                         break;
@@ -505,29 +475,12 @@ public class JPAUtils {
 
     private static Object getValueForPath(Path path, String value) {
 
-        if (value == null) return null;
-
-        Class c = path.getModel().getBindableJavaType();
-
         try {
-
-            if (c.equals(Date.class))
-                return Date.from(ZonedDateTime.parse(value).toInstant());
-
-            if (c.equals(Boolean.class))
-                return Boolean.parseBoolean(value);
-
-            if (c.isEnum())
-                return Enum.valueOf(c, value);
-
-            if (c.equals(UUID.class))
-                return UUID.fromString(value);
-        } catch (IllegalArgumentException | DateTimeParseException e) {
+            return ConversionHelper.toTargetObject(path.getModel().getBindableJavaType(), value);
+        } catch (ConversionException e) {
 
             throw new InvalidFieldValueException(e.getMessage(), path.getAlias(), value);
         }
-
-        return value;
     }
 
     private static CriteriaField getCriteriaField(String fieldName, Root<?> r) {
@@ -565,5 +518,17 @@ public class JPAUtils {
         }
 
         return new CriteriaField(path, containsToMany);
+    }
+
+    private static Boolean isClassStringLike(Class javaClass) {
+
+        return javaClass == String.class ||
+                javaClass == Character.class || javaClass == char.class ||
+                javaClass == Character[].class || javaClass == char[].class;
+    }
+
+    private static Boolean isClassComparable(Class javaClass) {
+
+        return Comparable.class.isAssignableFrom(javaClass) || javaClass.isPrimitive();
     }
 }

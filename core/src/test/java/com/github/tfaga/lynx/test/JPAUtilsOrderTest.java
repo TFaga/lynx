@@ -5,8 +5,8 @@ import com.github.tfaga.lynx.beans.QueryParameters;
 import com.github.tfaga.lynx.enums.OrderDirection;
 import com.github.tfaga.lynx.exceptions.InvalidEntityFieldException;
 import com.github.tfaga.lynx.exceptions.NoSuchEntityFieldException;
-import com.github.tfaga.lynx.test.entities.Project;
-import com.github.tfaga.lynx.test.entities.User;
+import com.github.tfaga.lynx.test.entities.AccountEntity;
+import com.github.tfaga.lynx.test.entities.DocumentEntity;
 import com.github.tfaga.lynx.test.utils.JpaUtil;
 import com.github.tfaga.lynx.utils.JPAUtils;
 import org.junit.Assert;
@@ -47,40 +47,40 @@ public class JPAUtilsOrderTest {
     public void testSingleOrder() {
 
         QueryOrder qo = new QueryOrder();
-        qo.setField("firstname");
+        qo.setField("name");
         qo.setOrder(OrderDirection.ASC);
 
         QueryParameters q = new QueryParameters();
         q.getOrder().add(qo);
 
-        List<User> users = JPAUtils.queryEntities(em, User.class, q);
+        List<AccountEntity> accounts = JPAUtils.queryEntities(em, AccountEntity.class, q);
 
-        Assert.assertNotNull(users);
-        Assert.assertEquals(100, users.size());
-        Assert.assertNotNull(users.get(0).getFirstname());
-        Assert.assertEquals("Amanda", users.get(0).getFirstname());
-        Assert.assertNotNull(users.get(99).getFirstname());
-        Assert.assertEquals("Victor", users.get(99).getFirstname());
+        Assert.assertNotNull(accounts);
+        Assert.assertEquals(50, accounts.size());
+        Assert.assertNotNull(accounts.get(0).getName());
+        Assert.assertEquals("Aurilia", accounts.get(0).getName());
+        Assert.assertNotNull(accounts.get(49).getName());
+        Assert.assertEquals("Zea", accounts.get(49).getName());
     }
 
     @Test
     public void testSingleOrderDesc() {
 
         QueryOrder qo = new QueryOrder();
-        qo.setField("lastname");
+        qo.setField("value");
         qo.setOrder(OrderDirection.DESC);
 
         QueryParameters q = new QueryParameters();
         q.getOrder().add(qo);
 
-        List<User> users = JPAUtils.queryEntities(em, User.class, q);
+        List<AccountEntity> accounts = JPAUtils.queryEntities(em, AccountEntity.class, q);
 
-        Assert.assertNotNull(users);
-        Assert.assertEquals(100, users.size());
-        Assert.assertNotNull(users.get(0).getLastname());
-        Assert.assertEquals("Willis", users.get(0).getLastname());
-        Assert.assertNotNull(users.get(99).getLastname());
-        Assert.assertEquals("Austin", users.get(99).getLastname());
+        Assert.assertNotNull(accounts);
+        Assert.assertEquals(50, accounts.size());
+        Assert.assertNotNull(accounts.get(0).getName());
+        Assert.assertEquals(98, accounts.get(0).getValue().intValue());
+        Assert.assertNotNull(accounts.get(49).getName());
+        Assert.assertEquals(8, accounts.get(49).getValue().intValue());
     }
 
     @Test
@@ -89,51 +89,46 @@ public class JPAUtilsOrderTest {
         QueryParameters q = new QueryParameters();
 
         QueryOrder qo = new QueryOrder();
-        qo.setField("role");
+        qo.setField("value");
         qo.setOrder(OrderDirection.DESC);
         q.getOrder().add(qo);
 
         qo = new QueryOrder();
-        qo.setField("lastname");
+        qo.setField("name");
         qo.setOrder(OrderDirection.ASC);
         q.getOrder().add(qo);
 
-        qo = new QueryOrder();
-        qo.setField("firstname");
-        qo.setOrder(OrderDirection.DESC);
-        q.getOrder().add(qo);
+        List<AccountEntity> accounts = JPAUtils.queryEntities(em, AccountEntity.class, q);
 
-        List<User> users = JPAUtils.queryEntities(em, User.class, q);
-
-        Assert.assertNotNull(users);
-        Assert.assertEquals(100, users.size());
-        Assert.assertNotNull(users.get(0).getFirstname());
-        Assert.assertNotNull(users.get(0).getLastname());
-        Assert.assertEquals("Larry", users.get(0).getFirstname());
-        Assert.assertEquals("Bailey", users.get(0).getLastname());
-        Assert.assertNotNull(users.get(99).getFirstname());
-        Assert.assertNotNull(users.get(99).getLastname());
-        Assert.assertEquals("Bonnie", users.get(99).getFirstname());
-        Assert.assertEquals("Willis", users.get(99).getLastname());
+        Assert.assertNotNull(accounts);
+        Assert.assertEquals(50, accounts.size());
+        Assert.assertNotNull(accounts.get(0).getValue());
+        Assert.assertNotNull(accounts.get(0).getName());
+        Assert.assertEquals(98, accounts.get(0).getValue().intValue());
+        Assert.assertEquals("Basile", accounts.get(0).getName());
+        Assert.assertNotNull(accounts.get(1).getValue());
+        Assert.assertNotNull(accounts.get(1).getName());
+        Assert.assertEquals(98, accounts.get(1).getValue().intValue());
+        Assert.assertEquals("Kathleen", accounts.get(1).getName());
     }
 
     @Test
     public void testNullDirection() {
 
         QueryOrder qo = new QueryOrder();
-        qo.setField("lastname");
+        qo.setField("name");
 
         QueryParameters q = new QueryParameters();
         q.getOrder().add(qo);
 
-        List<User> users = JPAUtils.queryEntities(em, User.class, q);
+        List<AccountEntity> accounts = JPAUtils.queryEntities(em, AccountEntity.class, q);
 
-        Assert.assertNotNull(users);
-        Assert.assertEquals(100, users.size());
-        Assert.assertNotNull(users.get(0).getLastname());
-        Assert.assertEquals("Austin", users.get(0).getLastname());
-        Assert.assertNotNull(users.get(99).getLastname());
-        Assert.assertEquals("Willis", users.get(99).getLastname());
+        Assert.assertNotNull(accounts);
+        Assert.assertEquals(50, accounts.size());
+        Assert.assertNotNull(accounts.get(0).getName());
+        Assert.assertEquals("Aurilia", accounts.get(0).getName());
+        Assert.assertNotNull(accounts.get(49).getName());
+        Assert.assertEquals("Zea", accounts.get(49).getName());
     }
 
     @Test
@@ -144,15 +139,15 @@ public class JPAUtilsOrderTest {
         QueryParameters q = new QueryParameters();
         q.getOrder().add(qo);
 
-        List<User> users = JPAUtils.queryEntities(em, User.class, q)
-                .stream().sorted(Comparator.comparing(User::getId)).collect(Collectors.toList());
+        List<AccountEntity> accounts = JPAUtils.queryEntities(em, AccountEntity.class, q)
+                .stream().sorted(Comparator.comparing(AccountEntity::getId)).collect(Collectors.toList());
 
-        Assert.assertNotNull(users);
-        Assert.assertEquals(100, users.size());
-        Assert.assertNotNull(users.get(0).getLastname());
-        Assert.assertEquals("Ramos", users.get(0).getLastname());
-        Assert.assertNotNull(users.get(99).getLastname());
-        Assert.assertEquals("Hall", users.get(99).getLastname());
+        Assert.assertNotNull(accounts);
+        Assert.assertEquals(50, accounts.size());
+        Assert.assertNotNull(accounts.get(0).getName());
+        Assert.assertEquals("Evvie", accounts.get(0).getName());
+        Assert.assertNotNull(accounts.get(49).getName());
+        Assert.assertEquals("Cari", accounts.get(49).getName());
     }
 
     @Test
@@ -167,7 +162,7 @@ public class JPAUtilsOrderTest {
 
         try {
 
-            JPAUtils.queryEntities(em, User.class, q);
+            JPAUtils.queryEntities(em, AccountEntity.class, q);
             Assert.fail("No exception was thrown");
         } catch (NoSuchEntityFieldException e) {
 
@@ -179,7 +174,7 @@ public class JPAUtilsOrderTest {
     public void testCaseSensitiveField() {
 
         QueryOrder qo = new QueryOrder();
-        qo.setField("firsTNAmE");
+        qo.setField("NAmE");
         qo.setOrder(OrderDirection.ASC);
 
         QueryParameters q = new QueryParameters();
@@ -187,11 +182,11 @@ public class JPAUtilsOrderTest {
 
         try {
 
-            JPAUtils.queryEntities(em, User.class, q);
+            JPAUtils.queryEntities(em, AccountEntity.class, q);
             Assert.fail("No exception was thrown");
         } catch (NoSuchEntityFieldException e) {
 
-            Assert.assertEquals("firsTNAmE", e.getField());
+            Assert.assertEquals("NAmE", e.getField());
         }
     }
 
@@ -199,38 +194,38 @@ public class JPAUtilsOrderTest {
     public void testManyToOne() {
 
         QueryOrder qo = new QueryOrder();
-        qo.setField("user.firstname");
+        qo.setField("account.name");
 
         QueryParameters q = new QueryParameters();
         q.getOrder().add(qo);
 
-        List<Project> projects = JPAUtils.queryEntities(em, Project.class, q);
+        List<DocumentEntity> documents = JPAUtils.queryEntities(em, DocumentEntity.class, q);
 
-        Assert.assertNotNull(projects);
-        Assert.assertEquals(100, projects.size());
-        Assert.assertNotNull(projects.get(0).getName());
-        Assert.assertEquals("Red", projects.get(0).getName());
-        Assert.assertNotNull(projects.get(99).getName());
-        Assert.assertEquals("Turquoise", projects.get(99).getName());
+        Assert.assertNotNull(documents);
+        Assert.assertEquals(50, documents.size());
+        Assert.assertNotNull(documents.get(0).getAccount().getName());
+        Assert.assertEquals("Aurilia", documents.get(0).getAccount().getName());
+        Assert.assertNotNull(documents.get(49).getAccount().getName());
+        Assert.assertEquals("Zea", documents.get(49).getAccount().getName());
     }
 
     @Test
     public void testManyToOneOnlyField() {
 
         QueryOrder qo = new QueryOrder();
-        qo.setField("user");
+        qo.setField("account");
 
         QueryParameters q = new QueryParameters();
         q.getOrder().add(qo);
 
-        List<Project> projects = JPAUtils.queryEntities(em, Project.class, q);
+        List<DocumentEntity> documents = JPAUtils.queryEntities(em, DocumentEntity.class, q);
 
-        Assert.assertNotNull(projects);
-        Assert.assertEquals(100, projects.size());
-        Assert.assertNotNull(projects.get(0).getName());
-        Assert.assertEquals("Goldenrod", projects.get(0).getName());
-        Assert.assertNotNull(projects.get(99).getName());
-        Assert.assertEquals("Yellow", projects.get(99).getName());
+        Assert.assertNotNull(documents);
+        Assert.assertEquals(50, documents.size());
+        Assert.assertNotNull(documents.get(0).getAccount().getName());
+        Assert.assertEquals(1, documents.get(0).getAccount().getId().intValue());
+        Assert.assertNotNull(documents.get(49).getAccount().getName());
+        Assert.assertEquals(49, documents.get(49).getAccount().getId().intValue());
     }
 
     @Test
@@ -242,28 +237,49 @@ public class JPAUtilsOrderTest {
         QueryParameters q = new QueryParameters();
         q.getOrder().add(qo);
 
-        List<User> users = JPAUtils.queryEntities(em, User.class, q);
+        List<AccountEntity> accounts = JPAUtils.queryEntities(em, AccountEntity.class, q);
 
-        Assert.assertNotNull(users);
-        Assert.assertEquals(100, users.size());
-        Assert.assertNotNull(users.get(0).getAddress());
-        Assert.assertNotNull(users.get(0).getAddress().getCountry());
-        Assert.assertEquals("Argentina", users.get(0).getAddress().getCountry());
-        Assert.assertNotNull(users.get(99).getAddress());
-        Assert.assertNotNull(users.get(99).getAddress().getCountry());
-        Assert.assertEquals("Venezuela", users.get(99).getAddress().getCountry());
+        Assert.assertNotNull(accounts);
+        Assert.assertEquals(50, accounts.size());
+        Assert.assertNotNull(accounts.get(0).getAddress());
+        Assert.assertNotNull(accounts.get(0).getAddress().getCountry());
+        Assert.assertEquals("Argentina", accounts.get(0).getAddress().getCountry());
+        Assert.assertNotNull(accounts.get(49).getAddress());
+        Assert.assertNotNull(accounts.get(49).getAddress().getCountry());
+        Assert.assertEquals("Venezuela", accounts.get(49).getAddress().getCountry());
+    }
+
+    @Test
+    public void testEmbeddedId() {
+
+        QueryOrder qo = new QueryOrder();
+        qo.setField("id.version");
+
+        QueryParameters q = new QueryParameters();
+        q.getOrder().add(qo);
+
+        List<DocumentEntity> documents = JPAUtils.queryEntities(em, DocumentEntity.class, q);
+
+        Assert.assertNotNull(documents);
+        Assert.assertEquals(50, documents.size());
+        Assert.assertNotNull(documents.get(0).getId());
+        Assert.assertNotNull(documents.get(0).getId().getVersion());
+        Assert.assertEquals(1, documents.get(0).getId().getVersion().intValue());
+        Assert.assertNotNull(documents.get(49).getId());
+        Assert.assertNotNull(documents.get(49).getId().getVersion());
+        Assert.assertEquals(5, documents.get(49).getId().getVersion().intValue());
     }
 
     @Test(expected = InvalidEntityFieldException.class)
     public void testOneToMany() {
 
         QueryOrder qo = new QueryOrder();
-        qo.setField("projects.name");
+        qo.setField("documents.string");
 
         QueryParameters q = new QueryParameters();
         q.getOrder().add(qo);
 
-        JPAUtils.queryEntities(em, User.class, q);
+        JPAUtils.queryEntities(em, AccountEntity.class, q);
         Assert.fail("No exception was thrown");
     }
 
@@ -271,12 +287,12 @@ public class JPAUtilsOrderTest {
     public void testOneToManyOnlyField() {
 
         QueryOrder qo = new QueryOrder();
-        qo.setField("projects");
+        qo.setField("documents");
 
         QueryParameters q = new QueryParameters();
         q.getOrder().add(qo);
 
-        JPAUtils.queryEntities(em, User.class, q);
+        JPAUtils.queryEntities(em, AccountEntity.class, q);
         Assert.fail("No exception was thrown");
     }
 }

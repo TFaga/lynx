@@ -3,20 +3,18 @@ package com.github.tfaga.lynx.test;
 import com.github.tfaga.lynx.beans.QueryOrder;
 import com.github.tfaga.lynx.beans.QueryParameters;
 import com.github.tfaga.lynx.enums.OrderDirection;
-import com.github.tfaga.lynx.test.entities.User;
+import com.github.tfaga.lynx.test.entities.AccountEntity;
 import com.github.tfaga.lynx.test.utils.JpaUtil;
 import com.github.tfaga.lynx.utils.JPAUtils;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+import javax.persistence.EntityManager;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-
-import javax.persistence.EntityManager;
 
 /**
  * @author Tilen Faganel
@@ -43,19 +41,19 @@ public class JPAUtilsPagingTest {
     @Test
     public void testEmptyQuery() {
 
-        List<User> users = JPAUtils.queryEntities(em, User.class, new QueryParameters());
+        List<AccountEntity> accounts = JPAUtils.queryEntities(em, AccountEntity.class, new QueryParameters());
 
-        Assert.assertNotNull(users);
-        Assert.assertEquals(100, users.size());
+        Assert.assertNotNull(accounts);
+        Assert.assertEquals(50, accounts.size());
     }
 
     @Test
     public void testNullQuery() {
 
-        List<User> users = JPAUtils.queryEntities(em, User.class);
+        List<AccountEntity> accounts = JPAUtils.queryEntities(em, AccountEntity.class);
 
-        Assert.assertNotNull(users);
-        Assert.assertEquals(100, users.size());
+        Assert.assertNotNull(accounts);
+        Assert.assertEquals(50, accounts.size());
     }
 
     @Test
@@ -64,14 +62,14 @@ public class JPAUtilsPagingTest {
         QueryParameters q = new QueryParameters();
         q.setLimit(10);
 
-        List<User> users = JPAUtils.queryEntities(em, User.class, q);
+        List<AccountEntity> accounts = JPAUtils.queryEntities(em, AccountEntity.class, q);
 
-        Assert.assertNotNull(users);
-        Assert.assertEquals(10, users.size());
-        Assert.assertNotNull(users.get(0).getId());
-        Assert.assertEquals(1, users.get(0).getId().intValue());
-        Assert.assertNotNull(users.get(9).getId());
-        Assert.assertEquals(10, users.get(9).getId().intValue());
+        Assert.assertNotNull(accounts);
+        Assert.assertEquals(10, accounts.size());
+        Assert.assertNotNull(accounts.get(0).getId());
+        Assert.assertEquals(1, accounts.get(0).getId().intValue());
+        Assert.assertNotNull(accounts.get(9).getId());
+        Assert.assertEquals(10, accounts.get(9).getId().intValue());
     }
 
     @Test
@@ -80,14 +78,14 @@ public class JPAUtilsPagingTest {
         QueryParameters q = new QueryParameters();
         q.setOffset(30);
 
-        List<User> users = JPAUtils.queryEntities(em, User.class, q);
+        List<AccountEntity> accounts = JPAUtils.queryEntities(em, AccountEntity.class, q);
 
-        Assert.assertNotNull(users);
-        Assert.assertEquals(70, users.size());
-        Assert.assertNotNull(users.get(0).getId());
-        Assert.assertEquals(31, users.get(0).getId().intValue());
-        Assert.assertNotNull(users.get(69).getId());
-        Assert.assertEquals(100, users.get(69).getId().intValue());
+        Assert.assertNotNull(accounts);
+        Assert.assertEquals(20, accounts.size());
+        Assert.assertNotNull(accounts.get(0).getId());
+        Assert.assertEquals(31, accounts.get(0).getId().intValue());
+        Assert.assertNotNull(accounts.get(19).getId());
+        Assert.assertEquals(50, accounts.get(19).getId().intValue());
     }
 
     @Test
@@ -102,21 +100,21 @@ public class JPAUtilsPagingTest {
         q.setOffset(0);
         q.getOrder().add(qo);
 
-        List<User> users = JPAUtils.queryEntities(em, User.class, q);
+        List<AccountEntity> accounts = JPAUtils.queryEntities(em, AccountEntity.class, q);
 
-        Assert.assertNotNull(users);
-        Assert.assertEquals(25, users.size());
+        Assert.assertNotNull(accounts);
+        Assert.assertEquals(25, accounts.size());
 
         q.setOffset(24);
 
-        List<User> usersOffseted = JPAUtils.queryEntities(em, User.class, q);
+        List<AccountEntity> accountsOffseted = JPAUtils.queryEntities(em, AccountEntity.class, q);
 
-        Assert.assertNotNull(usersOffseted);
-        Assert.assertEquals(25, usersOffseted.size());
+        Assert.assertNotNull(accountsOffseted);
+        Assert.assertEquals(25, accountsOffseted.size());
 
-        Assert.assertNotNull(users.get(24).getId());
-        Assert.assertNotNull(usersOffseted.get(0).getId());
-        Assert.assertEquals(users.get(24).getId().intValue(), usersOffseted.get(0).getId().intValue());
+        Assert.assertNotNull(accounts.get(24).getId());
+        Assert.assertNotNull(accountsOffseted.get(0).getId());
+        Assert.assertEquals(accounts.get(24).getId().intValue(), accountsOffseted.get(0).getId().intValue());
 //        Assert.assertEquals(65, users.get(24).getId().intValue());
     }
 
@@ -126,10 +124,10 @@ public class JPAUtilsPagingTest {
         QueryParameters q = new QueryParameters();
         q.setLimit(300);
 
-        List<User> users = JPAUtils.queryEntities(em, User.class, q);
+        List<AccountEntity> accounts = JPAUtils.queryEntities(em, AccountEntity.class, q);
 
-        Assert.assertNotNull(users);
-        Assert.assertEquals(100, users.size());
+        Assert.assertNotNull(accounts);
+        Assert.assertEquals(50, accounts.size());
     }
 
     @Test
@@ -138,9 +136,9 @@ public class JPAUtilsPagingTest {
         QueryParameters q = new QueryParameters();
         q.setOffset(200);
 
-        List<User> users = JPAUtils.queryEntities(em, User.class, q);
+        List<AccountEntity> accounts = JPAUtils.queryEntities(em, AccountEntity.class, q);
 
-        Assert.assertNotNull(users);
-        Assert.assertEquals(0, users.size());
+        Assert.assertNotNull(accounts);
+        Assert.assertEquals(0, accounts.size());
     }
 }
