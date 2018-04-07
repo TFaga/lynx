@@ -2560,8 +2560,6 @@ public class JPAUtilsFiltersTest {
 
         String value = "2017-09-25T12:38:19";
 
-        LocalDateTime dateTime = LocalDateTime.parse(value);
-
         QueryFilter qf = new QueryFilter();
         qf.setField("localDateTime");
         qf.setOperation(FilterOperation.IN);

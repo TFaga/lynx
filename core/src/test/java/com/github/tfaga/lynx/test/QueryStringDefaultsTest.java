@@ -7,6 +7,9 @@ import com.github.tfaga.lynx.utils.QueryStringDefaults;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * @author Tilen Faganel
  * @version 1.0.0
@@ -231,5 +234,60 @@ public class QueryStringDefaultsTest {
         Assert.assertNotNull(query);
         Assert.assertNotNull(query.getFields());
         Assert.assertEquals(0, query.getFields().size());
+    }
+
+    @Test
+    public void testFilterPredicate() {
+
+        Set<String> allowedFilterFields = new HashSet<>();
+        allowedFilterFields.add("email");
+
+        QueryParameters query = new QueryStringDefaults()
+                .allowFilter(f -> allowedFilterFields.contains(f.getField())).builder()
+                .query("filter=username:eq:test email:isnull")
+                .build();
+
+        Assert.assertNotNull(query);
+        Assert.assertNotNull(query.getFilters());
+        Assert.assertEquals(1, query.getFilters().size());
+        Assert.assertEquals("email", query.getFilters().get(0).getField());
+        Assert.assertNotNull(query.getFilters().get(0).getOperation());
+        Assert.assertEquals(FilterOperation.ISNULL, query.getFilters().get(0).getOperation());
+        Assert.assertNull(query.getFilters().get(0).getValue());
+    }
+
+    @Test
+    public void testOrderPredicate() {
+
+        Set<String> allowedOrderFields = new HashSet<>();
+        allowedOrderFields.add("email");
+
+        QueryParameters query = new QueryStringDefaults()
+                .allowOrder(f -> allowedOrderFields.contains(f.getField())).builder()
+                .query("order=username DESC,email ASC")
+                .build();
+
+        Assert.assertNotNull(query);
+        Assert.assertNotNull(query.getOrder());
+        Assert.assertEquals(1, query.getOrder().size());
+        Assert.assertEquals("email", query.getOrder().get(0).getField());
+        Assert.assertNotNull(query.getOrder().get(0).getOrder());
+        Assert.assertEquals(OrderDirection.ASC, query.getOrder().get(0).getOrder());
+    }
+
+    @Test
+    public void testFieldPredicate() {
+
+        Set<String> allowedFields = new HashSet<>();
+        allowedFields.add("email");
+
+        QueryParameters query = new QueryStringDefaults().allowField(allowedFields::contains).builder()
+                .query("fields=username,email")
+                .build();
+
+        Assert.assertNotNull(query);
+        Assert.assertNotNull(query.getFields());
+        Assert.assertEquals(1, query.getFields().size());
+        Assert.assertEquals("email", query.getFields().get(0));
     }
 }

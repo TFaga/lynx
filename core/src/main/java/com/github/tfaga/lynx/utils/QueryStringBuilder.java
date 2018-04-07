@@ -15,7 +15,11 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.function.Predicate;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -55,6 +59,10 @@ public class QueryStringBuilder {
     private Long maxLimit;
     private Long defaultLimit;
     private Long defaultOffset;
+
+    private Predicate<QueryFilter> filterPredicate;
+    private Predicate<QueryOrder> orderPredicate;
+    private Predicate<String> fieldPredicate;
 
     public QueryStringBuilder uri(URI uri) {
 
@@ -208,6 +216,27 @@ public class QueryStringBuilder {
         return this;
     }
 
+    public QueryStringBuilder allowFilter(Predicate<QueryFilter> predicate) {
+
+        filterPredicate = predicate;
+
+        return this;
+    }
+
+    public QueryStringBuilder allowOrder(Predicate<QueryOrder> predicate) {
+
+        orderPredicate = predicate;
+
+        return this;
+    }
+
+    public QueryStringBuilder allowField(Predicate<String> predicate) {
+
+        fieldPredicate = predicate;
+
+        return this;
+    }
+
     public QueryParameters build() {
 
         log.finest("Building query string: " + query);
@@ -277,7 +306,8 @@ public class QueryStringBuilder {
                     params.getOrder().clear();
 
                     Arrays.stream(value.split(",")).map(o -> buildOrder(key, o))
-                            .filter(Objects::nonNull).distinct()
+                            .filter(o -> o != null && (orderPredicate == null || orderPredicate.test(o)))
+                            .distinct()
                             .forEach(o -> params.getOrder().add(o));
                 }
 
@@ -392,7 +422,9 @@ public class QueryStringBuilder {
 
         log.finest("Building fields string: " + value);
 
-        return Arrays.stream(value.split(",")).filter(f -> !f.isEmpty()).distinct()
+        return Arrays.stream(value.split(","))
+                .filter(f -> !f.isEmpty() && (fieldPredicate == null || fieldPredicate.test(f)))
+                .distinct()
                 .collect(Collectors.toList());
     }
 
@@ -416,8 +448,8 @@ public class QueryStringBuilder {
             qf.setField(f[0]);
             qf.setOperation(parseFilterOperation(key, f[1].toUpperCase()));
 
-            if (qf.getOperation() == FilterOperation.ISNULL || qf.getOperation() ==
-                    FilterOperation.ISNOTNULL) {
+            if ((qf.getOperation() == FilterOperation.ISNULL || qf.getOperation() == FilterOperation.ISNOTNULL)
+                    && (filterPredicate == null || filterPredicate.test(qf))) {
 
                 filterList.add(qf);
             }
@@ -471,7 +503,10 @@ public class QueryStringBuilder {
                         qf.setValue(valuePattern.matcher(f[2]).replaceAll(""));
                     }
 
-                    filterList.add(qf);
+                    if (filterPredicate == null || filterPredicate.test(qf)) {
+
+                        filterList.add(qf);
+                    }
                 });
 
         return filterList;
